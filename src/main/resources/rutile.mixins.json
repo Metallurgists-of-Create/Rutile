@@ -6,10 +6,9 @@
   "refmap": "rutile.refmap.json",
   "plugin": "dev.metallurgists.rutile.mixin.plugin.RutileMixinsPlugin",
   "mixins": [
-
   ],
   "client": [
-
+    "ModelManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

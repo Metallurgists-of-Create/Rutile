@@ -5,13 +5,14 @@ issueTrackerURL="https://github.com/Metallurgists-of-Create/Rutile/issues"
 [[mods]]
 modId="rutile"
 version="${file.jarVersion}"
-displayName="Metallurgica"
+displayName="Rutile"
 displayURL="https://github.com/Metallurgists-of-Create/Rutile"
 logoFile="rutile.png"
 credits="Krystal"
 authors="PouffyDev"
 description='''
-API for easy material registry using flags
+    API for easy material registry using flags.
+    Also chemical compositions.
 '''
 [[dependencies.rutile]]
 modId="forge"

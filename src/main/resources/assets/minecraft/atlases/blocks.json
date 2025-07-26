@@ -1,0 +1,6 @@
+{
+  "sources": [
+    {"type": "single", "resource": "rutile:fluid/thin_fluid_flow"},
+    {"type": "single", "resource": "rutile:fluid/thin_fluid_still"}
+  ]
+}
