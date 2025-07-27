@@ -16,7 +16,7 @@ public class Element implements IHasDescriptionId {
     private final int color;
 
     public Element(Properties properties) {
-        this.id = properties.id;
+        this.id = properties.key;
         this.symbol = properties.symbol;
         this.color = properties.color;
     }
@@ -34,12 +34,12 @@ public class Element implements IHasDescriptionId {
     }
 
     public static class Properties {
-        private ResourceLocation id = Rutile.asResource("null");
+        private final ResourceLocation key;
         private String symbol = "null";
         private int color = 0x818181; // Default color
 
-        public Properties() {
-
+        public Properties(ResourceLocation key) {
+            this.key = key;
         }
 
         public Properties symbol(String symbol) {
@@ -49,11 +49,6 @@ public class Element implements IHasDescriptionId {
 
         public Properties color(int color) {
             this.color = color;
-            return this;
-        }
-
-        public Properties id(AbstractRegistrate<?> owner, String name) {
-            this.id = new ResourceLocation(owner.getModid(), name);
             return this;
         }
     }

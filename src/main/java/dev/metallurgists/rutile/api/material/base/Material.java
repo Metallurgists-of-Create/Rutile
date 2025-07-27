@@ -7,8 +7,7 @@ import dev.metallurgists.rutile.api.composition.SubComposition;
 import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.IMaterialFlag;
-import dev.metallurgists.rutile.api.registrate.element.ElementEntry;
-import dev.metallurgists.rutile.api.registrate.material.MaterialEntry;
+import dev.metallurgists.rutile.api.material.flag.types.IFlagRegistry;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.registry.RutileElements;
 import lombok.Getter;
@@ -35,6 +34,10 @@ public class Material implements Comparable<Material>, IHasDescriptionId {
         this.flags = flags;
         this.flags.setMaterial(this);
         verifyMaterial();
+    }
+
+    protected void registerMaterial() {
+        RutileAPI.materialManager.getRegistry(getNamespace()).register(this);
     }
 
     public String getName() {
@@ -84,6 +87,12 @@ public class Material implements Comparable<Material>, IHasDescriptionId {
     }
 
     public <T extends IMaterialFlag> void setFlag(FlagKey<T> key, IMaterialFlag flag) {
+        if (!RutileAPI.materialManager.canModifyMaterials()) {
+            throw new IllegalStateException("Cannot add flags to a Material when registry is frozen!");
+        }
+        if (flag instanceof IFlagRegistry reg && !Objects.equals(reg.getExistingNamespace(), "")) {
+            flags.getNoRegister().add(key);
+        }
         flags.setFlag(key, flag);
         flags.verify();
     }
@@ -115,8 +124,8 @@ public class Material implements Comparable<Material>, IHasDescriptionId {
     }
 
     public static class Builder {
-        private final MaterialInfo materialInfo;
-        private final MaterialFlags flags;
+        private MaterialInfo materialInfo;
+        private MaterialFlags flags;
         private final List<ElementData> composition = new ArrayList<>();
 
         public Builder(ResourceLocation resourceLocation) {
@@ -154,6 +163,7 @@ public class Material implements Comparable<Material>, IHasDescriptionId {
                             "Existing Id in Existing Ids List is null for Material " + this.materialInfo.resourceLocation);
                 }
                 materialInfo.withExistingId((FlagKey<?>) components[i], (String) components[i + 1]);
+                flags.getNoRegister().add((FlagKey<?>) components[i]);
             }
             return this;
         }
@@ -173,7 +183,7 @@ public class Material implements Comparable<Material>, IHasDescriptionId {
             return this;
         }
 
-        public Builder element(ElementEntry<?> entry) {
+        public Builder element(Element entry) {
             ElementData elementData = new ElementData(entry.getId(), 1);
             materialInfo.composition().add(new SubComposition(List.of(elementData), 1));
             return this;
@@ -189,7 +199,7 @@ public class Material implements Comparable<Material>, IHasDescriptionId {
                     throw new IllegalArgumentException(
                             "ElementData in Compositions List is null for Material " + this.materialInfo.resourceLocation);
                 }
-                ElementData elementData = new ElementData(components[i] instanceof ElementEntry<?> entry ? entry.getId() : ((Element) components[i]).getId(), ((Number) components[i + 1]).intValue());
+                ElementData elementData = new ElementData(components[i] instanceof Element entry ? entry.getId() : ((Element) components[i]).getId(), ((Number) components[i + 1]).intValue());
                 elementDataList.add(elementData);
             }
             ElementData.createFromList(elementDataList).forEach(materialInfo.composition()::add);
@@ -205,9 +215,9 @@ public class Material implements Comparable<Material>, IHasDescriptionId {
                     throw new IllegalArgumentException(
                             "ElementData in Compositions List is null for Material " + this.materialInfo.resourceLocation);
                 }
-                MaterialEntry<Material> materialEntry = ((MaterialEntry<Material>) components[i]);
+                Material material = ((Material) components[i]);
                 int amount = ((Number) components[i + 1]).intValue();
-                List<SubComposition> materialComp = materialEntry.get().getComposition();
+                List<SubComposition> materialComp = material.getComposition();
                 List<ElementData> elementDataList = new ArrayList<>();
                 for (SubComposition subComposition : materialComp) {
                     elementDataList.addAll(subComposition.getElements());
@@ -227,15 +237,18 @@ public class Material implements Comparable<Material>, IHasDescriptionId {
         public Material buildAndRegister() {
             if (materialInfo.colour() == 0) materialInfo.withColour(0xFFFFFF);
             var mat = new Material(materialInfo, flags);
-            ResourceLocation key = new ResourceLocation(mat.getNamespace(), mat.getName());
-            RutileAPI.getRegisteredMaterials().put(key, mat);
+            mat.registerMaterial();
             return mat;
+        }
+
+        public Material register() {
+            return buildAndRegister();
         }
     }
 
     @Accessors(chain = true)
     public static class MaterialInfo {
-        private final ResourceLocation resourceLocation;
+        public final ResourceLocation resourceLocation;
         @Getter
         public Map<FlagKey<?>, String> nameAlternatives = new HashMap<>();
         @Getter

@@ -2,29 +2,24 @@ package dev.metallurgists.rutile.api.material.flag;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.base.MaterialFlags;
-import dev.metallurgists.rutile.api.registry.RutileAPI;
+import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 
 public class FlagKey<T extends IMaterialFlag> {
 
-    private final String key;
+    @Getter
+    private final ResourceLocation id;
     private final Class<T> type;
 
     public static final FlagKey<EmptyFlag> EMPTY = create("empty", EmptyFlag.class);
 
     public static <C extends IMaterialFlag> FlagKey<C> create(String key, Class<C> type) {
-        FlagKey<C> flag = new  FlagKey<>(key, type);
-        ResourceLocation rl = new ResourceLocation(Rutile.ID, key);
-        return RutileAPI.registerFlag(rl, flag);
+        return new FlagKey<>(Rutile.id(key), type);
     }
 
-    public FlagKey(String key, Class<T> type) {
-        this.key = key;
+    public FlagKey(ResourceLocation id, Class<T> type) {
+        this.id = id;
         this.type = type;
-    }
-
-    protected String getKey() {
-        return key;
     }
 
     public T constructDefault() {
@@ -42,19 +37,19 @@ public class FlagKey<T extends IMaterialFlag> {
     @Override
     public boolean equals(Object o) {
         if (o instanceof FlagKey) {
-            return ((FlagKey<?>) o).getKey().equals(key);
+            return ((FlagKey<?>) o).getId().equals(id);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return key.hashCode();
+        return id.hashCode();
     }
 
     @Override
     public String toString() {
-        return key;
+        return id.toString();
     }
 
     public static class EmptyFlag implements IMaterialFlag {

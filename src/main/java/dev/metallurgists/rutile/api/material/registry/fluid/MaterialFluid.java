@@ -5,7 +5,7 @@ import dev.metallurgists.rutile.api.material.flag.types.IFluidRegistry;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
-public class MaterialFluid extends ForgeFlowingFluid implements IMaterialFluid{
+public class MaterialFluid extends ForgeFlowingFluid implements IMaterialFluid {
     public final Material material;
     public final IFluidRegistry fluidFlag;
 

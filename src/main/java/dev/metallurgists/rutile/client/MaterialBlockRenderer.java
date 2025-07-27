@@ -1,15 +1,9 @@
 package dev.metallurgists.rutile.client;
 
-import dev.metallurgists.rutile.api.dynamic_pack.asset.RutileDynamicResourcePack;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
+import dev.metallurgists.rutile.api.material.flag.types.IBlockRegistry;
 import dev.metallurgists.rutile.api.material.registry.block.AxisMaterialBlock;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.models.BlockModelGenerators;
-import net.minecraft.data.models.model.DelegatedModel;
-import net.minecraft.data.models.model.ModelLocationUtils;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 
 import java.util.HashSet;
@@ -28,15 +22,8 @@ public class MaterialBlockRenderer {
 
     public static void reinitModels() {
         for (MaterialBlockRenderer model : MODELS) {
-            String namespace = model.material.getNamespace();
-            ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(model.block);
-            String blockName = model.flagKey.toString();
-            boolean texturePresent = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(namespace, "textures/block/materials/" + model.material.getName() + "/%s.png".formatted(blockName))).isPresent();
-            String texture = texturePresent ? namespace+":block/materials/" + model.material.getName() + "/" + blockName : "rutile:block/materials/null/" + blockName;
-            ResourceLocation modelId = blockId.withPrefix("block/");
-            RutileDynamicResourcePack.addBlockModel(blockId, RutileModels.simpleCubeAll(texture));
-            RutileDynamicResourcePack.addBlockState(blockId, BlockModelGenerators.createSimpleBlock(model.block, modelId));
-            RutileDynamicResourcePack.addItemModel(BuiltInRegistries.ITEM.getKey(model.block.asItem()), new DelegatedModel(ModelLocationUtils.getModelLocation(model.block)));
+            var flag = model.material.getFlag(model.flagKey);
+            if (flag instanceof IBlockRegistry blockRegistry) blockRegistry.registerBlockAssets(model.material);
         }
     }
 

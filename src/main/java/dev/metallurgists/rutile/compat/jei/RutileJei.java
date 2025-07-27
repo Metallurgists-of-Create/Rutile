@@ -2,6 +2,7 @@ package dev.metallurgists.rutile.compat.jei;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.compat.jei.custom.element.ElementIngredientHelper;
 import dev.metallurgists.rutile.compat.jei.custom.element.ElementIngredientRenderer;
 import mezz.jei.api.IModPlugin;
@@ -23,14 +24,14 @@ public class RutileJei implements IModPlugin {
     @Override
     public void registerIngredients(IModIngredientRegistration registration) {
         IColorHelper colorHelper = registration.getColorHelper();
-        registration.register(RutileJeiConstants.ELEMENT, RutileAPI.getRegisteredElements().values(), new ElementIngredientHelper(colorHelper), new ElementIngredientRenderer(16));
+        registration.register(RutileJeiConstants.ELEMENT, RutileRegistries.ELEMENTS.values(), new ElementIngredientHelper(colorHelper), new ElementIngredientRenderer(16));
     }
 
     @Override
     public void registerIngredientAliases(IIngredientAliasRegistration registration) {
         registration.addAliases(
                 RutileJeiConstants.ELEMENT,
-                RutileAPI.getRegisteredElements().values(),
+                RutileRegistries.ELEMENTS.values(),
                 "element");
     }
 }

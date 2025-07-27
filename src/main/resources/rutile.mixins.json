@@ -6,6 +6,9 @@
   "refmap": "rutile.refmap.json",
   "plugin": "dev.metallurgists.rutile.mixin.plugin.RutileMixinsPlugin",
   "mixins": [
+    "TagLoaderMixin",
+    "TagManagerMixin",
+    "registrate.AbstractRegistrateAccessor"
   ],
   "client": [
     "ModelManagerMixin"

@@ -1,13 +1,11 @@
 {
-  "materialflag.storage_block": "Block of %s",
-  "materialflag.ingot": "%s Ingot",
-  "materialflag.nugget": "%s Nugget",
-  "materialflag.gem": "%s",
-  "materialflag.dust": "%s Dust",
-
-  "materialflag.bucket": "%s Bucket",
-  "materialflag.liquid": "%s",
-  "materialflag.bucket.liquid": "%s Bucket",
+  "materialflag.rutile.storage_block": "Block of %s",
+  "materialflag.rutile.ingot": "%s Ingot",
+  "materialflag.rutile.nugget": "%s Nugget",
+  "materialflag.rutile.gem": "%s",
+  "materialflag.rutile.dust": "%s Dust",
+  "materialflag.rutile.liquid": "%s",
+  "materialflag.rutile.bucket.liquid": "%s Bucket",
 
   "element.rutile.actinium": "Actinium",
   "element.rutile.aluminum": "Aluminum",

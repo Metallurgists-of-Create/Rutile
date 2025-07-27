@@ -5,10 +5,12 @@ import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.registry.block.IMaterialBlock;
 import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
-import dev.metallurgists.rutile.client.RutileModels;
 import dev.metallurgists.rutile.util.ClientUtil;
+import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public interface IBlockRegistry extends IFlagRegistry {
 
@@ -26,17 +28,21 @@ public interface IBlockRegistry extends IFlagRegistry {
 
     @Override
     default String getUnlocalizedName() {
-        return "materialflag." + (this instanceof ISpecialLangSuffix suffix ? suffix.getLangSuffix() : RutileModels.getFlagName(getKey()));
+        String flag = Util.makeDescriptionId("materialflag", getKey().getId());
+        if (this instanceof ISpecialLangSuffix suffix && !Objects.equals(suffix.getLangSuffix(), "")) {
+            flag += "." + suffix.getLangSuffix();
+        }
+        return flag;
     }
 
     @Override
     default ResourceLocation getExistingId(Material material) {
+        ResourceLocation existingId = material.materialInfo().existingIds().get(getKey());
+        if (existingId != null) return existingId;
         String nameAlternative = material.materialInfo().nameAlternatives().get(getKey());
-        String namespace = getExistingNamespace() != null ? getExistingNamespace() : material.getNamespace();
-        if (nameAlternative != null) {
-            return new ResourceLocation(namespace, getIdPattern().formatted(nameAlternative));
-        }
-        return new ResourceLocation(namespace, getIdPattern().formatted(material.getName()));
+        String namespace = !Objects.equals(getExistingNamespace(), "") ? getExistingNamespace() : material.getNamespace();
+        String path = nameAlternative != null ? nameAlternative : material.getName();
+        return new ResourceLocation(namespace, getIdPattern().formatted(path));
     }
 
     void registerBlockAssets(Material material);

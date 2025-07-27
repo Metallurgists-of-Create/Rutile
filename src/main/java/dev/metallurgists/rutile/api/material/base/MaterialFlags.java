@@ -68,6 +68,13 @@ public class MaterialFlags {
         ensureSet(key, false);
     }
 
+    public MaterialFlags addFlags(IMaterialFlag... flags) {
+        Map<FlagKey<? extends IMaterialFlag>, IMaterialFlag> newFlagMap = new HashMap<>();
+        Arrays.stream(flags).forEach((flag) -> newFlagMap.put(flag.getKey(), flag));
+        this.flagMap.putAll(newFlagMap);
+        return this;
+    }
+
     public void verify() {
         List<IMaterialFlag> oldList;
         do {
@@ -75,12 +82,11 @@ public class MaterialFlags {
             oldList.forEach(p -> p.verifyFlag(this));
         } while (oldList.size() != flagMap.size());
 
-        //if (flagMap.keySet().stream().noneMatch(baseTypes::contains)) {
-        //    if (flagMap.isEmpty()) {
-        //        flagMap.put(FlagKey.EMPTY, FlagKey.EMPTY.constructDefault());
-        //    } else
-        //        throw new IllegalArgumentException("Material must have at least one of: " + baseTypes + " specified!");
-        //}
+        if (flagMap.keySet().stream().noneMatch(baseTypes::contains)) {
+            if (flagMap.isEmpty()) {
+                flagMap.put(FlagKey.EMPTY, FlagKey.EMPTY.constructDefault());
+            }
+        }
     }
 
     @Override

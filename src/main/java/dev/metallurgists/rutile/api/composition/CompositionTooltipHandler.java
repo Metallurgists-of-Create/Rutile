@@ -1,10 +1,10 @@
 package dev.metallurgists.rutile.api.composition;
 
-import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.tooltip.CompositionManager;
 import dev.metallurgists.rutile.api.composition.tooltip.MaterialCompositionManager;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
+import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.util.ClientUtil;
 import dev.metallurgists.rutile.util.MaterialHelper;
@@ -14,53 +14,45 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 public class CompositionTooltipHandler {
 
     public static void addToTooltip(List<Component> toolTip, ItemStack stack) {
         boolean notAMaterialCheckSingleCompositions = false;
-        for (Material material : RutileAPI.getRegisteredMaterials().values()) {
-            if (MaterialCompositionManager.hasComposition(material)) {
-                var allMatItem = MaterialHelper.getAllMaterialItemsForTooltips(material);
-                if (allMatItem.contains(stack.getItem())) {
-                    LangBuilder compositionName = ClientUtil.lang();
-                    createTooltip(compositionName, MaterialCompositionManager.getSubCompositions(material));
-                    if (!compositionName.string().isEmpty()) {
-                        toolTip.add(ClientUtil.lang().space().space().space()
-                                .add(compositionName)
-                                .component().withStyle(style -> style.withColor(RutileConfig.client().tooltipColor.get())));
+        for (MaterialRegistry registry : RutileAPI.materialManager.getRegistries()) {
+            for (Material material : registry.getAllMaterials()) {
+                if (MaterialCompositionManager.hasComposition(material)) {
+                    var allMatItem = MaterialHelper.getAllMaterialItemsForTooltips(material);
+                    if (allMatItem.contains(stack.getItem())) {
+                        LangBuilder compositionName = ClientUtil.lang();
+                        createTooltip(compositionName, MaterialCompositionManager.getSubCompositions(material));
+                        add(toolTip, compositionName);
+                        break;
+                    } else {
+                        notAMaterialCheckSingleCompositions = true;
                     }
-                    return; // No need to check further if we found a material match
-                } else {
-                    notAMaterialCheckSingleCompositions = true;
                 }
             }
         }
         if (notAMaterialCheckSingleCompositions) {
-            Rutile.LOGGER.info("Item: {} does not belong to a material. Checking single compositions", stack.getItem());
             if (CompositionManager.hasComposition(stack.getItem())) {
                 LangBuilder compositionName = ClientUtil.lang();
                 createTooltip(compositionName, CompositionManager.getSubCompositions(stack.getItem()));
-                if (!compositionName.string().isEmpty()) {
-                    toolTip.add(ClientUtil.lang().space().space().space()
-                            .add(compositionName)
-                            .component().withStyle(style -> style.withColor(RutileConfig.client().tooltipColor.get())));
-                }
+                add(toolTip, compositionName);
             }
         }
     }
 
-    static Predicate<ItemStack> isMaterialItem() {
-        return stack -> {
-            for (Material material : RutileAPI.getRegisteredMaterials().values()) {
-                if (MaterialCompositionManager.hasComposition(material)) {
-                    var allMatItem = MaterialHelper.getAllMaterialItemsForTooltips(material);
-                    return allMatItem.contains(stack.getItem());
-                }
-            }
-            return false;
-        };
+    private static void add(List<Component> toolTip, LangBuilder composition) {
+        if (!composition.string().isEmpty()) {
+            Component component = ClientUtil.lang().space().space().space()
+                    .add(composition)
+                    .component().withStyle(style -> style.withColor(RutileConfig.client().tooltipColor.get()));
+            if (toolTip.size() < 2)
+                toolTip.add(component);
+            else
+                toolTip.add(1, component);
+        }
     }
 
     private static void createTooltip(LangBuilder compositionName, List<SubComposition> subCompositions) {

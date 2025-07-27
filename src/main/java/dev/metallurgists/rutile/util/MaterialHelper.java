@@ -6,7 +6,10 @@ import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.types.*;
+import dev.metallurgists.rutile.api.material.registry.item.IMaterialItem;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
+import dev.metallurgists.rutile.api.registry.RutileRegistry;
+import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -23,21 +26,13 @@ public class MaterialHelper {
 
     public static List<Item> getAllItems(Material material, boolean onlyChemicalTooltippable) {
         List<Item> allItems = new ArrayList<>();
-        Map<FlagKey<?>, ResourceLocation> existingIds = material.materialInfo().existingIds;
-        for (var flagKey : material.getFlags().getFlagKeys()) {
+        for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
+            if (!material.hasFlag(flagKey)) continue;
             var flag = material.getFlag(flagKey);
             if (flag instanceof IItemRegistry itemFlag) {
                 if (onlyChemicalTooltippable)
                     if (itemFlag instanceof IConditionalComposition conditionalComposition && !conditionalComposition.shouldHaveComposition()) continue;
-                if (existingIds.containsKey(flagKey)) {
-                    var item = BuiltInRegistries.ITEM.get(existingIds.get(flagKey));
-                    if (item == null) continue;
-                    allItems.add(item);
-                    continue;
-                }
-                var item = getItem(material, itemFlag.getKey());
-                if (item == null) continue;
-                allItems.add(item);
+                allItems.add(getItem(material, flagKey));
             }
         }
         return allItems;
@@ -49,21 +44,13 @@ public class MaterialHelper {
 
     public static List<Block> getAllBlocks(Material material, boolean onlyChemicalTooltippable) {
         List<Block> allBlocks = new ArrayList<>();
-        Map<FlagKey<?>, ResourceLocation> existingIds = material.materialInfo().existingIds;
-        for (var flagKey : material.getFlags().getFlagKeys()) {
+        for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
+            if (!material.hasFlag(flagKey)) continue;
             var flag = material.getFlag(flagKey);
             if (flag instanceof IBlockRegistry blockFlag) {
                 if (onlyChemicalTooltippable)
                     if (blockFlag instanceof IConditionalComposition conditionalComposition && !conditionalComposition.shouldHaveComposition()) continue;
-                if (existingIds.containsKey(flagKey)) {
-                    var block = BuiltInRegistries.BLOCK.get(existingIds.get(flagKey));
-                    if (block == null) continue;
-                    allBlocks.add(block);
-                    continue;
-                }
-                var block = getBlock(material, blockFlag.getKey());
-                if (block == null) continue;
-                allBlocks.add(block);
+                allBlocks.add(getBlock(material, blockFlag.getKey()));
             }
         }
         return allBlocks;
@@ -71,32 +58,14 @@ public class MaterialHelper {
 
     public static List<Fluid> getAllFluids(Material material) {
         List<Fluid> allFluids = new ArrayList<>();
-        Map<FlagKey<?>, ResourceLocation> existingIds = material.materialInfo().existingIds;
-        for (var flagKey : material.getFlags().getFlagKeys()) {
+        for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
+            if (!material.hasFlag(flagKey)) continue;
             var flag = material.getFlag(flagKey);
             if (flag instanceof IFluidRegistry fluidFlag) {
-                if (existingIds.containsKey(flagKey)) {
-                    var fluid = BuiltInRegistries.FLUID.get(existingIds.get(flagKey));
-                    if (fluid == null) continue;
-                    allFluids.add(fluid);
-                    continue;
-                }
-                var fluid = getFluid(material, fluidFlag.getKey());
-                if (fluid == null) continue;
-                allFluids.add(fluid);
+                allFluids.add(getFluid(material, fluidFlag.getKey()));
             }
         }
         return allFluids;
-    }
-
-    public static Codec<Material> byNameCodec() {
-        return ResourceLocation.CODEC.flatXmap((resLoc) -> Optional.ofNullable(RutileAPI.getRegisteredMaterials().get(resLoc)).map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Unknown material: " + resLoc.toString())), (material) ->  {
-            ResourceLocation resLoc = material.getId();
-            if (resLoc == null) {
-                return DataResult.error(() -> "Material has no registry name: " + material.getName());
-            }
-            return DataResult.success(resLoc);
-        });
     }
 
     public static Item getItem(Material material, FlagKey<?> flagKey) {
@@ -104,7 +73,6 @@ public class MaterialHelper {
         if (!(material.getFlag(flagKey) instanceof IItemRegistry flag)) throw new IllegalArgumentException("Flag: " + flagKey.toString() + " is not an item flag");
         ResourceLocation resultId = flag.getExistingId(material);
         Item item = BuiltInRegistries.ITEM.get(resultId);
-        if (item == null) throw new RuntimeException("No valid item of flag: " + flagKey.toString() + " found for material: " + material.getId());
         return item;
     }
 
@@ -113,7 +81,6 @@ public class MaterialHelper {
         if (!(material.getFlag(flagKey) instanceof IBlockRegistry flag)) throw new IllegalArgumentException("Flag: " + flagKey.toString() + " is not a block flag");
         ResourceLocation resultId = flag.getExistingId(material);
         Block block = BuiltInRegistries.BLOCK.get(resultId);
-        if (block == null) throw new RuntimeException("No valid block of flag: " + flagKey.toString() + " found for material: " + material.getId());
         return block;
     }
 
@@ -122,7 +89,6 @@ public class MaterialHelper {
         if (!(material.getFlag(flagKey) instanceof IFluidRegistry flag)) throw new IllegalArgumentException("Flag: " + flagKey.toString() + " is not a fluid flag");
         ResourceLocation resultId = flag.getExistingId(material);
         Fluid fluid = BuiltInRegistries.FLUID.get(resultId);
-        if (fluid == null) throw new RuntimeException("No valid fluid of flag: " + flagKey.toString() + " found for material: " + material.getId());
         return fluid;
     }
 
@@ -157,5 +123,9 @@ public class MaterialHelper {
             String namespacePrefix = Objects.equals(material.getNamespace(), "rutile") ? "" : material.getNamespace() + "_";
             return namespacePrefix + idPattern.getIdPattern().formatted(material.getName());
         } else throw new IllegalArgumentException("FlagKey: " + flagKey.toString() + " does not implement IIdPattern and thus cannot be used for a recipe path.");
+    }
+
+    public static boolean hasExternalId(Material material, FlagKey<?> flagKey) {
+        return material.noRegister(flagKey);
     }
 }

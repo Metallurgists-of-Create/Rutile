@@ -17,6 +17,10 @@ public class RutilePluginFinder {
 
     }
 
+    public static IRutilePlugin getPlugin(String pluginId) {
+        return getModPlugins().stream().filter(plugin -> plugin.getPluginNamespace().equals(pluginId)).findFirst().orElse(null);
+    }
+
     public static List<IRutilePlugin> getModPlugins() {
         return getInstances(RutilePlugin.class, IRutilePlugin.class);
     }

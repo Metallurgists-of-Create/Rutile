@@ -8,30 +8,34 @@ import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.types.IBlockRegistry;
 import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
-
-import java.util.Arrays;
+import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
 
 public class RutileMaterialBlocks {
     public static ImmutableTable.Builder<FlagKey<?>, Material, BlockEntry<? extends IMaterialBlock>> MATERIAL_BLOCKS_BUILDER = ImmutableTable.builder();
 
     public static Table<FlagKey<?>, Material, BlockEntry<? extends IMaterialBlock>> MATERIAL_BLOCKS;
 
-    public static void generateMaterialBlocks(RutileRegistrate registrate, String... namespaces) {
-        for (Material material : RutileAPI.getRegisteredMaterials().values()) {
-            if (!Arrays.stream(namespaces).toList().contains(material.getNamespace())) continue;
-            for (FlagKey<?> flagKey : material.getFlags().getFlagKeys()) {
-                var flag = material.getFlag(flagKey);
-                if (!material.noRegister(flagKey)) {
-                    if (flag instanceof IBlockRegistry blockRegistry) {
-                        registerMaterialBlock(blockRegistry, material, flagKey, registrate);
+    public static void generateMaterialBlocks() {
+        for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
+            if (flagKey.constructDefault() instanceof IBlockRegistry) {
+                for (MaterialRegistry registry : RutileAPI.materialManager.getRegistries()) {
+                    RutileRegistrate registrate = registry.getRegistrate();
+                    for (Material material : registry.getAllMaterials()) {
+                        var flag = material.getFlag(flagKey);
+                        if (material.noRegister(flagKey)) continue;
+                        if (flag instanceof IBlockRegistry blockRegistry) {
+                            registerMaterialBlock(material, blockRegistry, flagKey, registrate);
+                        }
                     }
                 }
             }
         }
+        MATERIAL_BLOCKS = MATERIAL_BLOCKS_BUILDER.build();
     }
 
 
-    private static void registerMaterialBlock(IBlockRegistry blockRegistry, Material material, FlagKey<?> flagKey, RutileRegistrate registrate) {
+
+    private static void registerMaterialBlock(Material material, IBlockRegistry blockRegistry, FlagKey<?> flagKey, RutileRegistrate registrate) {
         MATERIAL_BLOCKS_BUILDER.put(flagKey, material, blockRegistry.registerBlock(material, blockRegistry, registrate));
     }
 }

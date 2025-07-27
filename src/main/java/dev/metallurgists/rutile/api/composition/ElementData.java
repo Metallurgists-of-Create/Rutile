@@ -3,8 +3,8 @@ package dev.metallurgists.rutile.api.composition;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.metallurgists.rutile.api.registrate.element.ElementEntry;
-import dev.metallurgists.rutile.api.registry.RutileAPI;
+import dev.metallurgists.rutile.api.composition.element.Element;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.registry.RutileElements;
 import dev.metallurgists.rutile.util.ClientUtil;
 import lombok.Getter;
@@ -20,11 +20,11 @@ public record ElementData(@Getter ResourceLocation element, @Getter int amount) 
             Codec.INT.optionalFieldOf("amount", 1).forGetter(ElementData::getAmount)
     ).apply(instance, ElementData::new));
 
-    public static ElementData create(ElementEntry<?> element) {
+    public static ElementData create(Element element) {
         return new ElementData(element.getId(), 1);
     }
 
-    public static ElementData create(ElementEntry<?> element, int amount) {
+    public static ElementData create(Element element, int amount) {
         return new ElementData(element.getId(), amount);
     }
 
@@ -56,7 +56,7 @@ public record ElementData(@Getter ResourceLocation element, @Getter int amount) 
     }
 
     public String getDisplay() {
-        StringBuilder display = new StringBuilder(RutileAPI.getRegisteredElements().getOrDefault(element, RutileElements.NULL.get()).getSymbol());
+        StringBuilder display = new StringBuilder(RutileRegistries.ELEMENTS.getOrDefault(element, RutileElements.NULL).getSymbol());
         if (amount > 1)
             display.append(amount);
         return ClientUtil.toSmallDownNumbers(display.toString());
