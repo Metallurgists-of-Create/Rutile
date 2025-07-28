@@ -1,4 +1,6 @@
 # Rutile
+[![](https://jitpack.io/v/Metallurgists-of-Create/Rutile.svg)](https://jitpack.io/#Metallurgists-of-Create/Rutile)
+
 
 API for easy material registry using flags. \
 Also chemical compositions.
