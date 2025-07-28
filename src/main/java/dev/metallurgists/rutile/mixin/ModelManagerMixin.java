@@ -2,7 +2,6 @@ package dev.metallurgists.rutile.mixin;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.client.MaterialBlockRenderer;
-import dev.metallurgists.rutile.client.PillarMaterialBlockRenderer;
 import dev.metallurgists.rutile.client.RutileModels;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -26,7 +25,6 @@ public abstract class ModelManagerMixin {
 
         long startTime = System.currentTimeMillis();
         MaterialBlockRenderer.reinitModels();
-        PillarMaterialBlockRenderer.reinitModels();
         RutileModels.registerMaterialAssets();
         Rutile.LOGGER.info("Rutile Model loading took {}ms", System.currentTimeMillis() - startTime);
     }

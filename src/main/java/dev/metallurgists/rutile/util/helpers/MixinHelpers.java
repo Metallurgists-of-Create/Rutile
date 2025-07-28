@@ -1,4 +1,4 @@
-package dev.metallurgists.rutile.util;
+package dev.metallurgists.rutile.util.helpers;
 
 import com.google.common.collect.Table;
 import com.tterrag.registrate.util.entry.BlockEntry;

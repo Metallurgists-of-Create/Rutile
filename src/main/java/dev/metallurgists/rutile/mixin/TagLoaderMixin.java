@@ -1,7 +1,7 @@
 package dev.metallurgists.rutile.mixin;
 
 import dev.metallurgists.rutile.util.IRutileTagLoader;
-import dev.metallurgists.rutile.util.MixinHelpers;
+import dev.metallurgists.rutile.util.helpers.MixinHelpers;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;

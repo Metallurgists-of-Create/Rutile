@@ -16,18 +16,16 @@ import dev.metallurgists.rutile.api.material.registry.block.MaterialBlock;
 import dev.metallurgists.rutile.api.material.registry.block.MaterialBlockItem;
 import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 import dev.metallurgists.rutile.registry.RutileFlagKeys;
+import dev.metallurgists.rutile.util.helpers.ModelHelpers;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-
-import static dev.metallurgists.rutile.client.RutileModels.*;
 
 public class StorageBlockFlag extends BlockFlag {
     @Getter
@@ -77,15 +75,15 @@ public class StorageBlockFlag extends BlockFlag {
             boolean endPresent = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(material.getNamespace() + ":textures/block/materials/" + material.getName() + "/storage_block_end.png")).isPresent();
             String sideTexture = sidePresent ? material.getNamespace() + ":block/materials/" + material.getName() + "/storage_block_side" : "metallurgica:block/materials/null/storage_block_side";
             String endTexture = endPresent ? material.getNamespace() + ":block/materials/" + material.getName() + "/storage_block_end" : "metallurgica:block/materials/null/storage_block_end";
-            RutileDynamicResourcePack.addBlockModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), simplePillar(endTexture, sideTexture));
-            RutileDynamicResourcePack.addBlockState(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), simpleAxisBlockstate("metallurgica:block/" + getIdPattern().formatted(material.getName())));
+            RutileDynamicResourcePack.addBlockModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simplePillar(endTexture, sideTexture));
+            RutileDynamicResourcePack.addBlockState(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simpleAxisBlockstate("metallurgica:block/" + getIdPattern().formatted(material.getName())));
         } else {
             boolean texturePresent = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(material.getNamespace() + ":textures/block/materials/" + material.getName() + "/storage_block.png")).isPresent();
             String texture = texturePresent ? material.getNamespace() + ":block/materials/" + material.getName() + "/storage_block" : "metallurgica:block/materials/null/storage_block";
-            RutileDynamicResourcePack.addBlockModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), simpleCubeAll(texture));
-            RutileDynamicResourcePack.addBlockState(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), singleVariantBlockstate(material.getNamespace() + ":block/" + getIdPattern().formatted(material.getName())));
+            RutileDynamicResourcePack.addBlockModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simpleCubeAll(texture));
+            RutileDynamicResourcePack.addBlockState(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.singleVariantBlockstate(material.getNamespace() + ":block/" + getIdPattern().formatted(material.getName())));
         }
-        RutileDynamicResourcePack.addItemModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), simpleParentedModel(material.getNamespace() + ":block/" + getIdPattern().formatted(material.getName())));
+        RutileDynamicResourcePack.addItemModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simpleParentedModel(material.getNamespace() + ":block/" + getIdPattern().formatted(material.getName())));
     }
 
     @Override

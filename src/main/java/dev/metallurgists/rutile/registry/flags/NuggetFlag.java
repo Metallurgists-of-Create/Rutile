@@ -14,22 +14,19 @@ import dev.metallurgists.rutile.api.material.flag.types.ISpecialLangSuffix;
 import dev.metallurgists.rutile.api.material.registry.item.IMaterialItem;
 import dev.metallurgists.rutile.api.material.registry.item.MaterialItem;
 import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
-import dev.metallurgists.rutile.common.RecipeHelper;
+import dev.metallurgists.rutile.util.helpers.RecipeHelpers;
 import dev.metallurgists.rutile.registry.RutileFlagKeys;
-import dev.metallurgists.rutile.util.MaterialHelper;
+import dev.metallurgists.rutile.util.helpers.MaterialHelpers;
+import dev.metallurgists.rutile.util.helpers.ModelHelpers;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
-
-import static dev.metallurgists.rutile.client.RutileModels.simpleGeneratedModel;
 
 public class NuggetFlag extends ItemFlag implements IRecipeHandler, ISpecialLangSuffix {
     @Getter
@@ -75,7 +72,7 @@ public class NuggetFlag extends ItemFlag implements IRecipeHandler, ISpecialLang
     public void registerItemAssets(Material material) {
         boolean texturePresent = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(material.getNamespace() + ":textures/item/materials/" + material.getName() + "/nugget.png")).isPresent();
         String texture = texturePresent ? material.getNamespace() + ":item/materials/" + material.getName() + "/nugget" : "rutile:item/materials/null/nugget";
-        RutileDynamicResourcePack.addItemModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), simpleGeneratedModel("minecraft:item/generated", texture));
+        RutileDynamicResourcePack.addItemModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simpleGeneratedModel("minecraft:item/generated", texture));
     }
 
     @Override
@@ -90,21 +87,21 @@ public class NuggetFlag extends ItemFlag implements IRecipeHandler, ISpecialLang
 
     @Override
     public void run(@NotNull Consumer<FinishedRecipe> provider, @NotNull Material material) {
-        if (MaterialHelper.hasExternalId(material, getKey())) return;
+        if (MaterialHelpers.hasExternalId(material, getKey())) return;
         if (!isShard() && material.hasFlag(RutileFlagKeys.INGOT)) {
-            Item ingot = MaterialHelper.getItem(material, RutileFlagKeys.INGOT);
-            Item nugget = MaterialHelper.getItem(material, RutileFlagKeys.NUGGET);
+            Item ingot = MaterialHelpers.getItem(material, RutileFlagKeys.INGOT);
+            Item nugget = MaterialHelpers.getItem(material, RutileFlagKeys.NUGGET);
             if (!isRequiresCompacting()) {
-                RecipeHelper.craftCompact(provider, nugget, ingot, false, material, "%s_ingot_from_nuggets");
-                RecipeHelper.craftDecompact(provider, ingot, nugget, 9, material, "%s_nuggets_from_ingot");
+                RecipeHelpers.craftCompact(provider, nugget, ingot, false, material, "%s_ingot_from_nuggets");
+                RecipeHelpers.craftDecompact(provider, ingot, nugget, 9, material, "%s_nuggets_from_ingot");
             }
         }
         if (isShard() && material.hasFlag(RutileFlagKeys.GEM)) {
-            Item ingot = MaterialHelper.getItem(material, RutileFlagKeys.GEM);
-            Item shard = MaterialHelper.getItem(material, RutileFlagKeys.NUGGET);
+            Item ingot = MaterialHelpers.getItem(material, RutileFlagKeys.GEM);
+            Item shard = MaterialHelpers.getItem(material, RutileFlagKeys.NUGGET);
             if (!isRequiresCompacting()) {
-                RecipeHelper.craftCompact(provider, shard, ingot, 8, material, "%s_gem_from_shards");
-                RecipeHelper.craftDecompact(provider, ingot, shard, 8, material, "%s_shards_from_gem");
+                RecipeHelpers.craftCompact(provider, shard, ingot, 8, material, "%s_gem_from_shards");
+                RecipeHelpers.craftDecompact(provider, ingot, shard, 8, material, "%s_shards_from_gem");
             }
         }
     }

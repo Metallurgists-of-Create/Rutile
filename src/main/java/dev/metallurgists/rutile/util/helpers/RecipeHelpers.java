@@ -1,4 +1,4 @@
-package dev.metallurgists.rutile.common;
+package dev.metallurgists.rutile.util.helpers;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.base.Material;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-public class RecipeHelper {
+public class RecipeHelpers {
 
     public static void craftCompact(@NotNull Consumer<FinishedRecipe> provider, ItemLike input, ItemLike output, boolean isSmall, Material material, String recipeId) {
         ShapedRecipeBuilder builder = new ShapedRecipeBuilder(RecipeCategory.MISC, output, 1);

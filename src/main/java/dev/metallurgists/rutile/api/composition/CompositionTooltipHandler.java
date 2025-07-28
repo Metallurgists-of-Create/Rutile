@@ -7,7 +7,7 @@ import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.util.ClientUtil;
-import dev.metallurgists.rutile.util.MaterialHelper;
+import dev.metallurgists.rutile.util.helpers.MaterialHelpers;
 import net.createmod.catnip.lang.LangBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +22,7 @@ public class CompositionTooltipHandler {
         for (MaterialRegistry registry : RutileAPI.materialManager.getRegistries()) {
             for (Material material : registry.getAllMaterials()) {
                 if (MaterialCompositionManager.hasComposition(material)) {
-                    var allMatItem = MaterialHelper.getAllMaterialItemsForTooltips(material);
+                    var allMatItem = MaterialHelpers.getAllMaterialItemsForTooltips(material);
                     if (allMatItem.contains(stack.getItem())) {
                         LangBuilder compositionName = ClientUtil.lang();
                         createTooltip(compositionName, MaterialCompositionManager.getSubCompositions(material));

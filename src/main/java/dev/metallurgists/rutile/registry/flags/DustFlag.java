@@ -24,7 +24,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static dev.metallurgists.rutile.client.RutileModels.simpleGeneratedModel;
+import static dev.metallurgists.rutile.util.helpers.ModelHelpers.simpleGeneratedModel;
+
 
 public class DustFlag extends ItemFlag implements IRecipeHandler, ISpecialLangSuffix {
 

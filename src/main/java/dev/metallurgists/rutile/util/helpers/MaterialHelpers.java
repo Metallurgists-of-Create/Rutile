@@ -1,15 +1,10 @@
-package dev.metallurgists.rutile.util;
+package dev.metallurgists.rutile.util.helpers;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.types.*;
-import dev.metallurgists.rutile.api.material.registry.item.IMaterialItem;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
-import dev.metallurgists.rutile.api.registry.RutileRegistry;
-import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -18,7 +13,7 @@ import net.minecraft.world.level.material.Fluid;
 
 import java.util.*;
 
-public class MaterialHelper {
+public class MaterialHelpers {
 
     public static List<Item> getAllItems(Material material) {
         return getAllItems(material, false);
@@ -97,8 +92,8 @@ public class MaterialHelper {
             cannotGetAllItemsForNullMaterial();
             return new ArrayList<>();
         }
-        List<Item> items = new ArrayList<>(MaterialHelper.getAllItems(material));
-        for (Block block : MaterialHelper.getAllBlocks(material)) {
+        List<Item> items = new ArrayList<>(MaterialHelpers.getAllItems(material));
+        for (Block block : MaterialHelpers.getAllBlocks(material)) {
             items.add(block.asItem());
         }
         return items;
@@ -109,8 +104,8 @@ public class MaterialHelper {
             cannotGetAllItemsForNullMaterial();
             return new ArrayList<>();
         }
-        List<Item> items = new ArrayList<>(MaterialHelper.getAllItems(material, true));
-        MaterialHelper.getAllBlocks(material, true).forEach(block -> items.add(block.asItem()));
+        List<Item> items = new ArrayList<>(MaterialHelpers.getAllItems(material, true));
+        MaterialHelpers.getAllBlocks(material, true).forEach(block -> items.add(block.asItem()));
         return items;
     }
 

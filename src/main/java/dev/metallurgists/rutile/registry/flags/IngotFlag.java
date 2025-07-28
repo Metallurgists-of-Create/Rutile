@@ -13,9 +13,10 @@ import dev.metallurgists.rutile.api.material.flag.types.IRecipeHandler;
 import dev.metallurgists.rutile.api.material.registry.item.IMaterialItem;
 import dev.metallurgists.rutile.api.material.registry.item.MaterialItem;
 import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
-import dev.metallurgists.rutile.common.RecipeHelper;
+import dev.metallurgists.rutile.util.helpers.RecipeHelpers;
 import dev.metallurgists.rutile.registry.RutileFlagKeys;
-import dev.metallurgists.rutile.util.MaterialHelper;
+import dev.metallurgists.rutile.util.helpers.MaterialHelpers;
+import dev.metallurgists.rutile.util.helpers.ModelHelpers;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -25,10 +26,7 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
-
-import static dev.metallurgists.rutile.client.RutileModels.simpleGeneratedModel;
 
 public class IngotFlag extends ItemFlag implements IRecipeHandler {
     @Getter
@@ -61,7 +59,7 @@ public class IngotFlag extends ItemFlag implements IRecipeHandler {
     public void registerItemAssets(Material material) {
         boolean texturePresent = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(material.getNamespace() + ":textures/item/materials/" + material.getName() + "/ingot.png")).isPresent();
         String texture = texturePresent ? material.getNamespace() + ":item/materials/" + material.getName() + "/ingot" : "rutile:item/materials/null/ingot";
-        RutileDynamicResourcePack.addItemModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), simpleGeneratedModel("minecraft:item/generated", texture));
+        RutileDynamicResourcePack.addItemModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simpleGeneratedModel("minecraft:item/generated", texture));
     }
 
     @Override
@@ -79,13 +77,13 @@ public class IngotFlag extends ItemFlag implements IRecipeHandler {
     public void run(@NotNull Consumer<FinishedRecipe> provider, @NotNull Material material) {
         if (material.hasFlag(RutileFlagKeys.STORAGE_BLOCK)) {
             var storageBlockFlag = material.getFlag(RutileFlagKeys.STORAGE_BLOCK);
-            if (MaterialHelper.hasExternalId(material, getKey())) return;
-            Block block = MaterialHelper.getBlock(material, RutileFlagKeys.STORAGE_BLOCK);
-            Item ingot = MaterialHelper.getItem(material, RutileFlagKeys.INGOT);
+            if (MaterialHelpers.hasExternalId(material, getKey())) return;
+            Block block = MaterialHelpers.getBlock(material, RutileFlagKeys.STORAGE_BLOCK);
+            Item ingot = MaterialHelpers.getItem(material, RutileFlagKeys.INGOT);
             if (!isRequiresCompacting())
-                RecipeHelper.craftCompact(provider, ingot, block, false, material, "%s_block_from_ingots");
+                RecipeHelpers.craftCompact(provider, ingot, block, false, material, "%s_block_from_ingots");
             if (!storageBlockFlag.isRequiresDecompacting())
-                RecipeHelper.craftDecompact(provider, block, ingot, 9, material, "%s_ingots_from_block");
+                RecipeHelpers.craftDecompact(provider, block, ingot, 9, material, "%s_ingots_from_block");
         }
     }
 }
