@@ -4,7 +4,6 @@ plugins {
     id "dev.ithundxr.silk" version "0.11.15"
     id "net.kyori.blossom" version "2.1.0" // https://github.com/KyoriPowered/blossom
     id "io.freefair.lombok" version "8.11"
-
 }
 
 apply from: "./gradle/java.gradle"
@@ -12,9 +11,11 @@ apply from: "gradle/property_loader.gradle"
 
 String gitHash = "${calculateGitHash() + (hasUnstaged() ? "-modified" : "")}"
 
-version = project.mod_version + "-neoforge-mc" + project.minecraft_version
-group = project.maven_group
-archivesBaseName = project.mod_id
+base {
+    archivesName = "rutile-${project.mod_version}"
+    group = 'dev.metallurgists.rutile'
+    version = "neoforge-mc" + project.minecraft_version
+}
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -138,27 +139,8 @@ repositories {
         }
     }
     maven {
-        url = 'https://www.cursemaven.com'
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-    maven {
-        name = "Modrinth"
-        url = "https://api.modrinth.com/maven"
-        content {
-            includeGroup "maven.modrinth"
-        }
-    }
-    maven {
         name = "TerraformersMC"
         url = "https://maven.terraformersmc.com/"
-    }
-    maven { // Ritchie's Projectile Library && CBC
-        url = "https://maven.realrobotix.me/master/"
-        content {
-            includeGroup("com.rbasamoyai")
-        }
     }
     mavenLocal()
     flatDir {
@@ -191,8 +173,6 @@ dependencies {
     modCompileOnly("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}") { transitive = false }
     modCompileOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}") { transitive = false }
     modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}") { transitive = false }
-
-    modCompileOnly("maven.modrinth:emi:${emi_version}")
 
     if (System.getProperty('idea.sync.active') != 'true') {
         annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
