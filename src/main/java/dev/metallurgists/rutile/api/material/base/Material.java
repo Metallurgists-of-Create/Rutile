@@ -91,7 +91,7 @@ public class Material implements Comparable<Material>, IHasDescriptionId {
             throw new IllegalStateException("Cannot add flags to a Material when registry is frozen!");
         }
         if (flag instanceof IFlagRegistry reg && !Objects.equals(reg.getExistingNamespace(), "")) {
-            flags.getNoRegister().add(key);
+            flags.noRegister(key);
         }
         flags.setFlag(key, flag);
         flags.verify();
@@ -148,7 +148,7 @@ public class Material implements Comparable<Material>, IHasDescriptionId {
 
         @SafeVarargs
         public final Builder noRegister(FlagKey<? extends IMaterialFlag>... matFlags) {
-            flags.getNoRegister().addAll(Arrays.stream(matFlags).toList());
+            flags.noRegister(matFlags);
             return this;
         }
 
@@ -163,7 +163,7 @@ public class Material implements Comparable<Material>, IHasDescriptionId {
                             "Existing Id in Existing Ids List is null for Material " + this.materialInfo.resourceLocation);
                 }
                 materialInfo.withExistingId((FlagKey<?>) components[i], (String) components[i + 1]);
-                flags.getNoRegister().add((FlagKey<?>) components[i]);
+                flags.noRegister((FlagKey<?>) components[i]);
             }
             return this;
         }
@@ -229,6 +229,9 @@ public class Material implements Comparable<Material>, IHasDescriptionId {
 
         public Builder addFlags(IMaterialFlag... flags) {
             for (var flag : flags) {
+                if (flag instanceof IFlagRegistry reg && !Objects.equals(reg.getExistingNamespace(), "")) {
+                    this.flags.noRegister(flag.getKey());
+                }
                 this.flags.setFlag(flag.getKey(), flag);
             }
             return this;

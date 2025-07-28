@@ -79,7 +79,7 @@ public class IngotFlag extends ItemFlag implements IRecipeHandler {
     public void run(@NotNull Consumer<FinishedRecipe> provider, @NotNull Material material) {
         if (material.hasFlag(RutileFlagKeys.STORAGE_BLOCK)) {
             var storageBlockFlag = material.getFlag(RutileFlagKeys.STORAGE_BLOCK);
-            if (MaterialHelper.hasExternalId(material, RutileFlagKeys.STORAGE_BLOCK) || MaterialHelper.hasExternalId(material, getKey())) return;
+            if (MaterialHelper.hasExternalId(material, getKey())) return;
             Block block = MaterialHelper.getBlock(material, RutileFlagKeys.STORAGE_BLOCK);
             Item ingot = MaterialHelper.getItem(material, RutileFlagKeys.INGOT);
             if (!isRequiresCompacting())

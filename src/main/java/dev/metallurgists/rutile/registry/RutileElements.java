@@ -14,7 +14,7 @@ public class RutileElements {
         RutileRegistries.ELEMENTS.unfreeze();
     }
 
-    public static final Element NULL             =  createAndRegister("null", "?", 0xff171a2d);
+    public static final Element NULL             =  createAndRegister("null", "?", 0xffbf4cd2);
     public static final Element HYDROGEN         =  createAndRegister("hydrogen", "H", 0xff9175dc);
     public static final Element HELIUM           =  createAndRegister("helium", "He", 0xfffcc6f7);
     public static final Element LITHIUM          =  createAndRegister("lithium", "Li", 0xff989890);

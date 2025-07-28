@@ -50,6 +50,7 @@ public class RutileMaterials {
 
     public static Material Diamond = new Material.Builder(Rutile.id("diamond"))
             .element(RutileElements.CARBON)
+            .existingIds(RutileFlagKeys.GEM, "minecraft:diamond")
             .addFlags(
                     new GemFlag("minecraft"),
                     new StorageBlockFlag("minecraft")
@@ -57,6 +58,7 @@ public class RutileMaterials {
 
     public static Material Emerald = new Material.Builder(Rutile.id("emerald"))
             .composition(RutileElements.BERYLLIUM, 3, RutileElements.ALUMINUM, 2, RutileElements.SILICON, 6, RutileElements.OXYGEN, 18)
+            .existingIds(RutileFlagKeys.GEM, "minecraft:emerald")
             .addFlags(
                     new GemFlag("minecraft"),
                     new StorageBlockFlag("minecraft")
@@ -64,6 +66,7 @@ public class RutileMaterials {
 
     public static Material Quartz = new Material.Builder(Rutile.id("quartz"))
             .composition(RutileElements.SILICON, 1, RutileElements.OXYGEN, 2)
+            .existingIds(RutileFlagKeys.GEM, "minecraft:quartz")
             .addFlags(
                     new GemFlag("minecraft").small(),
                     new StorageBlockFlag("minecraft")
@@ -71,6 +74,7 @@ public class RutileMaterials {
 
     public static Material Amethyst = new Material.Builder(Rutile.id("amethyst"))
             .composition(RutileElements.SILICON, 1, RutileElements.OXYGEN, 2, RutileElements.IRON, 1)
+            .existingIds(RutileFlagKeys.GEM, "minecraft:amethyst_shard")
             .addFlags(
                     new GemFlag("minecraft").small(),
                     new StorageBlockFlag("minecraft")

@@ -11,6 +11,7 @@ import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.registry.RutileElements;
 import lombok.RequiredArgsConstructor;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.platform.CatnipClientServices;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.ChatFormatting;
@@ -67,11 +68,6 @@ public class ElementIngredientRenderer implements IIngredientRenderer<Element> {
     private void drawFluid(GuiGraphics guiGraphics, final int width, final int height, Element element, int posX, int posY) {
         getStillFluidSprite().ifPresent(fluidStillSprite -> {
                     int fluidColor = new Color(element.getColor(), true).getRGB();
-                    if (element == RutileElements.NULL) {
-                        fluidColor = Color.rainbowColor(Hashing.crc32().hashLong(Minecraft.getInstance().getFrameTimeNs() / 4).asInt()).getRGB();
-                    }
-
-
                     long amount = 1000;
                     long scaledAmount = (amount * height) / 1000;
                     if (amount > 0 && scaledAmount < 1) {

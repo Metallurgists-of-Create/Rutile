@@ -20,12 +20,18 @@ public class MaterialFlags {
     @Getter
     private Material material;
 
-    @Setter
     @Getter
+    @Setter
     private List<FlagKey<? extends IMaterialFlag>> noRegister = new ArrayList<>();
 
     public MaterialFlags() {
         flagMap = new HashMap<>();
+    }
+
+    @SafeVarargs
+    public final MaterialFlags noRegister(FlagKey<? extends IMaterialFlag>... flagKeys) {
+        noRegister.addAll(List.of(flagKeys));
+        return this;
     }
 
     public boolean isEmpty() {

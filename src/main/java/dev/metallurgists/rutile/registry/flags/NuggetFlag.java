@@ -90,8 +90,8 @@ public class NuggetFlag extends ItemFlag implements IRecipeHandler, ISpecialLang
 
     @Override
     public void run(@NotNull Consumer<FinishedRecipe> provider, @NotNull Material material) {
+        if (MaterialHelper.hasExternalId(material, getKey())) return;
         if (!isShard() && material.hasFlag(RutileFlagKeys.INGOT)) {
-            if (MaterialHelper.hasExternalId(material, RutileFlagKeys.INGOT) || MaterialHelper.hasExternalId(material, getKey())) return;
             Item ingot = MaterialHelper.getItem(material, RutileFlagKeys.INGOT);
             Item nugget = MaterialHelper.getItem(material, RutileFlagKeys.NUGGET);
             if (!isRequiresCompacting()) {
@@ -100,7 +100,6 @@ public class NuggetFlag extends ItemFlag implements IRecipeHandler, ISpecialLang
             }
         }
         if (isShard() && material.hasFlag(RutileFlagKeys.GEM)) {
-            if (MaterialHelper.hasExternalId(material, RutileFlagKeys.GEM) || MaterialHelper.hasExternalId(material, getKey())) return;
             Item ingot = MaterialHelper.getItem(material, RutileFlagKeys.GEM);
             Item shard = MaterialHelper.getItem(material, RutileFlagKeys.NUGGET);
             if (!isRequiresCompacting()) {

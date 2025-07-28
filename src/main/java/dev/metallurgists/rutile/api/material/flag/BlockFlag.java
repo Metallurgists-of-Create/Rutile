@@ -17,6 +17,7 @@ import java.util.List;
 public abstract class BlockFlag implements IMaterialFlag, IBlockRegistry, IConditionalComposition {
 
     private final String idPattern;
+    @Getter
     private String existingNamespace = "";
     @Setter
     private List<String> tagPatterns = List.of();

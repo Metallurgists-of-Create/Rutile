@@ -78,7 +78,7 @@ public class GemFlag extends ItemFlag implements IRecipeHandler {
     public void run(@NotNull Consumer<FinishedRecipe> provider, @NotNull Material material) {
         if (material.hasFlag(RutileFlagKeys.STORAGE_BLOCK)) {
             var storageBlockFlag = material.getFlag(RutileFlagKeys.STORAGE_BLOCK);
-            if (MaterialHelper.hasExternalId(material, RutileFlagKeys.STORAGE_BLOCK) || MaterialHelper.hasExternalId(material, getKey())) return;
+            if (MaterialHelper.hasExternalId(material, getKey())) return;
             Block block = MaterialHelper.getBlock(material, RutileFlagKeys.STORAGE_BLOCK);
             Item gem = MaterialHelper.getItem(material, getKey());
             RecipeHelper.craftCompact(provider, gem, block, true, material, "%s_block_from_gems");
