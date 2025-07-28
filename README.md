@@ -17,7 +17,7 @@ public class YourRutilePlugin implements IRutilePlugin {
         return "modid";
     }
 
-    public RutileRegistrate getRegistrate() {
+    public AbstractRegistrate<?> getRegistrate() {
         return YourMod.registrate();
     }
 }
