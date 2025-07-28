@@ -2,11 +2,11 @@ package dev.metallurgists.rutile.api.material.registry.fluid;
 
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
+import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.util.entry.FluidEntry;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.types.IFluidRegistry;
-import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
 
@@ -19,7 +19,7 @@ public class RutileMaterialFluids {
         for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
             if (flagKey.constructDefault() instanceof IFluidRegistry) {
                 for (MaterialRegistry registry : RutileAPI.materialManager.getRegistries()) {
-                    RutileRegistrate registrate = registry.getRegistrate();
+                    AbstractRegistrate<?> registrate = registry.getRegistrate();
                     for (Material material : registry.getAllMaterials()) {
                         var flag = material.getFlag(flagKey);
                         if (material.noRegister(flagKey)) continue;
@@ -33,7 +33,7 @@ public class RutileMaterialFluids {
         MATERIAL_FLUIDS = MATERIAL_FLUIDS_BUILDER.build();
     }
 
-    private static void registerMaterialFluid(Material material, IFluidRegistry fluidRegistry, FlagKey<?> flagKey, RutileRegistrate registrate) {
+    private static void registerMaterialFluid(Material material, IFluidRegistry fluidRegistry, FlagKey<?> flagKey, AbstractRegistrate<?> registrate) {
         MATERIAL_FLUIDS_BUILDER.put(flagKey, material, fluidRegistry.registerFluid(material, fluidRegistry, registrate));
     }
 }

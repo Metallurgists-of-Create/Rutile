@@ -2,11 +2,11 @@ package dev.metallurgists.rutile.api.material.registry.item;
 
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
+import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.types.IItemRegistry;
-import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
 
@@ -19,7 +19,7 @@ public class RutileMaterialItems {
         for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
             if (flagKey.constructDefault() instanceof IItemRegistry) {
                 for (MaterialRegistry registry : RutileAPI.materialManager.getRegistries()) {
-                    RutileRegistrate registrate = registry.getRegistrate();
+                    AbstractRegistrate<?> registrate = registry.getRegistrate();
                     for (Material material : registry.getAllMaterials()) {
                         var flag = material.getFlag(flagKey);
                         if (material.noRegister(flagKey)) continue;
@@ -33,7 +33,7 @@ public class RutileMaterialItems {
         MATERIAL_ITEMS = MATERIAL_ITEMS_BUILDER.build();
     }
 
-    public static void registerMaterialItem(Material material, IItemRegistry itemRegistry, FlagKey<?> flagKey, RutileRegistrate registrate) {
+    public static void registerMaterialItem(Material material, IItemRegistry itemRegistry, FlagKey<?> flagKey, AbstractRegistrate<?> registrate) {
         MATERIAL_ITEMS_BUILDER.put(flagKey, material, itemRegistry.registerItem(material, itemRegistry, registrate));
     }
 }

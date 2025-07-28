@@ -1,12 +1,12 @@
 package dev.metallurgists.rutile.api.material.flag;
 
+import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.base.MaterialFlags;
 import dev.metallurgists.rutile.api.material.flag.types.IBlockRegistry;
 import dev.metallurgists.rutile.api.material.flag.types.IConditionalComposition;
 import dev.metallurgists.rutile.api.material.registry.block.IMaterialBlock;
-import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +33,7 @@ public abstract class BlockFlag implements IMaterialFlag, IBlockRegistry, ICondi
         this.existingNamespace = existingNamespace;
     }
 
-    public abstract BlockEntry<? extends IMaterialBlock> registerBlock(@NotNull Material material, IBlockRegistry flag, @NotNull RutileRegistrate registrate);
+    public abstract BlockEntry<? extends IMaterialBlock> registerBlock(@NotNull Material material, IBlockRegistry flag, @NotNull AbstractRegistrate<?> registrate);
 
     public abstract boolean shouldHaveComposition();
 

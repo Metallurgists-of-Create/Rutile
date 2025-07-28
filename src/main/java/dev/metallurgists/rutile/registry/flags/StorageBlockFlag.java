@@ -1,5 +1,6 @@
 package dev.metallurgists.rutile.registry.flags;
 
+import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
@@ -14,7 +15,6 @@ import dev.metallurgists.rutile.api.material.registry.block.AxisMaterialBlock;
 import dev.metallurgists.rutile.api.material.registry.block.IMaterialBlock;
 import dev.metallurgists.rutile.api.material.registry.block.MaterialBlock;
 import dev.metallurgists.rutile.api.material.registry.block.MaterialBlockItem;
-import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 import dev.metallurgists.rutile.registry.RutileFlagKeys;
 import dev.metallurgists.rutile.util.helpers.ModelHelpers;
 import lombok.Getter;
@@ -54,7 +54,7 @@ public class StorageBlockFlag extends BlockFlag {
     }
 
     @Override
-    public BlockEntry<? extends IMaterialBlock> registerBlock(@NotNull Material material, IBlockRegistry flag, @NotNull RutileRegistrate registrate) {
+    public BlockEntry<? extends IMaterialBlock> registerBlock(@NotNull Material material, IBlockRegistry flag, @NotNull AbstractRegistrate<?> registrate) {
         NonNullFunction<BlockBehaviour.Properties, MaterialBlock> factory = useColumnModel ? p -> new AxisMaterialBlock(p, material, flag)
                 : p -> new MaterialBlock(p, material, flag);
         return registrate.block(getIdPattern().formatted(material.getName()), factory)

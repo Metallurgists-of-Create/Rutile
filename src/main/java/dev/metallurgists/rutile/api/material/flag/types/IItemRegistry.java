@@ -1,10 +1,10 @@
 package dev.metallurgists.rutile.api.material.flag.types;
 
+import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.registry.item.IMaterialItem;
-import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 import dev.metallurgists.rutile.util.ClientUtil;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public interface IItemRegistry extends IFlagRegistry {
 
-    ItemEntry<? extends IMaterialItem> registerItem(@NotNull Material material, IItemRegistry flag, @NotNull RutileRegistrate registrate);
+    ItemEntry<? extends IMaterialItem> registerItem(@NotNull Material material, IItemRegistry flag, @NotNull AbstractRegistrate<?> registrate);
 
     @Override
     default String getUnlocalizedName(Material material) {

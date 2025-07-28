@@ -1,9 +1,7 @@
 package dev.metallurgists.rutile.api.plugin;
 
+import com.tterrag.registrate.AbstractRegistrate;
 import dev.metallurgists.rutile.api.dynamic_pack.data.recipe.handler.*;
-import dev.metallurgists.rutile.api.material.registry.block.RutileMaterialBlocks;
-import dev.metallurgists.rutile.api.material.registry.fluid.RutileMaterialFluids;
-import dev.metallurgists.rutile.api.material.registry.item.RutileMaterialItems;
 import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 
 public interface IRutilePlugin {
@@ -20,7 +18,7 @@ public interface IRutilePlugin {
         Register this in you mod container
         @see dev.metallurgists.rutile.api.registrate.RutileRegistrate#registerEventListeners(net.minecraftforge.eventbus.api.IEventBus)
      */
-    default RutileRegistrate getRegistrate() {
+    default AbstractRegistrate<?> getRegistrate() {
         return RutileRegistrate.create(getPluginNamespace());
     }
 

@@ -1,5 +1,6 @@
 package dev.metallurgists.rutile.api.registry.material;
 
+import com.tterrag.registrate.AbstractRegistrate;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
@@ -15,7 +16,7 @@ import java.util.Collection;
 public abstract class MaterialRegistry extends RutileRegistry.String<Material> {
 
     @Getter
-    private final RutileRegistrate registrate;
+    private final AbstractRegistrate<?> registrate;
 
     public MaterialRegistry(java.lang.String modId) {
         super(new ResourceLocation(modId, "material"));

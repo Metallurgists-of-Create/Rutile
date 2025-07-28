@@ -1,10 +1,10 @@
 package dev.metallurgists.rutile.api.material.flag;
 
+import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.types.IItemRegistry;
 import dev.metallurgists.rutile.api.material.registry.item.IMaterialItem;
-import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -29,5 +29,5 @@ public abstract class ItemFlag implements IMaterialFlag, IItemRegistry {
     }
 
 
-    public abstract ItemEntry<? extends IMaterialItem> registerItem(@NotNull Material material, IItemRegistry flag, @NotNull RutileRegistrate registrate);
+    public abstract ItemEntry<? extends IMaterialItem> registerItem(@NotNull Material material, IItemRegistry flag, @NotNull AbstractRegistrate<?> registrate);
 }

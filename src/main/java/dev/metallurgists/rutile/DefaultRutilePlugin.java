@@ -1,8 +1,8 @@
 package dev.metallurgists.rutile;
 
+import com.tterrag.registrate.AbstractRegistrate;
 import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
 import dev.metallurgists.rutile.api.plugin.RutilePlugin;
-import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 
 @RutilePlugin
 public class DefaultRutilePlugin implements IRutilePlugin {
@@ -12,7 +12,7 @@ public class DefaultRutilePlugin implements IRutilePlugin {
         return Rutile.ID;
     }
 
-    public RutileRegistrate getRegistrate() {
+    public AbstractRegistrate<?> getRegistrate() {
         return Rutile.registrate();
     }
 }

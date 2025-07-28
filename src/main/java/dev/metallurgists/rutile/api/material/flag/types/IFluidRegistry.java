@@ -1,10 +1,10 @@
 package dev.metallurgists.rutile.api.material.flag.types;
 
+import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.util.entry.FluidEntry;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.registry.fluid.IMaterialFluid;
-import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 import dev.metallurgists.rutile.util.ClientUtil;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public interface IFluidRegistry extends IFlagRegistry {
 
-    FluidEntry<? extends IMaterialFluid> registerFluid(@NotNull Material material, IFluidRegistry flag, @NotNull RutileRegistrate registrate);
+    FluidEntry<? extends IMaterialFluid> registerFluid(@NotNull Material material, IFluidRegistry flag, @NotNull AbstractRegistrate<?> registrate);
 
     @Override
     default String getUnlocalizedName(Material material) {

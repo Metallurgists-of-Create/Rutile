@@ -1,5 +1,6 @@
 package dev.metallurgists.rutile.registry.flags;
 
+import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
@@ -12,7 +13,6 @@ import dev.metallurgists.rutile.api.material.flag.types.IItemRegistry;
 import dev.metallurgists.rutile.api.material.flag.types.IRecipeHandler;
 import dev.metallurgists.rutile.api.material.registry.item.IMaterialItem;
 import dev.metallurgists.rutile.api.material.registry.item.MaterialItem;
-import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 import dev.metallurgists.rutile.util.helpers.RecipeHelpers;
 import dev.metallurgists.rutile.registry.RutileFlagKeys;
 import dev.metallurgists.rutile.util.helpers.MaterialHelpers;
@@ -49,7 +49,7 @@ public class GemFlag extends ItemFlag implements IRecipeHandler {
     }
 
     @Override
-    public ItemEntry<? extends IMaterialItem> registerItem(@NotNull Material material, IItemRegistry flag, @NotNull RutileRegistrate registrate) {
+    public ItemEntry<? extends IMaterialItem> registerItem(@NotNull Material material, IItemRegistry flag, @NotNull AbstractRegistrate<?> registrate) {
         return registrate
                 .item(flag.getIdPattern().formatted(material.getName()), (p) -> new MaterialItem(p, material, flag))
                 .setData(ProviderType.LANG, NonNullBiConsumer.noop())
