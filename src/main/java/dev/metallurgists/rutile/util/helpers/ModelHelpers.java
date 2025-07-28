@@ -1,6 +1,13 @@
 package dev.metallurgists.rutile.util.helpers;
 
 import com.google.gson.JsonObject;
+import dev.metallurgists.rutile.api.dynamic_pack.asset.RutileDynamicResourcePack;
+import dev.metallurgists.rutile.api.material.base.Material;
+import dev.metallurgists.rutile.api.material.flag.FlagKey;
+import dev.metallurgists.rutile.api.material.flag.types.IItemRegistry;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 
 public class ModelHelpers {
 
@@ -65,5 +72,15 @@ public class ModelHelpers {
         variants.add("axis=z", variantZ);
         blockstate.add("variants", variants);
         return blockstate;
+    }
+
+    public static void generatedItemModel(Material material, FlagKey<? extends IItemRegistry> itemRegistry) {
+        ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
+        String namespace = material.getNamespace();
+        var flag = material.getFlag(itemRegistry);
+        String flagName = itemRegistry.getId().getPath();
+        boolean texturePresent = resourceManager.getResource(new ResourceLocation(namespace + ":textures/item/materials/" + material.getName() + "/" + flagName + ".png")).isPresent();
+        String texture = texturePresent ? material.getNamespace() + ":item/materials/" + material.getName() + "/" + flagName : "rutile:item/materials/null/" + flagName;
+        RutileDynamicResourcePack.addItemModel(new ResourceLocation(material.getNamespace(), flag.getIdPattern().formatted(material.getName())), ModelHelpers.simpleGeneratedModel("minecraft:item/generated", texture));
     }
 }

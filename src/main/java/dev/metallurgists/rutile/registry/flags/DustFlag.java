@@ -15,6 +15,7 @@ import dev.metallurgists.rutile.api.material.flag.types.ISpecialLangSuffix;
 import dev.metallurgists.rutile.api.material.registry.item.IMaterialItem;
 import dev.metallurgists.rutile.api.material.registry.item.MaterialItem;
 import dev.metallurgists.rutile.registry.RutileFlagKeys;
+import dev.metallurgists.rutile.util.helpers.ModelHelpers;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -58,9 +59,7 @@ public class DustFlag extends ItemFlag implements IRecipeHandler, ISpecialLangSu
 
     @Override
     public void registerItemAssets(Material material) {
-        boolean texturePresent = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(material.getNamespace() + ":textures/item/materials/" + material.getName() + "/dust.png")).isPresent();
-        String texture = texturePresent ? material.getNamespace() + ":item/materials/" + material.getName() + "/dust" : "rutile:item/materials/null/dust";
-        RutileDynamicResourcePack.addItemModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), simpleGeneratedModel("minecraft:item/generated", texture));
+        ModelHelpers.generatedItemModel(material, RutileFlagKeys.DUST);
     }
 
     @Override

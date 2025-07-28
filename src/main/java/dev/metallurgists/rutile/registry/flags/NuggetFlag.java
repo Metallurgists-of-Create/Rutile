@@ -70,9 +70,7 @@ public class NuggetFlag extends ItemFlag implements IRecipeHandler, ISpecialLang
 
     @Override
     public void registerItemAssets(Material material) {
-        boolean texturePresent = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(material.getNamespace() + ":textures/item/materials/" + material.getName() + "/nugget.png")).isPresent();
-        String texture = texturePresent ? material.getNamespace() + ":item/materials/" + material.getName() + "/nugget" : "rutile:item/materials/null/nugget";
-        RutileDynamicResourcePack.addItemModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simpleGeneratedModel("minecraft:item/generated", texture));
+        ModelHelpers.generatedItemModel(material, RutileFlagKeys.NUGGET);
     }
 
     @Override

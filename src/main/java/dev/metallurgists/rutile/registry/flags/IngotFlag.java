@@ -57,9 +57,7 @@ public class IngotFlag extends ItemFlag implements IRecipeHandler {
 
     @Override
     public void registerItemAssets(Material material) {
-        boolean texturePresent = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(material.getNamespace() + ":textures/item/materials/" + material.getName() + "/ingot.png")).isPresent();
-        String texture = texturePresent ? material.getNamespace() + ":item/materials/" + material.getName() + "/ingot" : "rutile:item/materials/null/ingot";
-        RutileDynamicResourcePack.addItemModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simpleGeneratedModel("minecraft:item/generated", texture));
+        ModelHelpers.generatedItemModel(material, RutileFlagKeys.INGOT);
     }
 
     @Override
