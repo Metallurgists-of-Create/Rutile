@@ -169,7 +169,8 @@ repositories {
 dependencies {
     implementation 'org.jetbrains:annotations:22.0.0'
 
-    modImplementation("com.tterrag.registrate:Registrate:${registrate_version}")
+    modImplementation(jarJar("com.tterrag.registrate:Registrate:${registrate_version}"))
+    jarJar("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}")
 
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}"))
 
@@ -205,6 +206,7 @@ compileJava.options.encoding = 'UTF-8'
 processResources {
     def buildProps = project.properties.clone()
 
+    // Replaces FML's magic file.jarVersion string with the correct version at build time.
     buildProps.put('file', [jarVersion: project.version])
 
     filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
