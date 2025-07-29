@@ -4,7 +4,7 @@ license="All rights reserved"
 issueTrackerURL="https://github.com/Metallurgists-of-Create/Rutile/issues"
 [[mods]]
 modId="rutile"
-version="${file.jarVersion}"
+version="${project.mod_version}-neoforge-mc${project.minecraft_version}"
 displayName="Rutile"
 displayURL="https://github.com/Metallurgists-of-Create/Rutile"
 logoFile="rutile.png"

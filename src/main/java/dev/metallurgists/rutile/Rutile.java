@@ -1,14 +1,20 @@
 package dev.metallurgists.rutile;
 
 import com.mojang.logging.LogUtils;
+import dev.metallurgists.rutile.api.material.events.MaterialEvent;
+import dev.metallurgists.rutile.api.material.events.PostMaterialEvent;
+import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
+import dev.metallurgists.rutile.api.plugin.RutilePluginFinder;
 import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.client.ClientProxy;
 import dev.metallurgists.rutile.common.CommonProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.jetbrains.annotations.NotNull;
@@ -28,11 +34,23 @@ public class Rutile {
     public Rutile() {
         Rutile.init();
         RutileAPI.instance = this;
+        var bus = FMLJavaModLoadingContext.get().getModEventBus();
+        bus.register(this);
         DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
     }
 
     public static void init() {
         LOGGER.info("{} is initializing...", DISPLAY_NAME);
+    }
+
+    @SubscribeEvent
+    public void modifyMaterials(PostMaterialEvent event) {
+        RutilePluginFinder.getModPlugins().forEach(IRutilePlugin::modifyMaterials);
+    }
+
+    @SubscribeEvent
+    public void registerMaterials(MaterialEvent event) {
+        RutilePluginFinder.getModPlugins().forEach(IRutilePlugin::registerMaterials);
     }
 
     public static ResourceLocation id(String path) {

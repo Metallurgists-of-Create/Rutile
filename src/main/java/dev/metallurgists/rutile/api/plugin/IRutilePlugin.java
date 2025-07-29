@@ -29,4 +29,12 @@ public interface IRutilePlugin {
     default void registerFlags() {
 
     }
+
+    default void modifyMaterials() {
+
+    }
+
+    default void registerMaterials() {
+
+    }
 }

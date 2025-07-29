@@ -97,6 +97,34 @@ public class Material implements Comparable<Material>, IHasDescriptionId {
         flags.verify();
     }
 
+    public <T extends IMaterialFlag> void setNameAlternative(FlagKey<T> key, String alternativeName) {
+        if (!RutileAPI.materialManager.canModifyMaterials()) {
+            throw new IllegalStateException("Cannot add name alternatives to a Material when registry is frozen!");
+        }
+        materialInfo.nameAlternatives.put(key, alternativeName);
+    }
+
+    public <T extends IMaterialFlag> void setExistingId(FlagKey<T> key, String existingId) {
+        if (!RutileAPI.materialManager.canModifyMaterials()) {
+            throw new IllegalStateException("Cannot add existing ids to a Material when registry is frozen!");
+        }
+        materialInfo.existingIds.put(key, ResourceLocation.tryParse(existingId));
+    }
+
+    public void setMeltingPoint(double temperature) {
+        if (!RutileAPI.materialManager.canModifyMaterials()) {
+            throw new IllegalStateException("Cannot modify a Material's melting point when registry is frozen!");
+        }
+        materialInfo.meltingPoint(temperature);
+    }
+
+    public void setColor(int color) {
+        if (!RutileAPI.materialManager.canModifyMaterials()) {
+            throw new IllegalStateException("Cannot modify a Material's color when registry is frozen!");
+        }
+        materialInfo.withColour(color);
+    }
+
     public @NotNull MaterialFlags getFlags() {
         return flags;
     }
