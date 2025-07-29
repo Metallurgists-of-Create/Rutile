@@ -1,5 +1,5 @@
 # Rutile
-[![](https://jitpack.io/v/Metallurgists-of-Create/Rutile.svg)](https://jitpack.io/#Metallurgists-of-Create/Rutile)
+[![](https://jitpack.io/v/Metallurgists-of-Create/Rutile.svg)](https://jitpack.io/#Metallurgists-of-Create/Rutile) [![](https://img.shields.io/github/v/release/Metallurgists-of-Create/Rutile)](https://github.com/Metallurgists-of-Create/Rutile/releases/latest)
 
 
 API for easy material registry using flags. \
