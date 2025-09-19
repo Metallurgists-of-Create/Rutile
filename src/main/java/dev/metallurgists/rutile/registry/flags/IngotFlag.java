@@ -4,7 +4,6 @@ import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
-import dev.metallurgists.rutile.api.dynamic_pack.asset.RutileDynamicResourcePack;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.base.MaterialFlags;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
@@ -18,15 +17,13 @@ import dev.metallurgists.rutile.registry.RutileFlagKeys;
 import dev.metallurgists.rutile.util.helpers.MaterialHelpers;
 import dev.metallurgists.rutile.util.helpers.ModelHelpers;
 import lombok.Getter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class IngotFlag extends ItemFlag implements IRecipeHandler {
     @Getter
@@ -72,16 +69,16 @@ public class IngotFlag extends ItemFlag implements IRecipeHandler {
 
     //TODO: Fix flags creating duplicate recipes
     @Override
-    public void run(@NotNull Consumer<FinishedRecipe> provider, @NotNull Material material) {
+    public void run(@NotNull RecipeOutput output, @NotNull Material material) {
         if (material.hasFlag(RutileFlagKeys.STORAGE_BLOCK)) {
             var storageBlockFlag = material.getFlag(RutileFlagKeys.STORAGE_BLOCK);
             if (MaterialHelpers.hasExternalId(material, getKey())) return;
             Block block = MaterialHelpers.getBlock(material, RutileFlagKeys.STORAGE_BLOCK);
             Item ingot = MaterialHelpers.getItem(material, RutileFlagKeys.INGOT);
             if (!isRequiresCompacting())
-                RecipeHelpers.craftCompact(provider, ingot, block, false, material, "%s_block_from_ingots");
+                RecipeHelpers.craftCompact(output, ingot, block, false, material, "%s_block_from_ingots");
             if (!storageBlockFlag.isRequiresDecompacting())
-                RecipeHelpers.craftDecompact(provider, block, ingot, 9, material, "%s_ingots_from_block");
+                RecipeHelpers.craftDecompact(output, block, ingot, 9, material, "%s_ingots_from_block");
         }
     }
 }

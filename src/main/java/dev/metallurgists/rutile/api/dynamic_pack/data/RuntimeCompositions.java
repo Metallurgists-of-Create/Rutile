@@ -6,18 +6,16 @@ import dev.metallurgists.rutile.api.composition.data.MaterialCompositionBuilder;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
+import dev.metallurgists.rutile.registry.RutileRegistries;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class RuntimeCompositions {
     public static void compositionAddition(Consumer<FinishedComposition> originalConsumer) {
-        for (MaterialRegistry registry : RutileAPI.materialManager.getRegistries()) {
-            for (Material material : registry.getAllMaterials()) {
-                createComposition(originalConsumer, material, material.getComposition());
-            }
+        for (Material material : RutileRegistries.MATERIAL_REGISTRY) {
+            createComposition(originalConsumer, material, material.getComposition());
         }
-
     }
 
     protected static void createComposition(Consumer<FinishedComposition> pFinishedCompositionConsumer, Material material, List<SubComposition> subCompositions) {

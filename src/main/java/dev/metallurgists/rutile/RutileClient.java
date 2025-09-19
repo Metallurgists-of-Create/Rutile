@@ -1,22 +1,25 @@
 package dev.metallurgists.rutile;
 
 import dev.metallurgists.rutile.api.composition.CompositionTooltipHandler;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+
+import java.util.Objects;
+
 
 public class RutileClient {
     public static void onCtor(IEventBus modEventBus, IEventBus forgeEventBus) {
 
     }
 
-    @Mod.EventBusSubscriber(Dist.CLIENT)
+    @EventBusSubscriber(Dist.CLIENT)
     public static class ClientEvents {
         @SubscribeEvent
         public static void onItemTooltip(ItemTooltipEvent event) {
-            CompositionTooltipHandler.addToTooltip(event.getToolTip(), event.getItemStack());
+            CompositionTooltipHandler.addToTooltip(event.getToolTip(), event.getItemStack(), Objects.requireNonNull(event.getContext().registries()));
         }
     }
 }

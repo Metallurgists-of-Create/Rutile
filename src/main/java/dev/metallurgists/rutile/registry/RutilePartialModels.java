@@ -6,6 +6,8 @@ import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.types.IPartialHolder;
+import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
+import dev.metallurgists.rutile.api.plugin.RutilePluginFinder;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
 import net.minecraft.resources.ResourceLocation;
@@ -15,14 +17,12 @@ public class RutilePartialModels {
     public static Table<FlagKey<?>, Material, PartialModel> MATERIAL_PARTIALS;
 
     public static void generateMaterialPartials() {
-        for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
+        for (var flagKey : RutileRegistries.FLAG_KEY_REGISTRY) {
             if (flagKey.constructDefault() instanceof IPartialHolder) {
-                for (MaterialRegistry registry : RutileAPI.materialManager.getRegistries()) {
-                    for (Material material : registry.getAllMaterials()) {
-                        var flag = material.getFlag(flagKey);
-                        if (flag instanceof IPartialHolder partialHolder) {
-                            generatePartialModel(partialHolder.getModelLocation(material), flagKey, material);
-                        }
+                for (Material material : RutileRegistries.MATERIAL_REGISTRY) {
+                    var flag = material.getFlag(flagKey);
+                    if (flag instanceof IPartialHolder partialHolder) {
+                        generatePartialModel(partialHolder.getModelLocation(material), flagKey, material);
                     }
                 }
             }
@@ -36,7 +36,7 @@ public class RutilePartialModels {
     }
 
     private static PartialModel block(ResourceLocation location) {
-        return PartialModel.of(new ResourceLocation(location.getNamespace(), String.join("", "block/", location.getPath())));
+        return PartialModel.of(ResourceLocation.fromNamespaceAndPath(location.getNamespace(), String.join("", "block/", location.getPath())));
     }
 
     public static PartialModel getPartial(Material material, FlagKey<?> flagKey) {

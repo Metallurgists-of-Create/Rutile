@@ -1,13 +1,17 @@
+import org.slf4j.event.Level
+
 plugins {
-    id "idea"
-    id "net.neoforged.moddev.legacyforge" version "2.0.74"
-    id "dev.ithundxr.silk" version "0.11.15"
-    id "net.kyori.blossom" version "2.1.0" // https://github.com/KyoriPowered/blossom
-    id "io.freefair.lombok" version "8.11"
+    id("idea")
+    id("eclipse")
+    id("maven-publish")
+    id("net.neoforged.moddev") version "2.0.107" // https://projects.neoforged.net/neoforged/ModDevGradle
+    id("net.kyori.blossom") version "2.1.0" // https://github.com/KyoriPowered/blossom
+    id("dev.ithundxr.silk") version "0.11.15" // https://github.com/ithundxr/silk
+    id("io.freefair.lombok") version "8.11"
 }
 
-apply from: "./gradle/java.gradle"
-apply from: "gradle/property_loader.gradle"
+apply(from: "./gradle/java.gradle")
+apply(from: "gradle/property_loader.gradle")
 
 String gitHash = "${calculateGitHash() + (hasUnstaged() ? "-modified" : "")}"
 
@@ -19,13 +23,7 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-def refmap
-mixin {
-    refmap = add sourceSets.main, 'rutile.refmap.json'
-    config 'rutile.mixins.json'
-}
-
-println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
+println("Java: ${System.getProperty("java.version")}, JVM: ${System.getProperty("java.vm.version")} (${System.getProperty("java.vendor")}), Arch: ${System.getProperty("os.arch")}")
 
 idea {
     module {
@@ -34,84 +32,71 @@ idea {
     }
 }
 
-legacyForge {
-    version = "$minecraft_version-$forge_version"
+neoForge {
+    version = neo_version
 
+    accessTransformers = files("src/main/resources/META-INF/accesstransformer.cfg")
 
-    validateAccessTransformers = false
-
-    if (file('src/main/resources/META-INF/accesstransformer.cfg').exists()) {
-        accessTransformers.from "src/main/resources/META-INF/accesstransformer.cfg"
+    if (parchment_version != "none") {
+        parchment {
+            minecraftVersion = parchment_minecraft_version == "same" ? minecraft_version : parchment_minecraft_version
+            mappingsVersion = parchment_version
+        }
     }
 
-    parchment {
-        minecraftVersion = minecraft_version
-        mappingsVersion = parchment_version
-    }
     mods {
-        rutile {
-            sourceSet sourceSets.main
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
         }
     }
 
     runs {
         configureEach {
-            systemProperty 'forge.logging.markers', ''
-            systemProperty 'forge.logging.console.level', 'info'
-            jvmArguments = ["-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition"]
+            systemProperty("forge.logging.markers", "REGISTRIES")
+            jvmArgument("-XX:+IgnoreUnrecognizedVMOptions")
+            jvmArgument("-XX:+AllowEnhancedClassRedefinition")
 
-            systemProperty 'mixin.debug.export', 'true'
-            systemProperty 'mixin.debug.verbose', 'true'
-            programArgument '-mixin.config=rutile.mixins.json'
+            systemProperty("mixin.debug.verbose", "true")
+            systemProperty("mixin.debug.export", "true")
+
+            systemProperty("neoforge.enabledGameTestNamespaces", mod_id as String)
+
+            logLevel = Level.DEBUG
         }
+
         client {
             client()
-            ideName = "Client"
-
-            //Uncomment when you want to use your username
-            //programArguments.addAll('--username', project.file('username.txt').readLines()[0])
-
-            gameDirectory = project.file('run')
-            systemProperty('forge.enabledGameTestNamespaces', "rutile")
         }
 
         server {
             server()
-            //sourceSet = sourceSets.main
-            ideName = "Server"
 
-            gameDirectory.set(file('run/server'))
-            //programArgument '--nogui'
-            //systemProperty('forge.enabledGameTestNamespaces', "rutile")
-        }
+            gameDirectory = project.file("run/server")
 
-        gameTestServer {
-            type = "gameTestServer"
-            sourceSet = sourceSets.test
-            ideName = "Game Tests"
-
-            gameDirectory.set(file('run/gametest'))
-            systemProperty('forge.enabledGameTestNamespaces', "rutile")
+            programArgument("--nogui")
         }
 
         data {
             data()
-            sourceSet = sourceSets.main
-            ideName = "Data Generation"
 
-            gameDirectory.set(file('run/data'))
+            programArguments.addAll(
+                    "--mod", mod_id as String,
+                    "--all",
+                    "--output", file("src/generated/resources/").getAbsolutePath(),
+                    "--existing", file("src/main/resources/").getAbsolutePath()
+            )
+        }
 
-            systemProperty 'forge.logging.markers', 'REGISTRIES,REGISTRYDUMP'
-            systemProperty 'forge.logging.console.level', 'debug'
-            programArguments.addAll("--mod", mod_id as String, "--all", "--output", file("src/generated/resources/").getAbsolutePath(), "--existing", file("src/main/resources").getAbsolutePath())
+        gameTestServer {
+            type = "gameTestServer"
         }
     }
 }
 
 sourceSets.main {
     resources {
-        srcDir 'src/generated/resources'
-        exclude '.cache/'
+        srcDir("src/generated/resources")
+        exclude(".cache/")
     }
 
     blossom.javaSources {
@@ -120,28 +105,16 @@ sourceSets.main {
     }
 }
 
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
 repositories {
-    maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
-    maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" } // ForgeConfigAPIPort
-    maven { url = "https://maven.tterrag.com" } // Registrate
+    maven { url = "https://maven.createmod.net" } // Ponder, Flywheel
+    maven { url = "https://maven.ithundxr.dev/snapshots" } // Registrate
     maven { url = "https://maven.blamejared.com" } // JEI, Vazkii's Mods
-    maven {
-        // Shedaniel's maven (Architectury API)
-        url = "https://maven.architectury.dev"
-        content {
-            includeGroup "dev.architectury"
-        }
-    }
-    maven {
-        url "https://maven.latvian.dev/releases"
-        content {
-            includeGroup "dev.latvian.mods"
-        }
-    }
-    maven {
-        name = "TerraformersMC"
-        url = "https://maven.terraformersmc.com/"
-    }
+    maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven" }
+    // NeoForge config api port, needed by ponder
     mavenLocal()
     flatDir {
         dirs 'libs'
@@ -149,34 +122,20 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jetbrains:annotations:22.0.0'
+    jarJar(implementation("com.tterrag.registrate:Registrate:$registrate_version"))
 
-    modImplementation(jarJar("com.tterrag.registrate:Registrate:${registrate_version}"))
-    jarJar("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}")
+    jarJar(implementation("net.createmod.ponder:Ponder-NeoForge-$minecraft_version:$ponder_version"))
 
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}"))
-
-    modCompileOnly("dev.engine-room.flywheel:flywheel-forge-api-${flywheel_minecraft_version}:${flywheel_version}")
-    modRuntimeOnly(jarJar("dev.engine-room.flywheel:flywheel-forge-${flywheel_minecraft_version}:${flywheel_version}") {
+    compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-$minecraft_version:$flywheel_version")
+    runtimeOnly(jarJar("dev.engine-room.flywheel:flywheel-neoforge-$minecraft_version:$flywheel_version") {
         version {
             strictly "[1.0,2.0)"
             prefer flywheel_version
         }
     })
-    modRuntimeOnly("dev.engine-room.vanillin:vanillin-forge-${flywheel_minecraft_version}:${vanillin_version}")
+    runtimeOnly("dev.engine-room.vanillin:vanillin-neoforge-$minecraft_version:$vanillin_version")
 
-    modImplementation("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}")
-
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
-
-    modCompileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}") { transitive = false }
-    modCompileOnly("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}") { transitive = false }
-    modCompileOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}") { transitive = false }
-    modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}") { transitive = false }
-
-    if (System.getProperty('idea.sync.active') != 'true') {
-        annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
-    }
+    implementation("mezz.jei:jei-$minecraft_version-neoforge:$jei_version")
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -199,8 +158,10 @@ compileJava {
 }
 
 jar {
-    //from('LICENSE') {
-    //    rename { "${it}_${archivesBaseName}" }
+    //String name = base.archivesName.get()
+
+    //from("LICENSE") {
+    //    rename { "${it}_$name" }
     //}
 
     manifest.attributes([
@@ -209,7 +170,7 @@ jar {
     ])
 }
 
-tasks.named("sourcesJar") {
+tasks.named("sourcesJar", Jar) {
     manifest.attributes([
             "Git-Hash": gitHash
     ])
@@ -218,25 +179,40 @@ tasks.named("sourcesJar") {
 final slimJar = tasks.register("slimJar", Jar) {
     archiveClassifier = "slim"
     from(sourceSets.main.output)
-    from(refmap)
     manifest.attributes([
             "MixinConfigs": "rutile.mixins.json",
             "Git-Hash"    : gitHash
     ])
 }
-obfuscation.reobfuscate(slimJar, sourceSets.main)
 
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+            "mod_version"           : mod_version,
+            "mod_id"                : mod_id,
+            "mod_name"              : mod_name,
+            "mod_author"            : mod_author,
+            "mod_description"       : mod_description,
+            "mod_license"           : mod_license,
+            "neo_version"           : neo_version,
+            "minecraft_version"     : minecraft_version,
+            "ponder_version"        : ponder_version,
+            "flywheel_version_range": flywheel_version_range,
+    ]
+    inputs.properties(replaceProperties)
+    expand(replaceProperties)
+    from("src/main/templates")
+    into("build/generated/sources/modMetadata")
+}
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-}
-compileJava {
-    options.compilerArgs = ['-Xdiags:verbose']
-}
+// Include the output of "generateModMetadata" as an input directory for the build
+// this works with both building through Gradle and the IDE.
+sourceSets.main.resources.srcDir(generateModMetadata)
+// To avoid having to run "generateModMetadata" manually, make it run on every project reload
+neoForge.ideSyncTask(generateModMetadata)
 
 String calculateGitHash() {
     try {
-        def output = providers.exec {
+        ExecOutput output = providers.exec {
             commandLine("git", "rev-parse", "HEAD")
         }
         return output.standardOutput.asText.get().trim()
@@ -247,7 +223,7 @@ String calculateGitHash() {
 
 boolean hasUnstaged() {
     try {
-        def output = providers.exec {
+        ExecOutput output = providers.exec {
             commandLine("git", "status", "--porcelain")
         }
         String result = output.standardOutput.asText.get().replace("/M gradlew(\\.bat)?/", "").trim()

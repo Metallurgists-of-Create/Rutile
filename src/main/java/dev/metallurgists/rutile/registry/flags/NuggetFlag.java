@@ -4,7 +4,6 @@ import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
-import dev.metallurgists.rutile.api.dynamic_pack.asset.RutileDynamicResourcePack;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.base.MaterialFlags;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
@@ -19,14 +18,11 @@ import dev.metallurgists.rutile.registry.RutileFlagKeys;
 import dev.metallurgists.rutile.util.helpers.MaterialHelpers;
 import dev.metallurgists.rutile.util.helpers.ModelHelpers;
 import lombok.Getter;
-import net.minecraft.client.Minecraft;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class NuggetFlag extends ItemFlag implements IRecipeHandler, ISpecialLangSuffix {
     @Getter
@@ -70,12 +66,12 @@ public class NuggetFlag extends ItemFlag implements IRecipeHandler, ISpecialLang
 
     @Override
     public void registerItemAssets(Material material) {
-        ModelHelpers.generatedItemModel(material, RutileFlagKeys.NUGGET);
+        ModelHelpers.generatedItemModel(material, RutileFlagKeys.NUGGET.get());
     }
 
     @Override
     public FlagKey<?> getKey() {
-        return RutileFlagKeys.NUGGET;
+        return RutileFlagKeys.NUGGET.get();
     }
 
     @Override
@@ -84,22 +80,22 @@ public class NuggetFlag extends ItemFlag implements IRecipeHandler, ISpecialLang
     }
 
     @Override
-    public void run(@NotNull Consumer<FinishedRecipe> provider, @NotNull Material material) {
+    public void run(@NotNull RecipeOutput output, @NotNull Material material) {
         if (MaterialHelpers.hasExternalId(material, getKey())) return;
         if (!isShard() && material.hasFlag(RutileFlagKeys.INGOT)) {
-            Item ingot = MaterialHelpers.getItem(material, RutileFlagKeys.INGOT);
-            Item nugget = MaterialHelpers.getItem(material, RutileFlagKeys.NUGGET);
+            Item ingot = MaterialHelpers.getItem(material, RutileFlagKeys.INGOT.get());
+            Item nugget = MaterialHelpers.getItem(material, RutileFlagKeys.NUGGET.get());
             if (!isRequiresCompacting()) {
-                RecipeHelpers.craftCompact(provider, nugget, ingot, false, material, "%s_ingot_from_nuggets");
-                RecipeHelpers.craftDecompact(provider, ingot, nugget, 9, material, "%s_nuggets_from_ingot");
+                RecipeHelpers.craftCompact(output, nugget, ingot, false, material, "%s_ingot_from_nuggets");
+                RecipeHelpers.craftDecompact(output, ingot, nugget, 9, material, "%s_nuggets_from_ingot");
             }
         }
         if (isShard() && material.hasFlag(RutileFlagKeys.GEM)) {
-            Item ingot = MaterialHelpers.getItem(material, RutileFlagKeys.GEM);
-            Item shard = MaterialHelpers.getItem(material, RutileFlagKeys.NUGGET);
+            Item ingot = MaterialHelpers.getItem(material, RutileFlagKeys.GEM.get());
+            Item shard = MaterialHelpers.getItem(material, RutileFlagKeys.NUGGET.get());
             if (!isRequiresCompacting()) {
-                RecipeHelpers.craftCompact(provider, shard, ingot, 8, material, "%s_gem_from_shards");
-                RecipeHelpers.craftDecompact(provider, ingot, shard, 8, material, "%s_shards_from_gem");
+                RecipeHelpers.craftCompact(output, shard, ingot, 8, material, "%s_gem_from_shards");
+                RecipeHelpers.craftDecompact(output, ingot, shard, 8, material, "%s_shards_from_gem");
             }
         }
     }

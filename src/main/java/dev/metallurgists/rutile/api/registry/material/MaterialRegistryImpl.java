@@ -2,7 +2,6 @@ package dev.metallurgists.rutile.api.registry.material;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.base.Material;
-import dev.metallurgists.rutile.registry.RutileMaterials;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

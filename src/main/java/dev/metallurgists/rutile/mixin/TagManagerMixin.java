@@ -23,7 +23,7 @@ public class TagManagerMixin {
     @Inject(method = "createLoader",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/tags/TagLoader;<init>(Ljava/util/function/Function;Ljava/lang/String;)V",
+                    target = "Lnet/minecraft/tags/TagLoader;<staticInit>(Ljava/util/function/Function;Ljava/lang/String;)V",
                     shift = At.Shift.BY,
                     by = 2),
             locals = LocalCapture.CAPTURE_FAILHARD)

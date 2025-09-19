@@ -4,7 +4,6 @@ import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
-import dev.metallurgists.rutile.api.dynamic_pack.asset.RutileDynamicResourcePack;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.base.MaterialFlags;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
@@ -18,15 +17,13 @@ import dev.metallurgists.rutile.registry.RutileFlagKeys;
 import dev.metallurgists.rutile.util.helpers.MaterialHelpers;
 import dev.metallurgists.rutile.util.helpers.ModelHelpers;
 import lombok.Getter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 
 public class GemFlag extends ItemFlag implements IRecipeHandler {
@@ -73,15 +70,15 @@ public class GemFlag extends ItemFlag implements IRecipeHandler {
     }
 
     @Override
-    public void run(@NotNull Consumer<FinishedRecipe> provider, @NotNull Material material) {
+    public void run(@NotNull RecipeOutput output, @NotNull Material material) {
         if (material.hasFlag(RutileFlagKeys.STORAGE_BLOCK)) {
             var storageBlockFlag = material.getFlag(RutileFlagKeys.STORAGE_BLOCK);
             if (MaterialHelpers.hasExternalId(material, getKey())) return;
             Block block = MaterialHelpers.getBlock(material, RutileFlagKeys.STORAGE_BLOCK);
             Item gem = MaterialHelpers.getItem(material, getKey());
-            RecipeHelpers.craftCompact(provider, gem, block, true, material, "%s_block_from_gems");
+            RecipeHelpers.craftCompact(output, gem, block, true, material, "%s_block_from_gems");
             if (!storageBlockFlag.isRequiresDecompacting())
-                RecipeHelpers.craftDecompact(provider, block, gem, isSmall() ? 4 : 9, material, "%s_gems_from_block");
+                RecipeHelpers.craftDecompact(output, block, gem, isSmall() ? 4 : 9, material, "%s_gems_from_block");
         }
     }
 }

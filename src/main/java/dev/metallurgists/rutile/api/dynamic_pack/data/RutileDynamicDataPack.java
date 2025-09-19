@@ -1,29 +1,32 @@
 package dev.metallurgists.rutile.api.dynamic_pack.data;
 
 import com.google.common.collect.Sets;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.data.FinishedComposition;
 import dev.metallurgists.rutile.api.dynamic_pack.RutileDynamicPackContents;
-import dev.metallurgists.rutile.api.dynamic_pack.data.recipe.RutileRecipes;
 import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
 import dev.metallurgists.rutile.api.plugin.RutilePluginFinder;
 import dev.metallurgists.rutile.config.RutileConfig;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.SharedConstants;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.resources.IoSupplier;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.storage.loot.LootTable;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -33,7 +36,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,18 +43,18 @@ public class RutileDynamicDataPack implements PackResources {
     protected static final ObjectSet<String> SERVER_DOMAINS = new ObjectOpenHashSet<>();
     protected static final RutileDynamicPackContents CONTENTS = new RutileDynamicPackContents();
 
-    private final String name;
+    private final PackLocationInfo info;
 
     static {
         SERVER_DOMAINS.addAll(Sets.newHashSet(Rutile.ID, "minecraft", "forge", "c"));
     }
 
-    public RutileDynamicDataPack(String name) {
-        this(name, RutilePluginFinder.getModPlugins().stream().map(IRutilePlugin::getPluginNamespace).collect(Collectors.toSet()));
+    public RutileDynamicDataPack(PackLocationInfo info) {
+        this(info, RutilePluginFinder.getModPlugins().stream().map(IRutilePlugin::getPluginNamespace).collect(Collectors.toSet()));
     }
 
-    public RutileDynamicDataPack(String name, Collection<String> domains) {
-        this.name = name;
+    public RutileDynamicDataPack(PackLocationInfo info, Collection<String> domains) {
+        this.info = info;
         SERVER_DOMAINS.addAll(domains);
     }
 
@@ -64,15 +66,19 @@ public class RutileDynamicDataPack implements PackResources {
         CONTENTS.addToData(location, bytes);
     }
 
+    @Nullable
     @Override
-    public @Nullable IoSupplier<InputStream> getRootResource(String... strings) {
+    public IoSupplier<InputStream> getRootResource(String... elements) {
+        if (elements.length > 0 && elements[0].equals("pack.png")) {
+            return () -> Rutile.class.getResourceAsStream("/icon.png");
+        }
         return null;
     }
 
     @Override
-    public @Nullable IoSupplier<InputStream> getResource(PackType packType, ResourceLocation resourceLocation) {
-        if (packType == PackType.SERVER_DATA) {
-            return CONTENTS.getResource(resourceLocation);
+    public @Nullable IoSupplier<InputStream> getResource(PackType type, ResourceLocation location) {
+        if (type == PackType.SERVER_DATA) {
+            return CONTENTS.getResource(location);
         } else {
             return null;
         }
@@ -86,108 +92,111 @@ public class RutileDynamicDataPack implements PackResources {
     }
 
     @Override
-    public @NotNull Set<String> getNamespaces(PackType packType) {
-        return packType == PackType.SERVER_DATA ? SERVER_DOMAINS : Set.of();
+    public Set<String> getNamespaces(PackType type) {
+        return type == PackType.SERVER_DATA ? SERVER_DOMAINS : Set.of();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @Nullable <T> T getMetadataSection(MetadataSectionSerializer<T> metadataSectionSerializer) {
-        if (metadataSectionSerializer == PackMetadataSection.TYPE) {
+    public @Nullable <T> T getMetadataSection(MetadataSectionSerializer<T> metaReader) {
+        if (metaReader == PackMetadataSection.TYPE) {
             return (T) new PackMetadataSection(Component.literal("Rutile dynamic data"),
                     SharedConstants.getCurrentVersion().getPackVersion(PackType.SERVER_DATA));
-        } else if (metadataSectionSerializer.getMetadataSectionName().equals("filter")) {
-            JsonObject filter = new JsonObject();
-            JsonArray block = new JsonArray();
-            RutileRecipes.RECIPE_FILTERS.forEach((id) -> { // Collect removed recipes in here, in the pack filter section.
-                JsonObject entry = new JsonObject();
-                entry.addProperty("namespace", "^" + id.getNamespace().replaceAll("[\\W]", "\\\\$0") + "$");
-                entry.addProperty("path", "^recipes/" + id.getPath().replaceAll("[\\W]", "\\\\$0") + "\\.json" + "$");
-                block.add(entry);
-            });
-            filter.add("block", block);
-            return metadataSectionSerializer.fromJson(filter);
         }
         return null;
     }
 
     @Override
-    public @NotNull String packId() {
-        return this.name;
+    public PackLocationInfo location() {
+        return info;
     }
 
     @Override
     public void close() {
-
+        // NOOP
     }
 
     @ApiStatus.Internal
-    public static void writeJson(ResourceLocation id, @Nullable String subdir, Path parent, JsonElement json) {
+    public static void writeJson(ResourceLocation id, @Nullable String subDir, Path parent, byte[] json) {
         try {
             Path file;
-            if (subdir != null) {
-                file = parent.resolve(id.getNamespace()).resolve(subdir).resolve(id.getPath() + ".json"); // assume JSON
+            if (subDir != null) {
+                // assume JSON
+                file = parent.resolve(id.getNamespace()).resolve(subDir).resolve(id.getPath() + ".json");
             } else {
-                file = parent.resolve(id.getNamespace()).resolve(id.getPath()); // assume the file type is also appended
-                // if a full path is given.
+                // assume the file type is also appended if a full path is given.
+                file = parent.resolve(id.getNamespace()).resolve(id.getPath());
             }
             Files.createDirectories(file.getParent());
             try (OutputStream output = Files.newOutputStream(file)) {
-                output.write(json.toString().getBytes());
+                output.write(json);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Rutile.LOGGER.error("Failed to write JSON export for file {}", id, e);
         }
     }
 
-    public static void addRecipe(FinishedRecipe recipe) {
-        JsonObject recipeJson = recipe.serializeRecipe();
-        ResourceLocation recipeId = recipe.getId();
+    public static void addRecipe(ResourceLocation recipeId, Recipe<?> recipe, @Nullable AdvancementHolder advancement,
+                                 HolderLookup.Provider provider) {
+        JsonElement recipeJson = Recipe.CODEC.encodeStart(provider.createSerializationContext(JsonOps.INSTANCE), recipe)
+                .getOrThrow();
+        byte[] recipeBytes = recipeJson.toString().getBytes(StandardCharsets.UTF_8);
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/data");
         if (RutileConfig.client().dumpRecipes.get()) {
-            writeJson(recipeId, "recipes", parent, recipeJson);
+            writeJson(recipeId, "recipes", parent, recipeBytes);
         }
-        addToData(getRecipeLocation(recipeId), recipeJson.toString().getBytes(StandardCharsets.UTF_8));
-        if (recipe.serializeAdvancement() != null) {
-            JsonObject advancement = recipe.serializeAdvancement();
-            addToData(getAdvancementLocation(Objects.requireNonNull(recipe.getAdvancementId())), advancement.toString().getBytes(StandardCharsets.UTF_8));
+        addToData(getRecipeLocation(recipeId), recipeBytes);
+        if (advancement != null) {
+            JsonElement advancementJson = Advancement.CODEC
+                    .encodeStart(provider.createSerializationContext(JsonOps.INSTANCE), advancement.value())
+                    .getOrThrow();
+            byte[] advancementBytes = advancementJson.toString().getBytes(StandardCharsets.UTF_8);
+            addToData(getAdvancementLocation(advancement.id()), advancementBytes);
         }
     }
 
-    public static void addTag(String identifier, ResourceLocation tagId, JsonObject tagJson) {
-        ResourceLocation l = getTagLocation(identifier, tagId);
-        addToData(l, tagJson.toString().getBytes(StandardCharsets.UTF_8));
-    }
-
-    public static void addAdvancement(ResourceLocation loc, JsonObject obj) {
-        ResourceLocation l = getAdvancementLocation(loc);
-        addToData(l, obj.toString().getBytes(StandardCharsets.UTF_8));
+    public static void addLootTable(ResourceLocation lootTableId, LootTable table, HolderLookup.Provider provider) {
+        JsonElement lootTableJson = LootTable.DIRECT_CODEC
+                .encodeStart(provider.createSerializationContext(JsonOps.INSTANCE), table).getOrThrow();
+        byte[] lootTableBytes = lootTableJson.toString().getBytes(StandardCharsets.UTF_8);
+        Path parent = Rutile.getGameDir().resolve("rutile/dumped/data");
+        if (RutileConfig.client().dumpRecipes.get()) {
+            writeJson(lootTableId, "loot_table", parent, lootTableBytes);
+        }
+        if (CONTENTS.getResource(lootTableId) != null) {
+            Rutile.LOGGER.error("duplicate loot table: {}", lootTableId);
+        }
+        addToData(getLootTableLocation(lootTableId), lootTableBytes);
     }
 
     public static void addComposition(FinishedComposition composition) {
         JsonObject compositionJson = composition.serializeComposition();
+        byte[] compositionBytes = compositionJson.toString().getBytes(StandardCharsets.UTF_8);
         ResourceLocation compositionId = composition.getId();
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/data");
         if (RutileConfig.client().dumpCompositions.get()) {
-            writeJson(compositionId, "compositions", parent, compositionJson);
+            writeJson(compositionId, "compositions", parent, compositionBytes);
         }
         addToData(getCompositionLocation(compositionId), compositionJson.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     public static ResourceLocation getRecipeLocation(ResourceLocation recipeId) {
-        return new ResourceLocation(recipeId.getNamespace(), String.join("", "recipes/", recipeId.getPath(), ".json"));
+        return recipeId.withPath(path -> "recipe/" + path + ".json");
+    }
+
+    public static ResourceLocation getLootTableLocation(ResourceLocation lootTableId) {
+        return lootTableId.withPath(path -> "loot_table/" + path + ".json");
     }
 
     public static ResourceLocation getAdvancementLocation(ResourceLocation advancementId) {
-        return new ResourceLocation(advancementId.getNamespace(),
-                String.join("", "advancements/", advancementId.getPath(), ".json"));
+        return advancementId.withPath(path -> "advancement/" + path + ".json");
     }
 
     public static ResourceLocation getTagLocation(String identifier, ResourceLocation tagId) {
-        return new ResourceLocation(tagId.getNamespace(),
-                String.join("", "tags/", identifier, "/", tagId.getPath(), ".json"));
+        return tagId.withPath(path -> "tags/" + identifier + "/" + path + ".json");
     }
 
     public static ResourceLocation getCompositionLocation(ResourceLocation compId) {
-        return new ResourceLocation(compId.getNamespace(), String.join("", "rutile_utilities/material_compositions/", compId.getPath(), ".json"));
+        return ResourceLocation.fromNamespaceAndPath(compId.getNamespace(), String.join("", "rutile/composition/material/", compId.getPath(), ".json"));
     }
 }

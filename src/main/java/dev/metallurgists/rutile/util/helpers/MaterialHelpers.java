@@ -4,7 +4,7 @@ import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.types.*;
-import dev.metallurgists.rutile.api.registry.RutileAPI;
+import dev.metallurgists.rutile.registry.RutileRegistries;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -21,7 +21,7 @@ public class MaterialHelpers {
 
     public static List<Item> getAllItems(Material material, boolean onlyChemicalTooltippable) {
         List<Item> allItems = new ArrayList<>();
-        for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
+        for (var flagKey : RutileRegistries.FLAG_KEY_REGISTRY) {
             if (!material.hasFlag(flagKey)) continue;
             var flag = material.getFlag(flagKey);
             if (flag instanceof IItemRegistry itemFlag) {
@@ -39,7 +39,7 @@ public class MaterialHelpers {
 
     public static List<Block> getAllBlocks(Material material, boolean onlyChemicalTooltippable) {
         List<Block> allBlocks = new ArrayList<>();
-        for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
+        for (var flagKey : RutileRegistries.FLAG_KEY_REGISTRY) {
             if (!material.hasFlag(flagKey)) continue;
             var flag = material.getFlag(flagKey);
             if (flag instanceof IBlockRegistry blockFlag) {
@@ -53,7 +53,7 @@ public class MaterialHelpers {
 
     public static List<Fluid> getAllFluids(Material material) {
         List<Fluid> allFluids = new ArrayList<>();
-        for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
+        for (var flagKey : RutileRegistries.FLAG_KEY_REGISTRY) {
             if (!material.hasFlag(flagKey)) continue;
             var flag = material.getFlag(flagKey);
             if (flag instanceof IFluidRegistry fluidFlag) {

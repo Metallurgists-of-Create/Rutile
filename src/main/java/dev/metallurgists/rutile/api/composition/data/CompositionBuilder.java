@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.metallurgists.rutile.api.composition.SubComposition;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
@@ -14,6 +15,8 @@ import java.util.function.Consumer;
 public class CompositionBuilder {
     private final ItemLike item;
     private final List<SubComposition> subCompositions;
+
+    ShapedRecipeBuilder
 
     public CompositionBuilder(ItemLike item, List<SubComposition> subCompositions) {
         this.item = item;

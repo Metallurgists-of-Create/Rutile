@@ -26,8 +26,6 @@ public interface IMaterialRegistryManager {
     @NotNull
     Collection<Material> getRegisteredMaterials();
 
-    Material getMaterial(String name);
-
     ResourceLocation getKey(Material material);
 
     @NotNull

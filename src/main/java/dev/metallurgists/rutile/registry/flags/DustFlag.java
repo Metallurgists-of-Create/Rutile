@@ -4,7 +4,6 @@ import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
-import dev.metallurgists.rutile.api.dynamic_pack.asset.RutileDynamicResourcePack;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.base.MaterialFlags;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
@@ -17,15 +16,11 @@ import dev.metallurgists.rutile.api.material.registry.item.MaterialItem;
 import dev.metallurgists.rutile.registry.RutileFlagKeys;
 import dev.metallurgists.rutile.util.helpers.ModelHelpers;
 import lombok.Getter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.data.recipes.RecipeOutput;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.Consumer;
-
-import static dev.metallurgists.rutile.util.helpers.ModelHelpers.simpleGeneratedModel;
 
 
 public class DustFlag extends ItemFlag implements IRecipeHandler, ISpecialLangSuffix {
@@ -78,7 +73,7 @@ public class DustFlag extends ItemFlag implements IRecipeHandler, ISpecialLangSu
     }
 
     @Override
-    public void run(@NotNull Consumer<FinishedRecipe> provider, @NotNull Material material) {
+    public void run(@NotNull RecipeOutput output, @NotNull Material material) {
 
     }
 }

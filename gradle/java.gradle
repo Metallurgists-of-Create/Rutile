@@ -1,18 +1,18 @@
 apply plugin: 'java'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 java.withSourcesJar()
 java.withJavadocJar()
 
 jar {
     manifest {
         attributes([
-                'Specification-Title'     : "Metallurgica",
-                'Specification-Vendor'    : "PouffyDev",
+                'Specification-Title'     : mod_name,
+                'Specification-Vendor'    : mod_author,
                 'Specification-Version'   : project.jar.archiveVersion,
                 'Implementation-Title'    : project.name,
                 'Implementation-Version'  : project.jar.archiveVersion,
-                'Implementation-Vendor'   : "PouffyDev",
+                'Implementation-Vendor'   : mod_author,
                 'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                 'Timestampe'              : System.currentTimeMillis(),
                 'Built-On-Java'           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
@@ -23,7 +23,7 @@ jar {
 
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = 'UTF-8'
-    it.options.release = 17
+    it.options.release = 21
 }
 
 // Disables Gradle's custom module metadata from being published to maven. The

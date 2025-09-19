@@ -42,7 +42,7 @@ public interface IBlockRegistry extends IFlagRegistry {
         String nameAlternative = material.materialInfo().nameAlternatives().get(getKey());
         String namespace = !Objects.equals(getExistingNamespace(), "") ? getExistingNamespace() : material.getNamespace();
         String path = nameAlternative != null ? nameAlternative : material.getName();
-        return new ResourceLocation(namespace, getIdPattern().formatted(path));
+        return ResourceLocation.fromNamespaceAndPath(namespace, getIdPattern().formatted(path));
     }
 
     void registerBlockAssets(Material material);

@@ -80,11 +80,11 @@ public abstract class RutileRegistry<K, V> implements Iterable<V> {
 
     public <T extends V> T register(K key, T value) {
         if (frozen) {
-            throw new IllegalStateException("[init] registry %s has been frozen".formatted(registryName));
+            throw new IllegalStateException("[staticInit] registry %s has been frozen".formatted(registryName));
         }
         if (containKey(key)) {
             throw new IllegalStateException(
-                    "[init] registry %s contains key %s already".formatted(registryName, key));
+                    "[staticInit] registry %s contains key %s already".formatted(registryName, key));
         }
         registry.put(key, value);
         return value;
@@ -104,7 +104,7 @@ public abstract class RutileRegistry<K, V> implements Iterable<V> {
 
     public <T extends V> T registerOrOverride(K key, T value) {
         if (frozen) {
-            throw new IllegalStateException("[init] registry %s has been frozen".formatted(registryName));
+            throw new IllegalStateException("[staticInit] registry %s has been frozen".formatted(registryName));
         }
         registry.put(key, value);
         return value;

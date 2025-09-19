@@ -6,9 +6,6 @@ import dev.metallurgists.rutile.api.dynamic_pack.asset.RutileDynamicResourcePack
 import dev.metallurgists.rutile.api.dynamic_pack.data.RuntimeCompositions;
 import dev.metallurgists.rutile.api.dynamic_pack.data.RutileDynamicDataPack;
 import dev.metallurgists.rutile.api.dynamic_pack.data.recipe.RutileRecipes;
-import dev.metallurgists.rutile.api.material.events.MaterialEvent;
-import dev.metallurgists.rutile.api.material.events.MaterialRegistryEvent;
-import dev.metallurgists.rutile.api.material.events.PostMaterialEvent;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.registry.material.MaterialRegistryManager;
@@ -16,25 +13,22 @@ import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.registry.*;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AddPackFindersEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoader;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
+
 
 public class CommonProxy {
 
     public CommonProxy() {
+        IEventBus modEventBus = ModLoadingContext.get().getActiveContainer().getEventBus();
         ModLoadingContext modLoadingContext = ModLoadingContext.get();
-        IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        eventBus.register(this);
+        modEventBus.register(this);
 
-        MinecraftForge.EVENT_BUS.register(new CommonEventHandler());
-
-        RutileAPI.materialManager = MaterialRegistryManager.getInstance();
+        NeoForge.EVENT_BUS.register(new CommonEventHandler());
 
         RutileConfig.register(modLoadingContext);
 
@@ -42,7 +36,7 @@ public class CommonProxy {
     }
 
     public static void init() {
-        RutileElements.init();
+        RutileElements.staticInit();
         initMaterials();
         RutileFlagKeys.init();
 
@@ -50,31 +44,13 @@ public class CommonProxy {
         RutileBlocks.register();
         RutileItems.register();
 
-        Rutile.registrate.registerRegistrate();
+        IEventBus modEventBus = ModLoadingContext.get().getActiveContainer().getEventBus();
+
+        Rutile.registrate.registerEventListeners(modEventBus);
     }
 
     public static void initMaterials() {
-        MaterialRegistryManager managerInternal = (MaterialRegistryManager) RutileAPI.materialManager;
-
-        Rutile.LOGGER.info("Registering material registries");
-        ModLoader.get().postEvent(new MaterialRegistryEvent());
-
-        managerInternal.unfreezeRegistries();
-        Rutile.LOGGER.info("Registering Rutile Materials");
-
         RutileMaterials.init();
-        MaterialRegistryManager.getInstance()
-                .getRegistry(Rutile.ID)
-                .setFallbackMaterial(RutileMaterials.Null);
-
-        Rutile.LOGGER.info("Registering plugin Materials");
-        MaterialEvent materialEvent = new MaterialEvent();
-        ModLoader.get().postEvent(materialEvent);
-
-        managerInternal.closeRegistries();
-        ModLoader.get().postEvent(new PostMaterialEvent());
-
-        managerInternal.freezeRegistries();
     }
 
     @SubscribeEvent

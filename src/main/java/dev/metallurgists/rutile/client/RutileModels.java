@@ -9,19 +9,18 @@ import dev.metallurgists.rutile.api.material.flag.types.IPartialHolder;
 import dev.metallurgists.rutile.api.material.flag.types.ISpecialAssetGen;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
+import dev.metallurgists.rutile.registry.RutileRegistries;
 
 public class RutileModels {
 
     public static void registerMaterialAssets() {
-        for (MaterialRegistry registry : RutileAPI.materialManager.getRegistries()) {
-            for (Material material : registry.getAllMaterials()) {
-                material.getFlags().getFlagKeys().forEach(flagKey -> {
-                    generateSpecialAssets(material, flagKey);
-                    generateItemModels(material, flagKey);
-                    generateBlockModels(material, flagKey);
-                    generatePartialModels(material, flagKey);
-                });
-            }
+        for (Material material : RutileRegistries.MATERIAL_REGISTRY) {
+            material.getFlags().getFlagKeys().forEach(flagKey -> {
+                generateSpecialAssets(material, flagKey);
+                generateItemModels(material, flagKey);
+                generateBlockModels(material, flagKey);
+                generatePartialModels(material, flagKey);
+            });
         }
     }
 

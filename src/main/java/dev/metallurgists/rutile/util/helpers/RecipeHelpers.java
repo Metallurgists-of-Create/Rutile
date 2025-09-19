@@ -5,6 +5,7 @@ import dev.metallurgists.rutile.api.material.base.Material;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.world.level.ItemLike;
@@ -14,7 +15,7 @@ import java.util.function.Consumer;
 
 public class RecipeHelpers {
 
-    public static void craftCompact(@NotNull Consumer<FinishedRecipe> provider, ItemLike input, ItemLike output, boolean isSmall, Material material, String recipeId) {
+    public static void craftCompact(@NotNull Consumer<RecipeOutput> provider, ItemLike input, ItemLike output, boolean isSmall, Material material, String recipeId) {
         ShapedRecipeBuilder builder = new ShapedRecipeBuilder(RecipeCategory.MISC, output, 1);
         if (isSmall) {
             for (int i = 0; i < 2; i++) {
@@ -27,7 +28,7 @@ public class RecipeHelpers {
         }
         builder.define('#', input)
                 .unlockedBy("has_input", InventoryChangeTrigger.TriggerInstance.hasItems(input))
-                .save(provider, Rutile.asResource("runtime_generated/" + material.getNamespace() + "/" + recipeId.formatted(material.getName())));
+                .save(provider, Rutile.id("runtime_generated/" + material.getNamespace() + "/" + recipeId.formatted(material.getName())));
     }
 
     public static void craftCompact(@NotNull Consumer<FinishedRecipe> provider, ItemLike input, ItemLike output, int amountIn, Material material, String recipeId) {
@@ -36,13 +37,13 @@ public class RecipeHelpers {
             builder.requires(input);
         }
         builder.unlockedBy("has_input", InventoryChangeTrigger.TriggerInstance.hasItems(input))
-                .save(provider, Rutile.asResource("runtime_generated/" + material.getNamespace() + "/" + recipeId.formatted(material.getName())));
+                .save(provider, Rutile.id("runtime_generated/" + material.getNamespace() + "/" + recipeId.formatted(material.getName())));
     }
 
     public static void craftDecompact(@NotNull Consumer<FinishedRecipe> provider, ItemLike input, ItemLike output, int amountOut, Material material, String recipeId) {
         ShapelessRecipeBuilder builder = new ShapelessRecipeBuilder(RecipeCategory.MISC, output, amountOut);
         builder.requires(input)
                 .unlockedBy("has_input", InventoryChangeTrigger.TriggerInstance.hasItems(input))
-                .save(provider, Rutile.asResource("runtime_generated/" + material.getNamespace() + "/" + recipeId.formatted(material.getName())));
+                .save(provider, Rutile.id("runtime_generated/" + material.getNamespace() + "/" + recipeId.formatted(material.getName())));
     }
 }

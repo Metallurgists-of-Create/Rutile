@@ -3,7 +3,6 @@ package dev.metallurgists.rutile.api.registry.material;
 import com.google.common.base.Preconditions;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.base.Material;
-import dev.metallurgists.rutile.registry.RutileMaterials;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
@@ -85,24 +84,6 @@ public class MaterialRegistryManager implements IMaterialRegistryManager {
             throw new IllegalStateException("Cannot retrieve all materials before registration");
         }
         return registeredMaterials;
-    }
-
-    @Override
-    public Material getMaterial(@NotNull String name) {
-        if (!name.isEmpty()) {
-            String modid;
-            String materialName;
-            int index = name.indexOf(':');
-            if (index >= 0) {
-                modid = name.substring(0, index);
-                materialName = name.substring(index + 1);
-            } else {
-                modid = Rutile.ID;
-                materialName = name;
-            }
-            return getRegistry(modid).get(materialName);
-        }
-        return RutileMaterials.Null;
     }
 
     @Override

@@ -3,6 +3,7 @@ package dev.metallurgists.rutile.api.material.modifier;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
+import dev.metallurgists.rutile.registry.RutileRegistries;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 
@@ -31,11 +32,9 @@ public class MaterialGroup {
 
     public void withKeyWord(String keyWord) {
         List<Material> materials = new ArrayList<>();
-        for (MaterialRegistry registry : RutileAPI.materialManager.getRegistries()) {
-            for (Material material : registry.getAllMaterials()) {
-                if (material.getName().contains(keyWord)) {
-                    materials.add(material);
-                }
+        for (Material material : RutileRegistries.MATERIAL_REGISTRY) {
+            if (material.getName().contains(keyWord)) {
+                materials.add(material);
             }
         }
         this.materials.addAll(materials);

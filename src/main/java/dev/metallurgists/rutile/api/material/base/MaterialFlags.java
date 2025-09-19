@@ -34,6 +34,15 @@ public class MaterialFlags {
         return this;
     }
 
+    public final <T extends IMaterialFlag> MaterialFlags setFlag(FlagKey<T> key, IMaterialFlag value) {
+        if (value == null) throw new IllegalArgumentException("Material Flag must not be null!");
+        if (hasFlag(key))
+            throw new IllegalArgumentException("Material Flag " + key.toString() + " already registered!");
+        flagMap.put(key, value);
+        flagMap.remove(FlagKey.EMPTY);
+        return this;
+    }
+
     public boolean isEmpty() {
         return flagMap.isEmpty();
     }
@@ -44,14 +53,6 @@ public class MaterialFlags {
 
     public <T extends IMaterialFlag> boolean hasFlag(FlagKey<T> key) {
         return flagMap.get(key) != null;
-    }
-
-    public <T extends IMaterialFlag> void setFlag(FlagKey<T> key, IMaterialFlag value) {
-        if (value == null) throw new IllegalArgumentException("Material Flag must not be null!");
-        if (hasFlag(key))
-            throw new IllegalArgumentException("Material Flag " + key.toString() + " already registered!");
-        flagMap.put(key, value);
-        flagMap.remove(FlagKey.EMPTY);
     }
 
     public <T extends IMaterialFlag> void removeFlag(FlagKey<T> flag) {
