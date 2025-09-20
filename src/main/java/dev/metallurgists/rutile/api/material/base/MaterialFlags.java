@@ -2,6 +2,8 @@ package dev.metallurgists.rutile.api.material.base;
 
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.IMaterialFlag;
+import dev.metallurgists.rutile.api.material.flag.types.IFluidRegistry;
+import dev.metallurgists.rutile.api.material.registry.fluid.FluidFlagProperties;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +18,10 @@ public class MaterialFlags {
     }
 
     private final Map<FlagKey<? extends IMaterialFlag>, IMaterialFlag> flagMap;
+
+    @Getter
+    private Map<FlagKey<? extends IFluidRegistry>, FluidFlagProperties> fluidFlagProperties = new HashMap<>();
+
     @Setter
     @Getter
     private Material material;
@@ -94,6 +100,18 @@ public class MaterialFlags {
                 flagMap.put(FlagKey.EMPTY, FlagKey.EMPTY.constructDefault());
             }
         }
+    }
+
+    public void addFluidProperties(FluidFlagProperties properties) {
+        FlagKey<? extends IFluidRegistry> flag = properties.getFlagKey();
+        if (fluidFlagProperties.containsKey(flag)) {
+            throw new IllegalArgumentException("Fluid Flag " + flag.toString() + " already registered!");
+        }
+        fluidFlagProperties.put(flag, properties);
+    }
+
+    public FluidFlagProperties getPropertiesFor(FlagKey<?> flagKey) {
+        return fluidFlagProperties.get(flagKey);
     }
 
     @Override

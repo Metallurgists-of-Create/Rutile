@@ -3,7 +3,7 @@ package dev.metallurgists.rutile;
 import com.mojang.logging.LogUtils;
 import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 import dev.metallurgists.rutile.client.ClientProxy;
-import dev.metallurgists.rutile.common.CommonProxy;
+import dev.metallurgists.rutile.common.CommonInit;
 import dev.metallurgists.rutile.events.RutileEventHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -23,8 +23,6 @@ public class Rutile {
     public static final String ID = "rutile";
     public static final String DISPLAY_NAME = "Rutile";
     public static final Logger LOGGER = LogUtils.getLogger();
-    public static CommonProxy COMMON_PROXY = new CommonProxy();
-    public static ClientProxy CLIENT_PROXY = new ClientProxy();
 
     public static final RutileRegistrate registrate = RutileRegistrate.create(ID);
 
@@ -39,6 +37,7 @@ public class Rutile {
 
     public static void init() {
         LOGGER.info("{} is initializing...", DISPLAY_NAME);
+        CommonInit.init(INSTANCE.modEventBus);
     }
 
     public static ResourceLocation id(String path) {

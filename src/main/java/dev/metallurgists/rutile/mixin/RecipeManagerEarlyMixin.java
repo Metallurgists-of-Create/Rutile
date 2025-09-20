@@ -21,4 +21,5 @@ public abstract class RecipeManagerEarlyMixin {
     private void rutile$removeRecipes(Map<ResourceLocation, JsonElement> map, ResourceManager pResourceManager,
                                       ProfilerFiller pProfiler, CallbackInfo ci) {
         RutileRecipes.recipeRemoval(map::remove);
-    }}
+    }
+}

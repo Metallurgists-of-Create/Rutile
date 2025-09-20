@@ -6,6 +6,7 @@
   "refmap": "rutile.refmap.json",
   "plugin": "dev.metallurgists.rutile.mixin.plugin.RutileMixinsPlugin",
   "mixins": [
+    "BlockBehaviourAccessor",
     "RecipeManagerEarlyMixin",
     "RecipeManagerLateMixin",
     "ReloadableServerResourcesMixin",

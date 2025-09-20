@@ -36,6 +36,10 @@ public class FlagKey<T extends IMaterialFlag> {
         return this.type.cast(flag);
     }
 
+    public boolean isEmpty() {
+        return this.type.isInstance(EMPTY);
+    }
+
     @Override
     public String toString() {
         return RutileRegistries.FLAG_KEY_REGISTRY.getKey(this).toString();

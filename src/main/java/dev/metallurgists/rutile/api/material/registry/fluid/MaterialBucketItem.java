@@ -2,31 +2,36 @@ package dev.metallurgists.rutile.api.material.registry.fluid;
 
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.types.IFluidRegistry;
-import net.createmod.catnip.theme.Color;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
 
 import javax.annotation.Nullable;
-import java.util.function.Supplier;
 
 public class MaterialBucketItem extends BucketItem {
     public final Material material;
     public final IFluidRegistry fluidFlag;
 
-    public MaterialBucketItem(Supplier<? extends Fluid> supplier, Properties builder, Material material, IFluidRegistry flag) {
-        super(supplier, builder);
+    public MaterialBucketItem(BaseFlowingFluid fluid, Properties builder, Material material, IFluidRegistry flag) {
+        super(fluid, builder);
         this.material = material;
         this.fluidFlag = flag;
     }
 
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return this.getClass() == MaterialBucketItem.class ? new FluidBucketWrapper(stack) : super.initCapabilities(stack, nbt);
+    public static int color(ItemStack itemStack, int index) {
+        if (itemStack.getItem() instanceof MaterialBucketItem item) {
+            if (index == 1) {
+                return IClientFluidTypeExtensions.of(item.content).getTintColor();
+            }
+        }
+        return -1;
     }
 
     public String getUnlocalizedName() {
@@ -56,5 +61,15 @@ public class MaterialBucketItem extends BucketItem {
     @Override
     public MutableComponent getName(ItemStack stack) {
         return getDescription();
+    }
+
+    @Override
+    public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+        var property = material.getFlag(fluidFlag.getKey());
+        if (property != null) {
+            var props = material.getFlags().getPropertiesFor(fluidFlag.getKey());
+            return props.getBurnTime();
+        }
+        return 0;
     }
 }

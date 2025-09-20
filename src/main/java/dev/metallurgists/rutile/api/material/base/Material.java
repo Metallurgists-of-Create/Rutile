@@ -88,6 +88,10 @@ public class Material implements Comparable<Material>, IHasDescriptionId {
         return flags.getFlag(key);
     }
 
+    public <T extends IMaterialFlag> T getFlag(FlagKeyEntry<FlagKey<T>> key) {
+        return flags.getFlag(key.get());
+    }
+
     public <T extends IMaterialFlag> void setFlag(FlagKey<T> key, IMaterialFlag flag) {
         if (flag instanceof IFlagRegistry reg && !Objects.equals(reg.getExistingNamespace(), "")) {
             flags.noRegister(key);

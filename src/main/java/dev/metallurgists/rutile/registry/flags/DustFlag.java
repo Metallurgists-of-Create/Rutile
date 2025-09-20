@@ -8,16 +8,15 @@ import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.base.MaterialFlags;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.ItemFlag;
-import dev.metallurgists.rutile.api.material.flag.types.IItemRegistry;
-import dev.metallurgists.rutile.api.material.flag.types.IRecipeHandler;
-import dev.metallurgists.rutile.api.material.flag.types.ISpecialLangSuffix;
+import dev.metallurgists.rutile.api.material.flag.types.*;
 import dev.metallurgists.rutile.api.material.registry.item.IMaterialItem;
 import dev.metallurgists.rutile.api.material.registry.item.MaterialItem;
 import dev.metallurgists.rutile.registry.RutileFlagKeys;
 import dev.metallurgists.rutile.util.helpers.ModelHelpers;
 import lombok.Getter;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -54,12 +53,12 @@ public class DustFlag extends ItemFlag implements IRecipeHandler, ISpecialLangSu
 
     @Override
     public void registerItemAssets(Material material) {
-        ModelHelpers.generatedItemModel(material, RutileFlagKeys.DUST);
+        ModelHelpers.generatedItemModel(material, RutileFlagKeys.DUST.get());
     }
 
     @Override
     public FlagKey<?> getKey() {
-        return RutileFlagKeys.DUST;
+        return RutileFlagKeys.DUST.get();
     }
 
     @Override
@@ -75,5 +74,12 @@ public class DustFlag extends ItemFlag implements IRecipeHandler, ISpecialLangSu
     @Override
     public void run(@NotNull RecipeOutput output, @NotNull Material material) {
 
+    }
+
+    @Override
+    public MultiTagHolder getTagHolder() {
+        var holder = new TagHolder<>(Registries.ITEM);
+        holder.addPatterns(powder ? "c:powders" : "c:dusts", powder ? "c:powders/%s" : "c:dusts/%s");
+        return new MultiTagHolder(holder);
     }
 }

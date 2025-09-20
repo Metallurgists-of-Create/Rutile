@@ -7,6 +7,7 @@ import com.tterrag.registrate.providers.RegistrateProvider;
 import com.tterrag.registrate.util.nullness.NonNullConsumer;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import com.tterrag.registrate.util.nullness.NonnullType;
+import net.neoforged.bus.api.IEventBus;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
@@ -18,4 +19,10 @@ public interface AbstractRegistrateAccessor {
 
     @Accessor
     NonNullSupplier<Boolean> getDoDatagen();
+
+    @Accessor("modEventBus")
+    IEventBus getModEventBus();
+
+    @Accessor("modEventBus")
+    void setModEventBus(IEventBus modEventBus);
 }

@@ -11,6 +11,8 @@ import dev.metallurgists.rutile.api.material.base.MaterialFlags;
 import dev.metallurgists.rutile.api.material.flag.BlockFlag;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.types.IBlockRegistry;
+import dev.metallurgists.rutile.api.material.flag.types.MultiTagHolder;
+import dev.metallurgists.rutile.api.material.flag.types.TagHolder;
 import dev.metallurgists.rutile.api.material.registry.block.AxisMaterialBlock;
 import dev.metallurgists.rutile.api.material.registry.block.IMaterialBlock;
 import dev.metallurgists.rutile.api.material.registry.block.MaterialBlock;
@@ -19,7 +21,9 @@ import dev.metallurgists.rutile.registry.RutileFlagKeys;
 import dev.metallurgists.rutile.util.helpers.ModelHelpers;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -35,8 +39,6 @@ public class StorageBlockFlag extends BlockFlag {
 
     public StorageBlockFlag(String existingNamespace) {
         super("%s_block", existingNamespace);
-        this.setTagPatterns(List.of("c:storage_blocks", "c:storage_blocks/%s", "minecraft:mineable/pickaxe"));
-        this.setItemTagPatterns(List.of("c:storage_blocks", "c:storage_blocks/%s"));
     }
 
     public StorageBlockFlag() {
@@ -71,19 +73,19 @@ public class StorageBlockFlag extends BlockFlag {
     @Override
     public void registerBlockAssets(Material material) {
         if (isUseColumnModel()) {
-            boolean sidePresent = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(material.getNamespace() + ":textures/block/materials/" + material.getName() + "/storage_block_side.png")).isPresent();
-            boolean endPresent = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(material.getNamespace() + ":textures/block/materials/" + material.getName() + "/storage_block_end.png")).isPresent();
+            boolean sidePresent = Minecraft.getInstance().getResourceManager().getResource(loc(material.getNamespace(), "textures/block/materials/" + material.getName() + "/storage_block_side.png")).isPresent();
+            boolean endPresent = Minecraft.getInstance().getResourceManager().getResource(loc(material.getNamespace(), "textures/block/materials/" + material.getName() + "/storage_block_end.png")).isPresent();
             String sideTexture = sidePresent ? material.getNamespace() + ":block/materials/" + material.getName() + "/storage_block_side" : "metallurgica:block/materials/null/storage_block_side";
             String endTexture = endPresent ? material.getNamespace() + ":block/materials/" + material.getName() + "/storage_block_end" : "metallurgica:block/materials/null/storage_block_end";
-            RutileDynamicResourcePack.addBlockModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simplePillar(endTexture, sideTexture));
-            RutileDynamicResourcePack.addBlockState(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simpleAxisBlockstate("metallurgica:block/" + getIdPattern().formatted(material.getName())));
+            RutileDynamicResourcePack.addBlockModel(loc(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simplePillar(endTexture, sideTexture));
+            RutileDynamicResourcePack.addBlockState(loc(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simpleAxisBlockstate("metallurgica:block/" + getIdPattern().formatted(material.getName())));
         } else {
-            boolean texturePresent = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(material.getNamespace() + ":textures/block/materials/" + material.getName() + "/storage_block.png")).isPresent();
+            boolean texturePresent = Minecraft.getInstance().getResourceManager().getResource(loc(material.getNamespace(), "textures/block/materials/" + material.getName() + "/storage_block.png")).isPresent();
             String texture = texturePresent ? material.getNamespace() + ":block/materials/" + material.getName() + "/storage_block" : "metallurgica:block/materials/null/storage_block";
-            RutileDynamicResourcePack.addBlockModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simpleCubeAll(texture));
-            RutileDynamicResourcePack.addBlockState(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.singleVariantBlockstate(material.getNamespace() + ":block/" + getIdPattern().formatted(material.getName())));
+            RutileDynamicResourcePack.addBlockModel(loc(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simpleCubeAll(texture));
+            RutileDynamicResourcePack.addBlockState(loc(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.singleVariantBlockstate(material.getNamespace() + ":block/" + getIdPattern().formatted(material.getName())));
         }
-        RutileDynamicResourcePack.addItemModel(new ResourceLocation(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simpleParentedModel(material.getNamespace() + ":block/" + getIdPattern().formatted(material.getName())));
+        RutileDynamicResourcePack.addItemModel(loc(material.getNamespace(), getIdPattern().formatted(material.getName())), ModelHelpers.simpleParentedModel(material.getNamespace() + ":block/" + getIdPattern().formatted(material.getName())));
     }
 
     @Override
@@ -93,11 +95,20 @@ public class StorageBlockFlag extends BlockFlag {
 
     @Override
     public FlagKey<?> getKey() {
-        return RutileFlagKeys.STORAGE_BLOCK;
+        return RutileFlagKeys.STORAGE_BLOCK.get();
     }
 
     @Override
     public void verifyFlag(MaterialFlags flags) {
 
+    }
+
+    @Override
+    public MultiTagHolder getTagHolder() {
+        var blockHolder = new TagHolder<>(Registries.BLOCK);
+        blockHolder.addPatterns("c:storage_blocks", "c:storage_blocks/%s", "minecraft:mineable/pickaxe");
+        var itemHolder = new TagHolder<>(Registries.ITEM);
+        itemHolder.addPatterns("c:storage_blocks", "c:storage_blocks/%s");
+        return new MultiTagHolder(blockHolder, itemHolder);
     }
 }

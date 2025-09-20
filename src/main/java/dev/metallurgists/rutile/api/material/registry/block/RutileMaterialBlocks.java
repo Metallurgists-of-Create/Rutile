@@ -36,12 +36,15 @@ public class RutileMaterialBlocks {
                 }
             }
         }
-        MATERIAL_BLOCKS = MATERIAL_BLOCKS_BUILDER.build();
     }
 
 
 
     private static void registerMaterialBlock(Material material, IBlockRegistry blockRegistry, FlagKey<?> flagKey, AbstractRegistrate<?> registrate) {
         MATERIAL_BLOCKS_BUILDER.put(flagKey, material, blockRegistry.registerBlock(material, blockRegistry, registrate));
+    }
+
+    public static void buildMaterialBlockTable() {
+        MATERIAL_BLOCKS = MATERIAL_BLOCKS_BUILDER.build();
     }
 }

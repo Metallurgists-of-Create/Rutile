@@ -17,27 +17,21 @@ import java.util.List;
 import java.util.Map;
 
 @Mixin(value = TagLoader.class, priority = 500)
-public class TagLoaderMixin<T> implements IRutileTagLoader<T> {
+public class TagLoaderMixin implements IRutileTagLoader {
 
     @Nullable
     @Unique
-    private Registry<T> rutile$storedRegistry;
+    private Registry<?> rutile$storedRegistry;
 
     @Inject(method = "load", at = @At(value = "RETURN"))
     public void rutile$load(ResourceManager resourceManager,
                                   CallbackInfoReturnable<Map<ResourceLocation, List<TagLoader.EntryWithSource>>> cir) {
-        var tagMap = cir.getReturnValue();
-        if (rutile$getRegistry() == null) return;
-        MixinHelpers.generateDynamicTags(tagMap, rutile$getRegistry());
+        if (rutile$storedRegistry == null) return;
+        MixinHelpers.generateDynamicTags(cir.getReturnValue(), rutile$storedRegistry);
     }
 
     @Override
-    public void rutile$setRegistry(Registry<T> registry) {
+    public void rutile$setRegistry(Registry<?> registry) {
         this.rutile$storedRegistry = registry;
-    }
-
-    @Override
-    public @Nullable Registry<T> rutile$getRegistry() {
-        return rutile$storedRegistry;
     }
 }

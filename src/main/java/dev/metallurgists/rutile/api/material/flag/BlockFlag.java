@@ -6,23 +6,22 @@ import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.base.MaterialFlags;
 import dev.metallurgists.rutile.api.material.flag.types.IBlockRegistry;
 import dev.metallurgists.rutile.api.material.flag.types.IConditionalComposition;
+import dev.metallurgists.rutile.api.material.flag.types.IHaveTags;
 import dev.metallurgists.rutile.api.material.registry.block.IMaterialBlock;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 @Getter
-public abstract class BlockFlag implements IMaterialFlag, IBlockRegistry, IConditionalComposition {
+public abstract class BlockFlag implements IMaterialFlag, IBlockRegistry, IConditionalComposition, IHaveTags {
 
     private final String idPattern;
     @Getter
     private String existingNamespace = "";
-    @Setter
-    private List<String> tagPatterns = List.of();
-    @Setter
-    private List<String> itemTagPatterns = List.of();
 
     public BlockFlag(String idPattern) {
         this.idPattern = idPattern;

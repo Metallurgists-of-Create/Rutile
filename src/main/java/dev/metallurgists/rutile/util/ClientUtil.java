@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.neoforgespi.Environment;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +27,7 @@ public class ClientUtil {
     }
 
     public static boolean isClientSide() {
-        return FMLEnvironment.dist.isClient();
+        return Environment.get().getDist().isClient();
     }
 
     public static String fromId(String key) {
@@ -94,7 +94,18 @@ public class ClientUtil {
     public static LangBuilder lang() {
         return new LangBuilder(Rutile.ID);
     }
+
     public static LangBuilder number(double d) {
         return lang().text(LangNumberFormat.format(d));
+    }
+
+    public static int convertRGBtoARGB(int colorValue) {
+        return convertRGBtoARGB(colorValue, 0xFF);
+    }
+
+    public static int convertRGBtoARGB(int colorValue, int opacity) {
+        // preserve existing opacity if present
+        if (((colorValue >> 24) & 0xFF) != 0) return colorValue;
+        return opacity << 24 | colorValue;
     }
 }

@@ -10,6 +10,8 @@ import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.ItemFlag;
 import dev.metallurgists.rutile.api.material.flag.types.IItemRegistry;
 import dev.metallurgists.rutile.api.material.flag.types.IRecipeHandler;
+import dev.metallurgists.rutile.api.material.flag.types.MultiTagHolder;
+import dev.metallurgists.rutile.api.material.flag.types.TagHolder;
 import dev.metallurgists.rutile.api.material.registry.item.IMaterialItem;
 import dev.metallurgists.rutile.api.material.registry.item.MaterialItem;
 import dev.metallurgists.rutile.util.helpers.RecipeHelpers;
@@ -17,7 +19,7 @@ import dev.metallurgists.rutile.registry.RutileFlagKeys;
 import dev.metallurgists.rutile.util.helpers.MaterialHelpers;
 import dev.metallurgists.rutile.util.helpers.ModelHelpers;
 import lombok.Getter;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -33,7 +35,6 @@ public class GemFlag extends ItemFlag implements IRecipeHandler {
 
     public GemFlag(String existingNamespace) {
         super("%s_gem", existingNamespace);
-        this.setTagPatterns(List.of("c:gems", "c:gems/%s"));
     }
 
     public GemFlag() {
@@ -56,12 +57,12 @@ public class GemFlag extends ItemFlag implements IRecipeHandler {
 
     @Override
     public void registerItemAssets(Material material) {
-        ModelHelpers.generatedItemModel(material, RutileFlagKeys.GEM);
+        ModelHelpers.generatedItemModel(material, RutileFlagKeys.GEM.get());
     }
 
     @Override
     public FlagKey<?> getKey() {
-        return RutileFlagKeys.GEM;
+        return RutileFlagKeys.GEM.get();
     }
 
     @Override
@@ -74,11 +75,18 @@ public class GemFlag extends ItemFlag implements IRecipeHandler {
         if (material.hasFlag(RutileFlagKeys.STORAGE_BLOCK)) {
             var storageBlockFlag = material.getFlag(RutileFlagKeys.STORAGE_BLOCK);
             if (MaterialHelpers.hasExternalId(material, getKey())) return;
-            Block block = MaterialHelpers.getBlock(material, RutileFlagKeys.STORAGE_BLOCK);
+            Block block = MaterialHelpers.getBlock(material, RutileFlagKeys.STORAGE_BLOCK.get());
             Item gem = MaterialHelpers.getItem(material, getKey());
             RecipeHelpers.craftCompact(output, gem, block, true, material, "%s_block_from_gems");
             if (!storageBlockFlag.isRequiresDecompacting())
                 RecipeHelpers.craftDecompact(output, block, gem, isSmall() ? 4 : 9, material, "%s_gems_from_block");
         }
+    }
+
+    @Override
+    public MultiTagHolder getTagHolder() {
+        var holder = new TagHolder<>(Registries.ITEM);
+        holder.addPatterns("c:gems", "c:gems/%s");
+        return new MultiTagHolder(holder);
     }
 }

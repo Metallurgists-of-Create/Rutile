@@ -8,9 +8,7 @@ import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.base.MaterialFlags;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.ItemFlag;
-import dev.metallurgists.rutile.api.material.flag.types.IItemRegistry;
-import dev.metallurgists.rutile.api.material.flag.types.IRecipeHandler;
-import dev.metallurgists.rutile.api.material.flag.types.ISpecialLangSuffix;
+import dev.metallurgists.rutile.api.material.flag.types.*;
 import dev.metallurgists.rutile.api.material.registry.item.IMaterialItem;
 import dev.metallurgists.rutile.api.material.registry.item.MaterialItem;
 import dev.metallurgists.rutile.util.helpers.RecipeHelpers;
@@ -18,6 +16,7 @@ import dev.metallurgists.rutile.registry.RutileFlagKeys;
 import dev.metallurgists.rutile.util.helpers.MaterialHelpers;
 import dev.metallurgists.rutile.util.helpers.ModelHelpers;
 import lombok.Getter;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +34,6 @@ public class NuggetFlag extends ItemFlag implements IRecipeHandler, ISpecialLang
 
     public NuggetFlag(String existingNamespace, boolean shard) {
         super(shard ? "%s_shard" :"%s_nugget", existingNamespace);
-        this.setTagPatterns(List.of(shard ? "c:/shards" :"c:nuggets", shard ? "c:/shards/%s" : "c:nuggets/%s"));
     }
 
     public NuggetFlag(boolean shard) {
@@ -103,5 +101,13 @@ public class NuggetFlag extends ItemFlag implements IRecipeHandler, ISpecialLang
     @Override
     public String getLangSuffix() {
         return isShard() ? "shard" : "";
+    }
+
+
+    @Override
+    public MultiTagHolder getTagHolder() {
+        var holder = new TagHolder<>(Registries.ITEM);
+        holder.addPatterns(this.shard ? "c:/shards" :"c:nuggets", this.shard ? "c:/shards/%s" : "c:nuggets/%s");
+        return new MultiTagHolder(holder);
     }
 }

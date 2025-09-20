@@ -79,8 +79,8 @@ public class ModelHelpers {
         String namespace = material.getNamespace();
         var flag = material.getFlag(itemRegistry);
         String flagName = itemRegistry.getId().getPath();
-        boolean texturePresent = resourceManager.getResource(new ResourceLocation(namespace + ":textures/item/materials/" + material.getName() + "/" + flagName + ".png")).isPresent();
+        boolean texturePresent = resourceManager.getResource(ResourceLocation.fromNamespaceAndPath(namespace, "textures/item/materials/" + material.getName() + "/" + flagName + ".png")).isPresent();
         String texture = texturePresent ? material.getNamespace() + ":item/materials/" + material.getName() + "/" + flagName : "rutile:item/materials/null/" + flagName;
-        RutileDynamicResourcePack.addItemModel(new ResourceLocation(material.getNamespace(), flag.getIdPattern().formatted(material.getName())), ModelHelpers.simpleGeneratedModel("minecraft:item/generated", texture));
+        RutileDynamicResourcePack.addItemModel(ResourceLocation.fromNamespaceAndPath(material.getNamespace(), flag.getIdPattern().formatted(material.getName())), ModelHelpers.simpleGeneratedModel("minecraft:item/generated", texture));
     }
 }

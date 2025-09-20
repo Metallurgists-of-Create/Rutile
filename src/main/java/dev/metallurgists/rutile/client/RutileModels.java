@@ -3,13 +3,10 @@ package dev.metallurgists.rutile.client;
 import dev.metallurgists.rutile.api.dynamic_pack.asset.RutileDynamicResourcePack;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
-import dev.metallurgists.rutile.api.material.flag.types.IBlockRegistry;
-import dev.metallurgists.rutile.api.material.flag.types.IItemRegistry;
-import dev.metallurgists.rutile.api.material.flag.types.IPartialHolder;
-import dev.metallurgists.rutile.api.material.flag.types.ISpecialAssetGen;
-import dev.metallurgists.rutile.api.registry.RutileAPI;
-import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
+import dev.metallurgists.rutile.api.material.flag.types.*;
 import dev.metallurgists.rutile.registry.RutileRegistries;
+import dev.metallurgists.rutile.util.helpers.MaterialHelpers;
+import dev.metallurgists.rutile.util.helpers.MixinHelpers;
 
 public class RutileModels {
 
@@ -20,6 +17,7 @@ public class RutileModels {
                 generateItemModels(material, flagKey);
                 generateBlockModels(material, flagKey);
                 generatePartialModels(material, flagKey);
+                generateFluidModels(material, flagKey);
             });
         }
     }
@@ -46,6 +44,13 @@ public class RutileModels {
         var flag = material.getFlag(flagKey);
         if (flag instanceof IPartialHolder partialHolder) {
             RutileDynamicResourcePack.addPartialModel(partialHolder.getModelLocation(material), partialHolder.createModel(material));
+        }
+    }
+
+    public static void generateFluidModels(Material material, FlagKey<?> flagKey) {
+        var flag = material.getFlag(flagKey);
+        if (flag instanceof IFluidRegistry) {
+            MixinHelpers.addFluidTexture(material, flagKey, MaterialHelpers.getFluid(material, flagKey));
         }
     }
 

@@ -2,7 +2,6 @@ package dev.metallurgists.rutile;
 
 import dev.metallurgists.rutile.api.composition.CompositionTooltipHandler;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
@@ -11,9 +10,6 @@ import java.util.Objects;
 
 
 public class RutileClient {
-    public static void onCtor(IEventBus modEventBus, IEventBus forgeEventBus) {
-
-    }
 
     @EventBusSubscriber(Dist.CLIENT)
     public static class ClientEvents {
