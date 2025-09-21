@@ -16,10 +16,7 @@ import dev.metallurgists.rutile.util.helpers.ModelHelpers;
 import lombok.Getter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 
 public class DustFlag extends ItemFlag implements IRecipeHandler, ISpecialLangSuffix {
@@ -30,8 +27,6 @@ public class DustFlag extends ItemFlag implements IRecipeHandler, ISpecialLangSu
     public DustFlag(String existingNamespace, boolean powder) {
         super(powder ? "%s_powder" : "%s_dust", existingNamespace);
         this.powder = powder;
-        List<String> patterns = powder ? List.of("c:powders", "c:powders/%s") : List.of("c:dusts", "c:dusts/%s");
-        this.setTagPatterns(patterns);
     }
 
     public DustFlag() {
@@ -53,12 +48,12 @@ public class DustFlag extends ItemFlag implements IRecipeHandler, ISpecialLangSu
 
     @Override
     public void registerItemAssets(Material material) {
-        ModelHelpers.generatedItemModel(material, RutileFlagKeys.DUST.get());
+        ModelHelpers.generatedItemModel(material, RutileFlagKeys.DUST);
     }
 
     @Override
-    public FlagKey<?> getKey() {
-        return RutileFlagKeys.DUST.get();
+    public FlagKey<? extends IItemRegistry> getKey() {
+        return RutileFlagKeys.DUST;
     }
 
     @Override

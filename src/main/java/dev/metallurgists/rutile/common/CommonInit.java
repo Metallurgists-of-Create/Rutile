@@ -6,6 +6,9 @@ import com.tterrag.registrate.providers.RegistrateLangProvider;
 import com.tterrag.registrate.providers.RegistrateProvider;
 import com.tterrag.registrate.util.nullness.NonNullConsumer;
 import dev.metallurgists.rutile.Rutile;
+import dev.metallurgists.rutile.RutileDataGen;
+import dev.metallurgists.rutile.api.composition.data.ItemComposition;
+import dev.metallurgists.rutile.api.composition.data.MaterialComposition;
 import dev.metallurgists.rutile.api.dynamic_pack.RutilePackSource;
 import dev.metallurgists.rutile.api.dynamic_pack.asset.RutileDynamicResourcePack;
 import dev.metallurgists.rutile.api.dynamic_pack.data.RutileDynamicDataPack;
@@ -15,7 +18,10 @@ import dev.metallurgists.rutile.api.material.registry.fluid.RutileMaterialFluids
 import dev.metallurgists.rutile.api.material.registry.item.RutileMaterialItems;
 import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
 import dev.metallurgists.rutile.api.plugin.RutilePluginFinder;
+import dev.metallurgists.rutile.api.registrate.MaterialLangGenerator;
 import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
+import dev.metallurgists.rutile.api.registry.CustomRutileRegistries;
+import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.mixin.registrate.AbstractRegistrateAccessor;
 import dev.metallurgists.rutile.registry.*;
@@ -31,7 +37,9 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.ModifyRegistriesEvent;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 
@@ -44,13 +52,13 @@ public class CommonInit {
 
     public static void init(final IEventBus modBus) {
         CommonInit.modBus = modBus;
-        modBus.register(CommonInit.class);
         ModLoadingContext modLoadingContext = ModLoadingContext.get();
 
         RutileConfig.register(modLoadingContext);
-        IEventBus modEventBus = ModLoadingContext.get().getActiveContainer().getEventBus();
-
-        Rutile.registrate.registerEventListeners(modEventBus);
+        modBus.addListener(RutileDataGen::gatherDataEvent);
+        modBus.register(CommonInit.class);
+        CustomRutileRegistries.init(modBus);
+        Rutile.registrate.registerEventListeners(modBus);
     }
 
     // Only register everything once.
@@ -62,7 +70,6 @@ public class CommonInit {
             return;
         }
         didRunRegistration = true;
-        RutileElements.staticInit();
         RutileMaterials.init();
         RutileFlagKeys.init();
 
@@ -74,7 +81,7 @@ public class CommonInit {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onRegisterEarly(RegisterEvent event) {
-        if (event.getRegistryKey() == RutileRegistries.MATERIAL_REGISTRY) {
+        if (event.getRegistryKey() == CustomRutileRegistries.MATERIAL_REGISTRY) {
             Rutile.LOGGER.debug("Registered {} materials", event.getRegistry().stream().count());
             RutilePluginFinder.getModPlugins().forEach(IRutilePlugin::modifyMaterials);
         } else if (event.getRegistryKey() == Registries.FLUID) {
@@ -98,7 +105,8 @@ public class CommonInit {
             if (accessor.getDoDatagen().get()) {
                 List<NonNullConsumer<? extends RegistrateProvider>> providers = Multimaps.asMap(accessor.getDatagens())
                         .get(ProviderType.LANG);
-                providers.add(0,
+                if (providers != null)
+                    providers.addFirst(
                         (provider) -> MaterialLangGenerator.generate((RegistrateLangProvider) provider, namespace));
             }
 
@@ -109,15 +117,27 @@ public class CommonInit {
     }
 
     @SubscribeEvent
+    public static void registerRegistries(NewRegistryEvent event) {
+        CustomRutileRegistries.getRegistries().forEach(event::register);
+    }
+
+    @SubscribeEvent
+    public void newDatapackRegistry(DataPackRegistryEvent.NewRegistry event) {
+        event.dataPackRegistry(CustomRutileRegistries.ITEM_COMPOSITION_REGISTRY, ItemComposition.CODEC, ItemComposition.CODEC);
+        event.dataPackRegistry(CustomRutileRegistries.MATERIAL_COMPOSITION_REGISTRY, MaterialComposition.CODEC, MaterialComposition.CODEC);
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    @SubscribeEvent
     public static void modifyRegistries(ModifyRegistriesEvent event) {
-        RutileRegistries.MATERIAL_REGISTRY.addCallback((BakeCallback<Material>) registry -> postInitMaterials());
+        RutileAPI.materialRegistry.addCallback((BakeCallback<Material>) registry -> postInitMaterials());
     }
 
     @SubscribeEvent
     public static void loadComplete(FMLLoadCompleteEvent event) {}
 
     @SubscribeEvent
-    public void addPackFinders(AddPackFindersEvent event) {
+    public static void addPackFinders(AddPackFindersEvent event) {
         if (event.getPackType() == PackType.CLIENT_RESOURCES) {
             RutileDynamicResourcePack.clearClient();
 

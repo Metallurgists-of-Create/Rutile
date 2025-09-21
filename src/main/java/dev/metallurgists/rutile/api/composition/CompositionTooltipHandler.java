@@ -1,6 +1,8 @@
 package dev.metallurgists.rutile.api.composition;
 
 import dev.metallurgists.rutile.api.material.base.Material;
+import dev.metallurgists.rutile.api.registry.CustomRutileRegistries;
+import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.registry.RutileRegistries;
 import dev.metallurgists.rutile.util.ClientUtil;
@@ -17,15 +19,15 @@ public class CompositionTooltipHandler {
 
     public static void addToTooltip(List<Component> toolTip, ItemStack stack, HolderLookup.Provider registries) {
         boolean notAMaterialCheckSingleCompositions = false;
-        var itemLookup = registries.lookupOrThrow(RutileRegistries.ITEM_COMPOSITION);
-        var materialLookup = registries.lookupOrThrow(RutileRegistries.MATERIAL_COMPOSITION);
-        for (Material material : RutileRegistries.MATERIAL_REGISTRY) {
+        var itemLookup = registries.lookupOrThrow(CustomRutileRegistries.ITEM_COMPOSITION_REGISTRY);
+        var materialLookup = registries.lookupOrThrow(CustomRutileRegistries.MATERIAL_COMPOSITION_REGISTRY);
+        for (Material material : RutileAPI.materialRegistry) {
             var validComp = materialLookup.listElements().filter(m -> m.value().material().equals(material)).map(r -> r.value().compositions()).toList();
             if (!validComp.isEmpty()) {
                 var allMatItem = MaterialHelpers.getAllMaterialItemsForTooltips(material);
                 if (allMatItem.contains(stack.getItem())) {
                     LangBuilder compositionName = ClientUtil.lang();
-                    createTooltip(compositionName, validComp.get(0));
+                    createTooltip(compositionName, validComp.getFirst(), registries);
                     add(toolTip, compositionName);
                     break;
                 }
@@ -36,9 +38,9 @@ public class CompositionTooltipHandler {
         if (notAMaterialCheckSingleCompositions) {
             var validComp = itemLookup.listElements().filter(m -> m.value().item().equals(stack.getItem())).map(r -> r.value().compositions()).toList();
             if (!validComp.isEmpty()) {
-                var comp = validComp.get(0);
+                var comp = validComp.getFirst();
                 LangBuilder compositionName = ClientUtil.lang();
-                createTooltip(compositionName, comp);
+                createTooltip(compositionName, comp, registries);
                 add(toolTip, compositionName);
             }
         }
@@ -56,7 +58,7 @@ public class CompositionTooltipHandler {
         }
     }
 
-    private static void createTooltip(LangBuilder compositionName, List<SubComposition> subCompositions) {
+    private static void createTooltip(LangBuilder compositionName, List<SubComposition> subCompositions, HolderLookup.Provider registries) {
         for (SubComposition composition : subCompositions) {
             if (composition == null) continue;
             LangBuilder subComp = ClientUtil.lang();
@@ -66,11 +68,11 @@ public class CompositionTooltipHandler {
                 subComp.add(Component.literal("("));
                 for (int j = 0; j < elementsSize; j++) {
                     if (subComposition.getElements().get(j) == null) continue;
-                    subComp.add(Component.literal(subComposition.getElement(j).getDisplay()));
+                    subComp.add(Component.literal(subComposition.getElement(j).getDisplay(registries)));
                 }
                 subComp.add(Component.literal(")"));
             } else {
-                subComp.add(Component.literal(subComposition.getElement(0).getDisplay()));
+                subComp.add(Component.literal(subComposition.getElement(0).getDisplay(registries)));
             }
             compositionName.add(subComp);
         }

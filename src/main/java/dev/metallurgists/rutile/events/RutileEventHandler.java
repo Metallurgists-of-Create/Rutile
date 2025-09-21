@@ -20,7 +20,6 @@ public class RutileEventHandler {
     }
 
     private void registerModEvents(IEventBus eventBus) {
-        eventBus.register(new RegistryEvents());
     }
 
 }

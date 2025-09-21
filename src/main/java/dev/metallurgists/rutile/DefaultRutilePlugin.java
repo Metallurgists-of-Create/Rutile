@@ -28,7 +28,7 @@ public class DefaultRutilePlugin implements IRutilePlugin {
 
         public static void register() {
             Dirt = registrate.material("dirt", Material::new)
-                    .composition(RutileElements.AMERICIUM, 3, RutileElements.BISMUTH, 19)
+                    .composition("3 americium", "19 bismuth")
                     .addFlags(
                             new IngotFlag()
                     ).register();

@@ -4,7 +4,6 @@ import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.types.IRecipeHandler;
 import dev.metallurgists.rutile.api.plugin.RutilePluginFinder;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
-import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
 import dev.metallurgists.rutile.registry.RutileRegistries;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.advancements.Advancement;
@@ -37,8 +36,8 @@ public class RutileRecipes {
         };
 
 
-        for (Material material : RutileRegistries.MATERIAL_REGISTRY) {
-            for (var flagKey : RutileRegistries.FLAG_KEY_REGISTRY) {
+        for (Material material : RutileAPI.materialRegistry) {
+            for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
                 if (material.hasFlag(flagKey) && material.getFlag(flagKey) instanceof IRecipeHandler handler) {
                     handler.run(consumer, material);
                 }

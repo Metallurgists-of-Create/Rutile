@@ -57,12 +57,12 @@ public class GemFlag extends ItemFlag implements IRecipeHandler {
 
     @Override
     public void registerItemAssets(Material material) {
-        ModelHelpers.generatedItemModel(material, RutileFlagKeys.GEM.get());
+        ModelHelpers.generatedItemModel(material, RutileFlagKeys.GEM);
     }
 
     @Override
-    public FlagKey<?> getKey() {
-        return RutileFlagKeys.GEM.get();
+    public FlagKey<? extends IItemRegistry> getKey() {
+        return RutileFlagKeys.GEM;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class GemFlag extends ItemFlag implements IRecipeHandler {
         if (material.hasFlag(RutileFlagKeys.STORAGE_BLOCK)) {
             var storageBlockFlag = material.getFlag(RutileFlagKeys.STORAGE_BLOCK);
             if (MaterialHelpers.hasExternalId(material, getKey())) return;
-            Block block = MaterialHelpers.getBlock(material, RutileFlagKeys.STORAGE_BLOCK.get());
+            Block block = MaterialHelpers.getBlock(material, RutileFlagKeys.STORAGE_BLOCK);
             Item gem = MaterialHelpers.getItem(material, getKey());
             RecipeHelpers.craftCompact(output, gem, block, true, material, "%s_block_from_gems");
             if (!storageBlockFlag.isRequiresDecompacting())

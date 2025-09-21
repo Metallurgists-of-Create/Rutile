@@ -10,7 +10,6 @@ import dev.metallurgists.rutile.api.material.flag.types.IItemRegistry;
 import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
 import dev.metallurgists.rutile.api.plugin.RutilePluginFinder;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
-import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
 import dev.metallurgists.rutile.registry.RutileRegistries;
 
 import java.util.Objects;
@@ -21,11 +20,11 @@ public class RutileMaterialItems {
     public static Table<FlagKey<?>, Material, ItemEntry<? extends IMaterialItem>> MATERIAL_ITEMS;
 
     public static void generateMaterialItems() {
-        for (var flagKey : RutileRegistries.FLAG_KEY_REGISTRY) {
+        for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
             if (flagKey.constructDefault() instanceof IItemRegistry) {
                 for (IRutilePlugin plugin : RutilePluginFinder.getModPlugins()) {
                     AbstractRegistrate<?> registrate = plugin.getRegistrate();
-                    for (Material material : RutileRegistries.MATERIAL_REGISTRY) {
+                    for (Material material : RutileAPI.materialRegistry) {
                         if (!Objects.equals(material.getNamespace(), registrate.getModid())) continue;
                         var flag = material.getFlag(flagKey);
                         if (material.noRegister(flagKey)) continue;

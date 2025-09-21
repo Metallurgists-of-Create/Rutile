@@ -6,6 +6,7 @@ import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.types.IHaveTags;
 import dev.metallurgists.rutile.api.registrate.builder.MaterialEntry;
+import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.registry.RutileMaterials;
 import dev.metallurgists.rutile.registry.RutileRegistries;
 import net.minecraft.core.registries.Registries;
@@ -27,16 +28,16 @@ public record KeyedMaterial(@NotNull FlagKey<?> flagKey, @NotNull Material mater
         Preconditions.checkNotNull(material, "KeyedMaterial Material cannot be null!");
     }
 
-    public static final KeyedMaterial NULL_ENTRY = new KeyedMaterial(FlagKey.EMPTY, RutileMaterials.Null.get());
+    public static final KeyedMaterial NULL_ENTRY = new KeyedMaterial(FlagKey.EMPTY, RutileMaterials.Null);
 
     private static final Map<String, KeyedMaterial> PARSE_CACHE = new WeakHashMap<>();
 
     public KeyedMaterial(FlagKey<?> flagKey) {
-        this(flagKey, RutileMaterials.Null.get());
+        this(flagKey, RutileMaterials.Null);
     }
 
     public boolean isEmpty() {
-        return this == NULL_ENTRY || material() == RutileMaterials.Null.get() || flagKey().isEmpty();
+        return this == NULL_ENTRY || material() == RutileMaterials.Null || flagKey().isEmpty();
     }
 
     public boolean isIgnored() {
@@ -69,9 +70,9 @@ public record KeyedMaterial(@NotNull FlagKey<?> flagKey, @NotNull Material mater
             ResourceLocation flagLoc = Rutile.id(flag);
             ResourceLocation matLoc = Rutile.id(mat);
             if (values.length > 2) {
-                var flagK = RutileRegistries.FLAG_KEY_REGISTRY.get(flagLoc);
+                var flagK = RutileAPI.getRegisteredFlags().get(flagLoc);
                 if (flagK == null) throw new IllegalArgumentException("Invalid FlagKey: " + values[0]);
-                var material = RutileRegistries.MATERIAL_REGISTRY.get(matLoc);
+                var material = RutileAPI.materialRegistry.get(matLoc);
                 if (material == null) throw new IllegalArgumentException("Invalid Material: " + matLoc);
                 cached = new KeyedMaterial(flagK, material);
                 PARSE_CACHE.put(str, cached);

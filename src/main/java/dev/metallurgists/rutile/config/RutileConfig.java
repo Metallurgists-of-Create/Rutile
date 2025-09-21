@@ -44,7 +44,7 @@ public class RutileConfig {
         client = register(RClient::new, ModConfig.Type.CLIENT);
 
         for (Map.Entry<ModConfig.Type, ConfigBase> pair : CONFIGS.entrySet()) {
-            context.registerConfig(pair.getKey(), pair.getValue().specification);
+            context.getActiveContainer().registerConfig(pair.getKey(), pair.getValue().specification);
         }
     }
 

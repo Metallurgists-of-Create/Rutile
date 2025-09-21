@@ -34,6 +34,7 @@ public class NuggetFlag extends ItemFlag implements IRecipeHandler, ISpecialLang
 
     public NuggetFlag(String existingNamespace, boolean shard) {
         super(shard ? "%s_shard" :"%s_nugget", existingNamespace);
+        this.shard = shard;
     }
 
     public NuggetFlag(boolean shard) {
@@ -64,12 +65,12 @@ public class NuggetFlag extends ItemFlag implements IRecipeHandler, ISpecialLang
 
     @Override
     public void registerItemAssets(Material material) {
-        ModelHelpers.generatedItemModel(material, RutileFlagKeys.NUGGET.get());
+        ModelHelpers.generatedItemModel(material, RutileFlagKeys.NUGGET);
     }
 
     @Override
-    public FlagKey<?> getKey() {
-        return RutileFlagKeys.NUGGET.get();
+    public FlagKey<? extends IItemRegistry> getKey() {
+        return RutileFlagKeys.NUGGET;
     }
 
     @Override
@@ -81,16 +82,16 @@ public class NuggetFlag extends ItemFlag implements IRecipeHandler, ISpecialLang
     public void run(@NotNull RecipeOutput output, @NotNull Material material) {
         if (MaterialHelpers.hasExternalId(material, getKey())) return;
         if (!isShard() && material.hasFlag(RutileFlagKeys.INGOT)) {
-            Item ingot = MaterialHelpers.getItem(material, RutileFlagKeys.INGOT.get());
-            Item nugget = MaterialHelpers.getItem(material, RutileFlagKeys.NUGGET.get());
+            Item ingot = MaterialHelpers.getItem(material, RutileFlagKeys.INGOT);
+            Item nugget = MaterialHelpers.getItem(material, RutileFlagKeys.NUGGET);
             if (!isRequiresCompacting()) {
                 RecipeHelpers.craftCompact(output, nugget, ingot, false, material, "%s_ingot_from_nuggets");
                 RecipeHelpers.craftDecompact(output, ingot, nugget, 9, material, "%s_nuggets_from_ingot");
             }
         }
         if (isShard() && material.hasFlag(RutileFlagKeys.GEM)) {
-            Item ingot = MaterialHelpers.getItem(material, RutileFlagKeys.GEM.get());
-            Item shard = MaterialHelpers.getItem(material, RutileFlagKeys.NUGGET.get());
+            Item ingot = MaterialHelpers.getItem(material, RutileFlagKeys.GEM);
+            Item shard = MaterialHelpers.getItem(material, RutileFlagKeys.NUGGET);
             if (!isRequiresCompacting()) {
                 RecipeHelpers.craftCompact(output, shard, ingot, 8, material, "%s_gem_from_shards");
                 RecipeHelpers.craftDecompact(output, ingot, shard, 8, material, "%s_shards_from_gem");

@@ -2,7 +2,8 @@ package dev.metallurgists.rutile;
 
 import com.mojang.logging.LogUtils;
 import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
-import dev.metallurgists.rutile.client.ClientProxy;
+import dev.metallurgists.rutile.api.registry.CustomRutileRegistries;
+import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.common.CommonInit;
 import dev.metallurgists.rutile.events.RutileEventHandler;
 import net.minecraft.client.Minecraft;
@@ -29,15 +30,18 @@ public class Rutile {
     private final IEventBus modEventBus;
 
     public Rutile(IEventBus modEventBus) {
+        RutileAPI.instance = this;
         this.modEventBus = modEventBus;
         INSTANCE = this;
         new RutileEventHandler(modEventBus).register();
+        RutileAPI.materialRegistry = CustomRutileRegistries.MATERIALS;
         Rutile.init();
     }
 
     public static void init() {
         LOGGER.info("{} is initializing...", DISPLAY_NAME);
         CommonInit.init(INSTANCE.modEventBus);
+        RutileClient.init();
     }
 
     public static ResourceLocation id(String path) {

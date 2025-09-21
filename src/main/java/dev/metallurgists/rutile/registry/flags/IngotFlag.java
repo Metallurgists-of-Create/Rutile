@@ -53,12 +53,12 @@ public class IngotFlag extends ItemFlag implements IRecipeHandler {
 
     @Override
     public void registerItemAssets(Material material) {
-        ModelHelpers.generatedItemModel(material, RutileFlagKeys.INGOT.get());
+        ModelHelpers.generatedItemModel(material, RutileFlagKeys.INGOT);
     }
 
     @Override
-    public FlagKey<?> getKey() {
-        return RutileFlagKeys.INGOT.get();
+    public FlagKey<? extends IItemRegistry> getKey() {
+        return RutileFlagKeys.INGOT;
     }
 
     @Override
@@ -72,8 +72,8 @@ public class IngotFlag extends ItemFlag implements IRecipeHandler {
         if (material.hasFlag(RutileFlagKeys.STORAGE_BLOCK)) {
             var storageBlockFlag = material.getFlag(RutileFlagKeys.STORAGE_BLOCK);
             if (MaterialHelpers.hasExternalId(material, getKey())) return;
-            Block block = MaterialHelpers.getBlock(material, RutileFlagKeys.STORAGE_BLOCK.get());
-            Item ingot = MaterialHelpers.getItem(material, RutileFlagKeys.INGOT.get());
+            Block block = MaterialHelpers.getBlock(material, RutileFlagKeys.STORAGE_BLOCK);
+            Item ingot = MaterialHelpers.getItem(material, RutileFlagKeys.INGOT);
             if (!isRequiresCompacting())
                 RecipeHelpers.craftCompact(output, ingot, block, false, material, "%s_block_from_ingots");
             //if (!storageBlockFlag.isRequiresDecompacting())

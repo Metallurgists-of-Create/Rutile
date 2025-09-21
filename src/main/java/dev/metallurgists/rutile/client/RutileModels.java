@@ -4,6 +4,7 @@ import dev.metallurgists.rutile.api.dynamic_pack.asset.RutileDynamicResourcePack
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.types.*;
+import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.registry.RutileRegistries;
 import dev.metallurgists.rutile.util.helpers.MaterialHelpers;
 import dev.metallurgists.rutile.util.helpers.MixinHelpers;
@@ -11,7 +12,7 @@ import dev.metallurgists.rutile.util.helpers.MixinHelpers;
 public class RutileModels {
 
     public static void registerMaterialAssets() {
-        for (Material material : RutileRegistries.MATERIAL_REGISTRY) {
+        for (Material material : RutileAPI.materialRegistry) {
             material.getFlags().getFlagKeys().forEach(flagKey -> {
                 generateSpecialAssets(material, flagKey);
                 generateItemModels(material, flagKey);

@@ -3,6 +3,7 @@ package dev.metallurgists.rutile.compat.jei.custom.element;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.compat.jei.RutileJeiConstants;
+import dev.metallurgists.rutile.registry.RutileRegistries;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -11,6 +12,7 @@ import net.createmod.catnip.theme.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import org.jetbrains.annotations.Nullable;
@@ -36,14 +38,20 @@ public class ElementIngredientHelper implements IIngredientHelper<Element> {
         return element.getDisplayName().getString();
     }
 
+    @SuppressWarnings("removal")
     @Override
     public String getUniqueId(Element element, UidContext context) {
         return getResourceLocation(element).toString();
     }
 
     @Override
+    public String getUid(Element element, UidContext context) {
+        return getResourceLocation(element).toString();
+    }
+
+    @Override
     public ResourceLocation getResourceLocation(Element element) {
-        return element.getKey();
+        return element.getId();
     }
 
     @Override
@@ -63,7 +71,7 @@ public class ElementIngredientHelper implements IIngredientHelper<Element> {
     public Iterable<Integer> getColors(Element element) {
         return getStillFluidSprite()
                 .map(fluidStillSprite -> {
-                    int renderColor = new Color(element.getColor(), true).getRGB();
+                    int renderColor = new Color(element.color(), true).getRGB();
                     return colorHelper.getColors(fluidStillSprite, renderColor, 1);
                 })
                 .orElseGet(List::of);

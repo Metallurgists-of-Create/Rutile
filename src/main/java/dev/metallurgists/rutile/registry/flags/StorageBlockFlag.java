@@ -94,8 +94,8 @@ public class StorageBlockFlag extends BlockFlag {
     }
 
     @Override
-    public FlagKey<?> getKey() {
-        return RutileFlagKeys.STORAGE_BLOCK.get();
+    public FlagKey<? extends IBlockRegistry> getKey() {
+        return RutileFlagKeys.STORAGE_BLOCK;
     }
 
     @Override

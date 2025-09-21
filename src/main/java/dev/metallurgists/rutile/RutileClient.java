@@ -1,6 +1,7 @@
 package dev.metallurgists.rutile;
 
 import dev.metallurgists.rutile.api.composition.CompositionTooltipHandler;
+import dev.metallurgists.rutile.registry.RutilePartialModels;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -10,6 +11,10 @@ import java.util.Objects;
 
 
 public class RutileClient {
+
+    public static void init() {
+        RutilePartialModels.clientInit();
+    }
 
     @EventBusSubscriber(Dist.CLIENT)
     public static class ClientEvents {

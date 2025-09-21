@@ -3,6 +3,7 @@ package dev.metallurgists.rutile.api.material.flag;
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import dev.metallurgists.rutile.api.material.base.Material;
+import dev.metallurgists.rutile.api.material.flag.types.IFluidRegistry;
 import dev.metallurgists.rutile.api.material.flag.types.IHaveTags;
 import dev.metallurgists.rutile.api.material.flag.types.IItemRegistry;
 import dev.metallurgists.rutile.api.material.registry.item.IMaterialItem;
@@ -27,6 +28,8 @@ public abstract class ItemFlag implements IMaterialFlag, IItemRegistry, IHaveTag
         this.idPattern = idPattern;
         this.existingNamespace = existingNamespace;
     }
+
+    public abstract FlagKey<? extends IItemRegistry> getKey();
 
     public abstract ItemEntry<? extends IMaterialItem> registerItem(@NotNull Material material, IItemRegistry flag, @NotNull AbstractRegistrate<?> registrate);
 }

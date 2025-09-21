@@ -3,15 +3,9 @@ package dev.metallurgists.rutile.api.registrate;
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.util.OneTimeEventReceiver;
 import com.tterrag.registrate.util.nullness.NonNullBiFunction;
-import com.tterrag.registrate.util.nullness.NonNullFunction;
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.base.MaterialFlags;
-import dev.metallurgists.rutile.api.material.flag.FlagKey;
-import dev.metallurgists.rutile.api.material.flag.IMaterialFlag;
-import dev.metallurgists.rutile.api.registrate.builder.ElementBuilder;
-import dev.metallurgists.rutile.api.registrate.builder.FlagKeyBuilder;
 import dev.metallurgists.rutile.api.registrate.builder.MaterialBuilder;
 import dev.metallurgists.rutile.mixin.registrate.AbstractRegistrateAccessor;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -99,40 +93,6 @@ public class RutileRegistrate extends AbstractRegistrate<RutileRegistrate> {
             }
         }
         return this;
-    }
-
-    // Elements
-    public <T extends Element> ElementBuilder<T, RutileRegistrate> element(NonNullFunction<Element.Properties, T> factory) {
-        return element(self(), factory);
-    }
-
-    public <T extends Element> ElementBuilder<T, RutileRegistrate> element(String name, NonNullFunction<Element.Properties, T> factory) {
-        return element(self(), name, factory);
-    }
-
-    public <T extends Element, P> ElementBuilder<T, P> element(P parent, NonNullFunction<Element.Properties, T> factory) {
-        return element(parent, currentName(), factory);
-    }
-
-    public <T extends Element, P> ElementBuilder<T, P> element(P parent, String name, NonNullFunction<Element.Properties, T> factory) {
-        return entry(name, callback -> ElementBuilder.create(this, parent, name, callback, factory));
-    }
-
-    // Flag Keys
-    public <C extends IMaterialFlag, T extends FlagKey<? extends IMaterialFlag>> FlagKeyBuilder<C, T, RutileRegistrate> flagKey(NonNullFunction<Class<C>, T> factory, Class<C> type) {
-        return flagKey(self(), factory, type);
-    }
-
-    public <C extends IMaterialFlag, T extends FlagKey<? extends IMaterialFlag>> FlagKeyBuilder<C, T, RutileRegistrate> flagKey(String name, NonNullFunction<Class<C>, T> factory, Class<C> type) {
-        return flagKey(self(), name, factory, type);
-    }
-
-    public <C extends IMaterialFlag, T extends FlagKey<? extends IMaterialFlag>, P> FlagKeyBuilder<C, T, P> flagKey(P parent, NonNullFunction<Class<C>, T> factory, Class<C> type) {
-        return flagKey(parent, currentName(), factory, type);
-    }
-
-    public <C extends IMaterialFlag, T extends FlagKey<? extends IMaterialFlag>, P> FlagKeyBuilder<C, T, P> flagKey(P parent, String name, NonNullFunction<Class<C>, T> factory, Class<C> type) {
-        return entry(name, callback -> FlagKeyBuilder.create(this, parent, name, callback, factory, type));
     }
 
     // Materials

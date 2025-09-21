@@ -6,10 +6,7 @@ import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.types.IPartialHolder;
-import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
-import dev.metallurgists.rutile.api.plugin.RutilePluginFinder;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
-import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
 import net.minecraft.resources.ResourceLocation;
 
 public class RutilePartialModels {
@@ -17,9 +14,9 @@ public class RutilePartialModels {
     public static Table<FlagKey<?>, Material, PartialModel> MATERIAL_PARTIALS;
 
     public static void generateMaterialPartials() {
-        for (var flagKey : RutileRegistries.FLAG_KEY_REGISTRY) {
+        for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
             if (flagKey.constructDefault() instanceof IPartialHolder) {
-                for (Material material : RutileRegistries.MATERIAL_REGISTRY) {
+                for (Material material : RutileAPI.materialRegistry) {
                     var flag = material.getFlag(flagKey);
                     if (flag instanceof IPartialHolder partialHolder) {
                         generatePartialModel(partialHolder.getModelLocation(material), flagKey, material);

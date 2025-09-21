@@ -12,7 +12,7 @@ import java.util.List;
 public record MaterialComposition(Material material, List<SubComposition> compositions) {
 
     public static final Codec<MaterialComposition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            RutileRegistries.MATERIAL_REGISTRY.byNameCodec().fieldOf("material").forGetter(MaterialComposition::material),
+            RutileAPI.materialRegistry.byNameCodec().fieldOf("material").forGetter(MaterialComposition::material),
             Codec.list(SubComposition.CODEC).fieldOf("compositions").forGetter(MaterialComposition::compositions)
     ).apply(instance, MaterialComposition::new));
 }

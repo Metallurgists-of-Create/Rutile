@@ -9,15 +9,18 @@ import net.minecraft.resources.ResourceLocation;
 public class FlagKey<T extends IMaterialFlag> {
 
     private final Class<T> type;
+    @Getter
+    private final ResourceLocation id;
 
-    public static final FlagKey<EmptyFlag> EMPTY = create(EmptyFlag.class);
+    public static final FlagKey<EmptyFlag> EMPTY = create("empty", EmptyFlag.class);
 
-    public static <C extends IMaterialFlag> FlagKey<C> create(Class<C> type) {
-        return new FlagKey<>(type);
+    public static <C extends IMaterialFlag> FlagKey<C> create(String name, Class<C> type) {
+        return new FlagKey<>(name, type);
     }
 
-    public FlagKey(Class<T> type) {
+    public FlagKey(String key, Class<T> type) {
         this.type = type;
+        this.id = Rutile.id(key);
     }
 
     public T constructDefault() {
@@ -26,10 +29,6 @@ public class FlagKey<T extends IMaterialFlag> {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    public ResourceLocation getId() {
-        return RutileRegistries.FLAG_KEY_REGISTRY.getKey(this);
     }
 
     public T cast(IMaterialFlag flag) {
@@ -42,7 +41,7 @@ public class FlagKey<T extends IMaterialFlag> {
 
     @Override
     public String toString() {
-        return RutileRegistries.FLAG_KEY_REGISTRY.getKey(this).toString();
+        return getId().toString();
     }
 
     public static class EmptyFlag implements IMaterialFlag {

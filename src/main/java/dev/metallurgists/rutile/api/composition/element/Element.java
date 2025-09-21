@@ -1,52 +1,46 @@
 package dev.metallurgists.rutile.api.composition.element;
 
-import com.tterrag.registrate.AbstractRegistrate;
-import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.IHasDescriptionId;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.metallurgists.rutile.api.registry.CustomRutileRegistries;
 import dev.metallurgists.rutile.registry.RutileRegistries;
-import lombok.Getter;
-import net.minecraft.Util;
+import net.minecraft.core.Holder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.RegistryFileCodec;
 import net.minecraft.resources.ResourceLocation;
 
-@Getter
-public class Element implements IHasDescriptionId {
-    private String descriptionId;
+public record Element(String symbol, int color) {
+    public static final Codec<Element> DIRECT_CODEC = RecordCodecBuilder.create((instance) -> instance.group(
+            Codec.STRING.optionalFieldOf("symbol", "?").forGetter(Element::symbol),
+            Codec.INT.optionalFieldOf("color", 0x818181).forGetter(Element::color)
+    ).apply(instance, Element::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, Element> DIRECT_STREAM_CODEC;
+    public static final Codec<Holder<Element>> CODEC;
+    public static final StreamCodec<RegistryFriendlyByteBuf, Holder<Element>> STREAM_CODEC;
 
-    private final String symbol;
-    private final int color;
-
-    public Element(Properties properties) {
-        this.symbol = properties.symbol;
-        this.color = properties.color;
+    static {
+        DIRECT_STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.STRING_UTF8, Element::symbol,
+                ByteBufCodecs.INT, Element::color,
+                Element::new);
+        CODEC = RegistryFileCodec.create(CustomRutileRegistries.ELEMENT_REGISTRY, DIRECT_CODEC);
+        STREAM_CODEC = ByteBufCodecs.holder(CustomRutileRegistries.ELEMENT_REGISTRY, DIRECT_STREAM_CODEC);
     }
 
-    public String getOrCreateDescriptionId() {
-        if (this.descriptionId == null) {
-            this.descriptionId = Util.makeDescriptionId("element", RutileRegistries.ELEMENT_REGISTRY.getKey(this));
-        }
-
-        return this.descriptionId;
+    public Element(String symbol, int color) {
+        this.symbol = symbol;
+        this.color = color;
     }
 
     public ResourceLocation getId() {
-        return RutileRegistries.ELEMENT_REGISTRY.getKey(this);
+        return CustomRutileRegistries.ELEMENTS.getKey(this);
     }
 
-    public static class Properties {
-        private String symbol = "?";
-        private int color = 0x818181; // Default color
-
-        public Properties() {
-        }
-
-        public Properties symbol(String symbol) {
-            this.symbol = symbol;
-            return this;
-        }
-
-        public Properties color(int color) {
-            this.color = color;
-            return this;
-        }
+    public Component getDisplayName() {
+        String key = getId().toLanguageKey("element");
+        return Component.translatable(key);
     }
 }

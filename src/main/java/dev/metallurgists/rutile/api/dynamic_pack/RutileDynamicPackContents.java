@@ -46,7 +46,7 @@ public class RutileDynamicPackContents {
         void outputResources(String namespace, String path, PackResources.ResourceOutput output) {
             if (isTerminalNode()) {
                 // This is a terminal node.
-                ResourceLocation location = new ResourceLocation(namespace, path);
+                ResourceLocation location = ResourceLocation.fromNamespaceAndPath(namespace, path);
                 output.accept(location, this.createIoSupplier());
             } else {
                 for (var entry : getChildren().entrySet()) {
@@ -56,6 +56,7 @@ public class RutileDynamicPackContents {
         }
 
         @SuppressWarnings("unchecked")
+        @Nullable
         IoSupplier<InputStream> createIoSupplier() {
             if (!isTerminalNode()) {
                 throw new IllegalStateException("Node has no data");
@@ -106,7 +107,7 @@ public class RutileDynamicPackContents {
         }
     }
 
-    public IoSupplier<InputStream> getResource(ResourceLocation location) {
+    public @Nullable IoSupplier<InputStream> getResource(ResourceLocation location) {
         var lock = this.lock.readLock();
         lock.lock();
         try {

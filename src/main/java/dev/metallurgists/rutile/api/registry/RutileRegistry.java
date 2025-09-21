@@ -11,8 +11,8 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModLoadingContext;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModLoadingContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -232,7 +232,7 @@ public abstract class RutileRegistry<K, V> implements Iterable<V> {
         @Override
         public V readBuf(FriendlyByteBuf buf) {
             if (buf.readBoolean()) {
-                return get(new ResourceLocation(buf.readUtf()));
+                return get(ResourceLocation.parse(buf.readUtf()));
             }
             return null;
         }
@@ -247,7 +247,7 @@ public abstract class RutileRegistry<K, V> implements Iterable<V> {
 
         @Override
         public V loadFromNBT(Tag tag) {
-            return get(new ResourceLocation(tag.getAsString()));
+            return get(ResourceLocation.parse(tag.getAsString()));
         }
 
         @Override

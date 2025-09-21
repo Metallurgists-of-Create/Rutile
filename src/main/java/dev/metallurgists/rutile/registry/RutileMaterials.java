@@ -1,89 +1,86 @@
 package dev.metallurgists.rutile.registry;
 
-import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.base.Material;
-import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
-import dev.metallurgists.rutile.api.registrate.builder.MaterialEntry;
+import dev.metallurgists.rutile.api.material.registry.fluid.FluidFlagProperties;
+import dev.metallurgists.rutile.api.registrate.builder.MaterialBuilder;
 import dev.metallurgists.rutile.registry.flags.*;
+import dev.metallurgists.rutile.registry.flags.fluid.MoltenFlag;
 
 public class RutileMaterials {
-
-    private static final RutileRegistrate registrate = Rutile.registrate();
-
 
     public static void init() {
 
     }
 
-    public static MaterialEntry<Material> Null = registrate.material("null", Material::new)
-            .element(RutileElements.NULL)
+    public static Material Null = MaterialBuilder.create("null", Material::new)
+            .element("null")
             .meltingPoint(9999.0)
+            .fluidProperty(FluidFlagProperties.b(RutileFlagKeys.MOLTEN).temperature(9999.0))
             .addFlags(
                     new IngotFlag(),
                     new NuggetFlag(),
                     new DustFlag(),
                     new StorageBlockFlag(),
-                    new GemFlag()
-            ).register();
+                    new GemFlag(),
+                    new MoltenFlag()
+            ).createAndRegister();
 
     // Minecraft Materials
-    public static MaterialEntry<Material> Iron = registrate.material("iron", Material::new)
-            .element(RutileElements.IRON)
+    public static Material Iron = MaterialBuilder.create("iron", Material::new)
+            .element("iron")
             .meltingPoint(1538.0)
             .addFlags(
                     new IngotFlag("minecraft"),
                     new NuggetFlag("minecraft"),
                     new StorageBlockFlag("minecraft")
-            ).register();
+            ).createAndRegister();
 
-
-
-    public static MaterialEntry<Material> Copper = registrate.material("copper", Material::new)
-            .element(RutileElements.COPPER)
+    public static Material Copper = MaterialBuilder.create("copper", Material::new)
+            .element("copper")
             .meltingPoint(1084.6)
             .addFlags(
                     new IngotFlag("minecraft"),
                     new StorageBlockFlag("minecraft")
-            ).register();
+            ).createAndRegister();
 
-    public static MaterialEntry<Material> Gold = registrate.material("gold", Material::new)
-            .element(RutileElements.GOLD)
+    public static Material Gold = MaterialBuilder.create("gold", Material::new)
+            .element("gold")
             .meltingPoint(1064.2)
             .addFlags(
                     new IngotFlag("minecraft"),
                     new NuggetFlag("minecraft"),
                     new StorageBlockFlag("minecraft")
-            ).register();
+            ).createAndRegister();
 
-    public static MaterialEntry<Material> Diamond = registrate.material("diamond", Material::new)
-            .element(RutileElements.CARBON)
+    public static Material Diamond = MaterialBuilder.create("diamond", Material::new)
+            .element("carbon")
             .existingIds(RutileFlagKeys.GEM, "minecraft:diamond")
             .addFlags(
                     new GemFlag("minecraft"),
                     new StorageBlockFlag("minecraft")
-            ).register();
+            ).createAndRegister();
 
-    public static MaterialEntry<Material> Emerald = registrate.material("emerald", Material::new)
-            .composition(RutileElements.BERYLLIUM, 3, RutileElements.ALUMINUM, 2, RutileElements.SILICON, 6, RutileElements.OXYGEN, 18)
+    public static Material Emerald = MaterialBuilder.create("emerald", Material::new)
+            .composition("3 beryllium", "2 aluminum", "6 silicon", "18 oxygen")
             .existingIds(RutileFlagKeys.GEM, "minecraft:emerald")
             .addFlags(
                     new GemFlag("minecraft"),
                     new StorageBlockFlag("minecraft")
-            ).register();
+            ).createAndRegister();
 
-    public static MaterialEntry<Material> Quartz = registrate.material("quartz", Material::new)
-            .composition(RutileElements.SILICON, 1, RutileElements.OXYGEN, 2)
+    public static Material Quartz = MaterialBuilder.create("quartz", Material::new)
+            .composition("1 silicon", "2 oxygen")
             .existingIds(RutileFlagKeys.GEM, "minecraft:quartz")
             .addFlags(
                     new GemFlag("minecraft").small(),
                     new StorageBlockFlag("minecraft")
-            ).register();
+            ).createAndRegister();
 
-    public static MaterialEntry<Material> Amethyst = registrate.material("amethyst", Material::new)
-            .composition(RutileElements.SILICON, 1, RutileElements.OXYGEN, 2, RutileElements.IRON, 1)
+    public static Material Amethyst = MaterialBuilder.create("amethyst", Material::new)
+            .composition("1 silicon", "2 oxygen", "1 iron")
             .existingIds(RutileFlagKeys.GEM, "minecraft:amethyst_shard")
             .addFlags(
                     new GemFlag("minecraft").small(),
                     new StorageBlockFlag("minecraft")
-            ).register();
+            ).createAndRegister();
 }

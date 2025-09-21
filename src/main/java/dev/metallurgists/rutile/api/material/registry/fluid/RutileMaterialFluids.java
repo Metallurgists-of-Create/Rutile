@@ -10,7 +10,6 @@ import dev.metallurgists.rutile.api.material.flag.types.IFluidRegistry;
 import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
 import dev.metallurgists.rutile.api.plugin.RutilePluginFinder;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
-import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
 import dev.metallurgists.rutile.registry.RutileRegistries;
 
 public class RutileMaterialFluids {
@@ -19,11 +18,11 @@ public class RutileMaterialFluids {
     public static Table<FlagKey<?>, Material, FluidEntry<? extends IMaterialFluid>> MATERIAL_FLUIDS;
 
     public static void generateMaterialFluids() {
-        for (var flagKey : RutileRegistries.FLAG_KEY_REGISTRY) {
+        for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
             if (flagKey.constructDefault() instanceof IFluidRegistry) {
                 for (IRutilePlugin plugin : RutilePluginFinder.getModPlugins()) {
                     AbstractRegistrate<?> registrate = plugin.getRegistrate();
-                    for (Material material : RutileRegistries.MATERIAL_REGISTRY) {
+                    for (Material material : RutileAPI.materialRegistry) {
                         var flag = material.getFlag(flagKey);
                         if (material.noRegister(flagKey)) continue;
                         if (flag instanceof IFluidRegistry fluidRegistry) {

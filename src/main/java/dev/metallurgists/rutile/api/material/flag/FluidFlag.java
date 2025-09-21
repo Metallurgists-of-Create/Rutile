@@ -22,5 +22,7 @@ public abstract class FluidFlag implements IMaterialFlag, IFluidRegistry {
         this.existingNamespace = existingNamespace;
     }
 
+    public abstract FlagKey<? extends IFluidRegistry> getKey();
+
     public abstract FluidEntry<? extends IMaterialFluid> registerFluid(@NotNull Material material, IFluidRegistry flag, @NotNull AbstractRegistrate<?> registrate);
 }

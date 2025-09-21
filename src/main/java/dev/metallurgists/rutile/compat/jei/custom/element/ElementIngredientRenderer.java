@@ -2,10 +2,7 @@ package dev.metallurgists.rutile.compat.jei.custom.element;
 
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.*;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.registry.RutileElements;
@@ -67,7 +64,7 @@ public class ElementIngredientRenderer implements IIngredientRenderer<Element> {
 
     private void drawFluid(GuiGraphics guiGraphics, final int width, final int height, Element element, int posX, int posY) {
         getStillFluidSprite().ifPresent(fluidStillSprite -> {
-                    int fluidColor = new Color(element.getColor(), true).getRGB();
+                    int fluidColor = new Color(element.color(), true).getRGB();
                     long amount = 1000;
                     long scaledAmount = (amount * height) / 1000;
                     if (amount > 0 && scaledAmount < 1) {
@@ -135,14 +132,13 @@ public class ElementIngredientRenderer implements IIngredientRenderer<Element> {
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferBuilder.vertex(matrix, xCoord, yCoord + 16, zLevel).uv(uMin, vMax).endVertex();
-        bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).uv(uMax, vMax).endVertex();
-        bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).uv(uMax, vMin).endVertex();
-        bufferBuilder.vertex(matrix, xCoord, yCoord + maskTop, zLevel).uv(uMin, vMin).endVertex();
-        tessellator.end();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferBuilder.addVertex(matrix, xCoord, yCoord + 16, zLevel).setUv(uMin, vMax);
+        bufferBuilder.addVertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).setUv(uMax, vMax);
+        bufferBuilder.addVertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).setUv(uMax, vMin);
+        bufferBuilder.addVertex(matrix, xCoord, yCoord + maskTop, zLevel).setUv(uMin, vMin);
+        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
     }
 
     @Override
@@ -150,7 +146,7 @@ public class ElementIngredientRenderer implements IIngredientRenderer<Element> {
         List<Component> tooltip = new ArrayList<>();
         tooltip.add(element.getDisplayName());
         if (flag.isAdvanced()) {
-            tooltip.add((Component.literal(element.getKey().toString())).withStyle(ChatFormatting.DARK_GRAY));
+            tooltip.add((Component.literal(element.getId().toString())).withStyle(ChatFormatting.DARK_GRAY));
         }
         return tooltip;
     }

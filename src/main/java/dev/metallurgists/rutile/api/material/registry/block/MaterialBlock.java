@@ -1,6 +1,7 @@
 package dev.metallurgists.rutile.api.material.registry.block;
 
 import dev.metallurgists.rutile.api.material.base.Material;
+import dev.metallurgists.rutile.api.material.base.MaterialLike;
 import dev.metallurgists.rutile.api.material.flag.types.IBlockRegistry;
 import dev.metallurgists.rutile.client.MaterialBlockRenderer;
 import dev.metallurgists.rutile.util.ClientUtil;
@@ -16,9 +17,9 @@ public class MaterialBlock extends Block implements IMaterialBlock {
 
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.AXIS;
 
-    public MaterialBlock(Properties properties, Material material, IBlockRegistry blockFlag, boolean registerModel) {
+    public MaterialBlock(Properties properties, MaterialLike material, IBlockRegistry blockFlag, boolean registerModel) {
         super(properties);
-        this.material = material;
+        this.material = material.asMaterial();
         this.blockFlag = blockFlag;
         if (registerModel && ClientUtil.isClientSide()) {
             MaterialBlockRenderer.create(this, material, blockFlag.getKey());

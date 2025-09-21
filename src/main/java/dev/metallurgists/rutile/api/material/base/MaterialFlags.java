@@ -4,8 +4,11 @@ import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.IMaterialFlag;
 import dev.metallurgists.rutile.api.material.flag.types.IFluidRegistry;
 import dev.metallurgists.rutile.api.material.registry.fluid.FluidFlagProperties;
+import dev.metallurgists.rutile.util.helpers.MaterialHelpers;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.*;
 
@@ -102,12 +105,13 @@ public class MaterialFlags {
         }
     }
 
-    public void addFluidProperties(FluidFlagProperties properties) {
+    public MaterialFlags addFluidProperties(FluidFlagProperties properties) {
         FlagKey<? extends IFluidRegistry> flag = properties.getFlagKey();
         if (fluidFlagProperties.containsKey(flag)) {
             throw new IllegalArgumentException("Fluid Flag " + flag.toString() + " already registered!");
         }
         fluidFlagProperties.put(flag, properties);
+        return this;
     }
 
     public FluidFlagProperties getPropertiesFor(FlagKey<?> flagKey) {

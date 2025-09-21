@@ -1,6 +1,7 @@
 package dev.metallurgists.rutile.api.material.base;
 
 import dev.metallurgists.rutile.Rutile;
+import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.registry.RutileMaterials;
 import dev.metallurgists.rutile.registry.RutileRegistries;
 import dev.metallurgists.rutile.util.ClientUtil;
@@ -12,7 +13,7 @@ import java.util.WeakHashMap;
 
 public record MaterialStack(@NotNull Material material, long amount) {
 
-    public static final MaterialStack EMPTY = new MaterialStack(RutileMaterials.Null.get(), 0);
+    public static final MaterialStack EMPTY = new MaterialStack(RutileMaterials.Null, 0);
 
     private static final Map<String, MaterialStack> PARSE_CACHE = new WeakHashMap<>();
 
@@ -52,14 +53,14 @@ public record MaterialStack(@NotNull Material material, long amount) {
         }
 
         ResourceLocation key = Rutile.id(copy);
-        Material mat = RutileRegistries.MATERIAL_REGISTRY.getOptional(key).orElse(RutileMaterials.Null.get());
+        Material mat = RutileAPI.materialRegistry.getOptional(key).orElse(RutileMaterials.Null);
         cached = new MaterialStack(mat, count);
         PARSE_CACHE.put(trimmed, cached);
         return cached;
     }
 
     public boolean isEmpty() {
-        return this.material == RutileMaterials.Null.get() || this.amount < 1;
+        return this.material == RutileMaterials.Null || this.amount < 1;
     }
 
     @Override

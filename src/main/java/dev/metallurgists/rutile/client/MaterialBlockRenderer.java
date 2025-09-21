@@ -1,6 +1,7 @@
 package dev.metallurgists.rutile.client;
 
 import dev.metallurgists.rutile.api.material.base.Material;
+import dev.metallurgists.rutile.api.material.base.MaterialLike;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
 import dev.metallurgists.rutile.api.material.flag.types.IBlockRegistry;
 import net.minecraft.world.level.block.Block;
@@ -11,8 +12,8 @@ import java.util.Set;
 public class MaterialBlockRenderer {
     private static final Set<MaterialBlockRenderer> MODELS = new HashSet<>();
 
-    public static void create(Block block, Material material, FlagKey<?> flagKey) {
-        MODELS.add(new MaterialBlockRenderer(block, material, flagKey));
+    public static void create(Block block, MaterialLike material, FlagKey<?> flagKey) {
+        MODELS.add(new MaterialBlockRenderer(block, material.asMaterial(), flagKey));
     }
 
     public static void reinitModels() {

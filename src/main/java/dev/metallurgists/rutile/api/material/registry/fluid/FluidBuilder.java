@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.util.OneTimeEventReceiver;
+import com.tterrag.registrate.util.entry.FluidEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.flag.FlagKey;
@@ -23,14 +24,12 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.SoundActions;
-import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.function.Supplier;
 
 @Accessors(fluent = true, chain = true)
@@ -165,8 +164,8 @@ public class FluidBuilder {
     }
 
     @SuppressWarnings("UnstableApiUsage")
-    public @NotNull Supplier<? extends Fluid> build(Material material, @NotNull FlagKey<? extends IFluidRegistry> key,
-                                                    RutileRegistrate registrate) {
+    public @NotNull FluidEntry<? extends IMaterialFluid> build(Material material, @NotNull FlagKey<? extends IFluidRegistry> key,
+                                                               AbstractRegistrate<?> owner) {
         determineName(material, key);
         determineTextures(material, key);
 
@@ -184,8 +183,8 @@ public class FluidBuilder {
 
         final String langKey = this.translation != null ? this.translation : fluidRegistry.getUnlocalizedName(material);
         // noinspection DataFlowIssue
-        var builder = registrate.fluid(this.name, this.still, this.flowing,
-                        (p, $1, $2) -> makeFluidType(registrate, p, material, key, langKey),
+        var builder = owner.fluid(this.name, this.still, this.flowing,
+                        (p, $1, $2) -> makeFluidType(owner, p, material, key, langKey),
                         (p) -> new MaterialFluid.Flowing(p, material, fluidRegistry))
                 .source((p) -> new MaterialFluid.Source(p, material, fluidRegistry))
                 .setData(ProviderType.LANG, NonNullBiConsumer.noop());
@@ -213,7 +212,7 @@ public class FluidBuilder {
             // noinspection DataFlowIssue
             builder.noBucket().fluidProperties(p -> p.bucket(null));
         }
-        return builder.register()::getSource;
+        return builder.register();
     }
 
     private void determineName(@NotNull Material material, @Nullable FlagKey<? extends IFluidRegistry> key) {
