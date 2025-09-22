@@ -3,9 +3,7 @@ package dev.metallurgists.rutile;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
 import dev.metallurgists.rutile.api.plugin.RutilePlugin;
-import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
-import dev.metallurgists.rutile.api.registrate.builder.MaterialEntry;
-import dev.metallurgists.rutile.registry.RutileElements;
+import dev.metallurgists.rutile.api.registrate.builder.MaterialBuilder;
 import dev.metallurgists.rutile.registry.flags.IngotFlag;
 
 @RutilePlugin
@@ -22,16 +20,15 @@ public class DefaultRutilePlugin implements IRutilePlugin {
     }
 
     static class TestMaterials {
-        private static final RutileRegistrate registrate = Rutile.registrate();
 
-        public static MaterialEntry<Material> Dirt;
+        public static Material Dirt;
 
         public static void register() {
-            Dirt = registrate.material("dirt", Material::new)
+            Dirt = MaterialBuilder.create("dirt", Material::new)
                     .composition("3 americium", "19 bismuth")
                     .addFlags(
                             new IngotFlag()
-                    ).register();
+                    ).createAndRegister();
         }
 
     }

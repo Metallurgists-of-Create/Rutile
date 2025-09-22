@@ -7,28 +7,25 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.api.registry.CustomRutileRegistries;
-import dev.metallurgists.rutile.registry.RutileRegistries;
 import dev.metallurgists.rutile.util.ClientUtil;
 import lombok.Getter;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public record ElementData(@Getter ResourceKey<Element> element, @Getter int amount) {
+public record ElementData(@Getter Element element, @Getter int amount) {
     public static final Codec<ElementData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ResourceKey.codec(CustomRutileRegistries.ELEMENT_REGISTRY).fieldOf("element").forGetter(ElementData::getElement),
+            CustomRutileRegistries.ELEMENTS.byNameCodec().fieldOf("element").forGetter(ElementData::getElement),
             Codec.INT.optionalFieldOf("amount", 1).forGetter(ElementData::getAmount)
     ).apply(instance, ElementData::new));
 
-    public static ElementData create(ResourceKey<Element> element) {
+    public static ElementData create(Element element) {
         return new ElementData(element, 1);
     }
 
-    public static ElementData create(ResourceKey<Element> element, int amount) {
+    public static ElementData create(Element element, int amount) {
         return new ElementData(element, amount);
     }
 
@@ -39,7 +36,7 @@ public record ElementData(@Getter ResourceKey<Element> element, @Getter int amou
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
         json.addProperty("amount", getAmount());
-        JsonElement elementKey = ResourceKey.codec(CustomRutileRegistries.ELEMENT_REGISTRY).encodeStart(JsonOps.INSTANCE, getElement()).getOrThrow();
+        JsonElement elementKey = CustomRutileRegistries.ELEMENTS.byNameCodec().encodeStart(JsonOps.INSTANCE, getElement()).getOrThrow();
         json.add("element", elementKey);
         return json;
     }
@@ -60,21 +57,20 @@ public record ElementData(@Getter ResourceKey<Element> element, @Getter int amou
         return subCompositions;
     }
 
-    public String getDisplay(HolderLookup.Provider registries) {
-        var lookup = registries.lookupOrThrow(CustomRutileRegistries.ELEMENT_REGISTRY);
-        StringBuilder display = new StringBuilder(lookup.get(element).orElseThrow().value().symbol());
+    public String getDisplay() {
+        StringBuilder display = new StringBuilder(element().symbol());
         if (amount > 1)
             display.append(amount);
         return ClientUtil.toSmallDownNumbers(display.toString());
     }
 
     public void writeToPacket(FriendlyByteBuf buf) {
-        buf.writeResourceLocation(element.location());
+        buf.writeResourceKey(CustomRutileRegistries.ELEMENTS.getResourceKey(element).orElseThrow());
         buf.writeInt(amount);
     }
 
     public static ElementData fromNetwork(FriendlyByteBuf buf) {
-        ResourceKey<Element> element = ResourceKey.create(CustomRutileRegistries.ELEMENT_REGISTRY, buf.readResourceLocation());
+        Element element = CustomRutileRegistries.ELEMENTS.get(buf.readResourceKey(CustomRutileRegistries.ELEMENT_REGISTRY));
         int amount = buf.readInt();
         return new ElementData(element, amount);
     }

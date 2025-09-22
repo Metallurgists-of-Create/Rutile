@@ -13,7 +13,10 @@ import dev.metallurgists.rutile.api.dynamic_pack.RutilePackSource;
 import dev.metallurgists.rutile.api.dynamic_pack.asset.RutileDynamicResourcePack;
 import dev.metallurgists.rutile.api.dynamic_pack.data.RutileDynamicDataPack;
 import dev.metallurgists.rutile.api.material.base.Material;
+import dev.metallurgists.rutile.api.material.events.PostMaterialEvent;
+import dev.metallurgists.rutile.api.material.registry.block.MaterialBlockItem;
 import dev.metallurgists.rutile.api.material.registry.block.RutileMaterialBlocks;
+import dev.metallurgists.rutile.api.material.registry.fluid.MaterialBucketItem;
 import dev.metallurgists.rutile.api.material.registry.fluid.RutileMaterialFluids;
 import dev.metallurgists.rutile.api.material.registry.item.RutileMaterialItems;
 import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
@@ -22,26 +25,34 @@ import dev.metallurgists.rutile.api.registrate.MaterialLangGenerator;
 import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 import dev.metallurgists.rutile.api.registry.CustomRutileRegistries;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
+import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.mixin.registrate.AbstractRegistrateAccessor;
 import dev.metallurgists.rutile.registry.*;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.ModifyRegistriesEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -70,7 +81,8 @@ public class CommonInit {
             return;
         }
         didRunRegistration = true;
-        RutileMaterials.init();
+        RutileElements.init();
+        initMaterials();
         RutileFlagKeys.init();
 
         RutileBlocks.register();
@@ -79,11 +91,18 @@ public class CommonInit {
         RutileItems.register();
     }
 
+    @ApiStatus.Internal
+    public static void initMaterials() {
+        Rutile.LOGGER.info("Registering Rutile Materials");
+        RutileMaterials.init();
+        RutileAPI.materialRegistry.setFallbackMaterial(Rutile.ID, RutileMaterials.Null);
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onRegisterEarly(RegisterEvent event) {
         if (event.getRegistryKey() == CustomRutileRegistries.MATERIAL_REGISTRY) {
-            Rutile.LOGGER.debug("Registered {} materials", event.getRegistry().stream().count());
-            RutilePluginFinder.getModPlugins().forEach(IRutilePlugin::modifyMaterials);
+            CustomRutileRegistries.MATERIALS.close();
+            ModLoader.postEventWrapContainerInModOrder(new PostMaterialEvent());
         } else if (event.getRegistryKey() == Registries.FLUID) {
             // Material fluids
             RutileMaterialFluids.generateMaterialFluids();
@@ -98,7 +117,7 @@ public class CommonInit {
 
     private static void postInitMaterials() {
         // Register all material manager registries, for materials with mod ids.
-        RutilePluginFinder.getModPlugins().stream().map(IRutilePlugin::getPluginNamespace).forEach(namespace -> {
+        RutileAPI.materialRegistry.getUsedNamespaces().forEach(namespace -> {
             // Force the material lang generator to be at index 0, so that addons' lang generators can override it.
             RutileRegistrate registrate = RutileRegistrate.createIgnoringListenerErrors(namespace);
             AbstractRegistrateAccessor accessor = (AbstractRegistrateAccessor) registrate;
@@ -122,7 +141,7 @@ public class CommonInit {
     }
 
     @SubscribeEvent
-    public void newDatapackRegistry(DataPackRegistryEvent.NewRegistry event) {
+    public static void newDatapackRegistry(DataPackRegistryEvent.NewRegistry event) {
         event.dataPackRegistry(CustomRutileRegistries.ITEM_COMPOSITION_REGISTRY, ItemComposition.CODEC, ItemComposition.CODEC);
         event.dataPackRegistry(CustomRutileRegistries.MATERIAL_COMPOSITION_REGISTRY, MaterialComposition.CODEC, MaterialComposition.CODEC);
     }
@@ -135,6 +154,16 @@ public class CommonInit {
 
     @SubscribeEvent
     public static void loadComplete(FMLLoadCompleteEvent event) {}
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        for (Item item : BuiltInRegistries.ITEM) {
+            if (item instanceof MaterialBucketItem) {
+                event.registerItem(Capabilities.FluidHandler.ITEM,
+                        (stack, ctx) -> new FluidBucketWrapper(stack), item);
+            }
+        }
+    }
 
     @SubscribeEvent
     public static void addPackFinders(AddPackFindersEvent event) {

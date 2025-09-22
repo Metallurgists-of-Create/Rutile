@@ -3,16 +3,8 @@ package dev.metallurgists.rutile.registry;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.api.registry.CustomRutileRegistries;
-import dev.metallurgists.rutile.api.registry.RutileRegistries;
-import net.minecraft.data.worldgen.BootstrapContext;
-import net.minecraft.resources.ResourceKey;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class RutileElements {
-
-    private static final Map<ResourceKey<Element>, Element> toRegister = new HashMap<>();
 
     public static final Element NULL             =  createAndRegister("null", "?", 0xffbf4cd2);
     public static final Element HYDROGEN         =  createAndRegister("hydrogen", "H", 0xff9175dc);

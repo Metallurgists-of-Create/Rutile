@@ -4,6 +4,7 @@ import com.mojang.serialization.Lifecycle;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.registry.RutileMaterials;
+import dev.metallurgists.rutile.util.IMappedRegistryAccess;
 import net.minecraft.core.Holder;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.RegistrationInfo;
@@ -15,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class MaterialRegistry extends MappedRegistry<Material> {
+public class MaterialRegistry extends MappedRegistry<Material> implements IMappedRegistryAccess<Material> {
 
     private final Set<String> usedNamespaces = new HashSet<>();
     private final Map<String, Material> fallbackMaterials = new HashMap<>();

@@ -91,7 +91,7 @@ public class MaterialBuilder<T extends Material> {
             String element = split[1];
             if (element.isEmpty()) throw new IllegalArgumentException("Element is invalid or empty");
             ResourceKey<Element> elementKey = ResourceKey.create(CustomRutileRegistries.ELEMENT_REGISTRY, Rutile.id(element));
-            ElementData elementData = new ElementData(elementKey, amount);
+            ElementData elementData = new ElementData(CustomRutileRegistries.ELEMENTS.get(elementKey), amount);
             elementDataList.add(elementData);
         }
         ElementData.createFromList(elementDataList).forEach(e -> infoCallback.andThen(i -> i.composition().add(e)));

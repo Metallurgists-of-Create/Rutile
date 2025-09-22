@@ -94,21 +94,4 @@ public class RutileRegistrate extends AbstractRegistrate<RutileRegistrate> {
         }
         return this;
     }
-
-    // Materials
-    public <T extends Material> MaterialBuilder<T, RutileRegistrate> material(NonNullBiFunction<Material.MaterialInfo, MaterialFlags, T> factory) {
-        return material(self(), factory);
-    }
-
-    public <T extends Material> MaterialBuilder<T, RutileRegistrate> material(String name, NonNullBiFunction<Material.MaterialInfo, MaterialFlags, T> factory) {
-        return material(self(), name, factory);
-    }
-
-    public <T extends Material, P> MaterialBuilder<T, P> material(P parent, NonNullBiFunction<Material.MaterialInfo, MaterialFlags, T> factory) {
-        return material(parent, currentName(), factory);
-    }
-
-    public <T extends Material, P> MaterialBuilder<T, P> material(P parent, String name, NonNullBiFunction<Material.MaterialInfo, MaterialFlags, T> factory) {
-        return entry(name, callback -> MaterialBuilder.create(this, parent, name, callback, factory));
-    }
 }

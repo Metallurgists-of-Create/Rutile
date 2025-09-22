@@ -4,7 +4,6 @@ import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.registry.CustomRutileRegistries;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.config.RutileConfig;
-import dev.metallurgists.rutile.registry.RutileRegistries;
 import dev.metallurgists.rutile.util.ClientUtil;
 import dev.metallurgists.rutile.util.helpers.MaterialHelpers;
 import net.createmod.catnip.lang.LangBuilder;
@@ -68,11 +67,11 @@ public class CompositionTooltipHandler {
                 subComp.add(Component.literal("("));
                 for (int j = 0; j < elementsSize; j++) {
                     if (subComposition.getElements().get(j) == null) continue;
-                    subComp.add(Component.literal(subComposition.getElement(j).getDisplay(registries)));
+                    subComp.add(Component.literal(subComposition.getElement(j).getDisplay()));
                 }
                 subComp.add(Component.literal(")"));
             } else {
-                subComp.add(Component.literal(subComposition.getElement(0).getDisplay(registries)));
+                subComp.add(Component.literal(subComposition.getElement(0).getDisplay()));
             }
             compositionName.add(subComp);
         }
