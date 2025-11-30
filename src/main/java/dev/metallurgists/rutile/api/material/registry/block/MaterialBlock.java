@@ -2,7 +2,7 @@ package dev.metallurgists.rutile.api.material.registry.block;
 
 import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.base.MaterialLike;
-import dev.metallurgists.rutile.api.material.flag.types.IBlockRegistry;
+import dev.metallurgists.rutile.api.material.builder.MaterialBlockBuilder;
 import dev.metallurgists.rutile.client.MaterialBlockRenderer;
 import dev.metallurgists.rutile.util.ClientUtil;
 import net.minecraft.core.Direction;
@@ -13,31 +13,31 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 public class MaterialBlock extends Block implements IMaterialBlock {
     public final Material material;
-    public final IBlockRegistry blockFlag;
+    public final MaterialBlockBuilder blockBuilder;
 
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.AXIS;
 
-    public MaterialBlock(Properties properties, MaterialLike material, IBlockRegistry blockFlag, boolean registerModel) {
+    public MaterialBlock(Properties properties, MaterialLike material, MaterialBlockBuilder blockBuilder, boolean registerModel) {
         super(properties);
         this.material = material.asMaterial();
-        this.blockFlag = blockFlag;
+        this.blockBuilder = blockBuilder;
         if (registerModel && ClientUtil.isClientSide()) {
-            MaterialBlockRenderer.create(this, material, blockFlag.getKey());
+            MaterialBlockRenderer.create(this, material, blockBuilder.getFlagSource());
         }
     }
 
     @Override
     public String getDescriptionId() {
-        return blockFlag.getUnlocalizedName(material);
+        return blockBuilder.getFlagSource().getUnlocalizedName(material, blockBuilder.nameFormat());
     }
 
     @Override
     public MutableComponent getName() {
-        return blockFlag.getLocalizedName(material);
+        return blockBuilder.getFlagSource().getLocalizedName(material, blockBuilder.nameFormat());
     }
 
-    public MaterialBlock(Properties properties, Material material, IBlockRegistry blockFlag) {
-        this(properties, material, blockFlag, true);
+    public MaterialBlock(Properties properties, Material material, MaterialBlockBuilder blockBuilder) {
+        this(properties, material, blockBuilder, true);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class MaterialBlock extends Block implements IMaterialBlock {
     }
 
     @Override
-    public IBlockRegistry getFlag() {
-        return this.blockFlag;
+    public MaterialBlockBuilder getBuilder() {
+        return this.blockBuilder;
     }
 }

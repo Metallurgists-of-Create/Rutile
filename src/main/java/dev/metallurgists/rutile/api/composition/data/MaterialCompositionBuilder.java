@@ -48,7 +48,7 @@ public class MaterialCompositionBuilder {
 
         @Override
         public void serializeData(JsonObject json) {
-            json.addProperty("material", material.getId().toString());
+            json.addProperty("id", material.getId().toString());
             JsonArray compositionsArray = new JsonArray();
             for (SubComposition subComposition : subCompositions) {
                 compositionsArray.add(subComposition.toJson());

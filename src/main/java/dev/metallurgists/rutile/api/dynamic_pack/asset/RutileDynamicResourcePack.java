@@ -5,9 +5,7 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.dynamic_pack.RutileDynamicPackContents;
-import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
-import dev.metallurgists.rutile.api.plugin.RutilePluginFinder;
-import dev.metallurgists.rutile.config.RutileConfig;
+import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.SharedConstants;
@@ -36,8 +34,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -59,7 +55,7 @@ public class RutileDynamicResourcePack implements PackResources {
     }
 
     public RutileDynamicResourcePack(PackLocationInfo info) {
-        this(info, RutilePluginFinder.getModPlugins().stream().map(IRutilePlugin::getPluginNamespace).collect(Collectors.toSet()));
+        this(info, PluginRegistry.getInstance().map((pl, cf) -> cf.getModId()).collect(Collectors.toSet()));
     }
 
     public RutileDynamicResourcePack(PackLocationInfo info, Collection<String> domains) {

@@ -3,11 +3,11 @@ package dev.metallurgists.rutile.util.helpers;
 import com.google.gson.JsonObject;
 import dev.metallurgists.rutile.api.dynamic_pack.asset.RutileDynamicResourcePack;
 import dev.metallurgists.rutile.api.material.base.Material;
-import dev.metallurgists.rutile.api.material.flag.FlagKey;
-import dev.metallurgists.rutile.api.material.flag.types.IItemRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+
+import java.util.List;
 
 public class ModelHelpers {
 
@@ -74,13 +74,26 @@ public class ModelHelpers {
         return blockstate;
     }
 
-    public static void generatedItemModel(Material material, FlagKey<? extends IItemRegistry> itemRegistry) {
+    //These will never overlap. I know this because they're mine
+    public static List<String> defaultFlagSources = List.of("rutile", "metallurgica");
+
+    public static void generatedItemModel(Material material, ResourceLocation builderName, String nameFormat) {
         ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
         String namespace = material.getNamespace();
-        var flag = material.getFlag(itemRegistry);
-        String flagName = itemRegistry.getId().getPath();
+        String flagName = (defaultFlagSources.contains(builderName.getNamespace()) ? "" : builderName.getNamespace() + "_") + builderName.getPath();
         boolean texturePresent = resourceManager.getResource(ResourceLocation.fromNamespaceAndPath(namespace, "textures/item/materials/" + material.getName() + "/" + flagName + ".png")).isPresent();
         String texture = texturePresent ? material.getNamespace() + ":item/materials/" + material.getName() + "/" + flagName : "rutile:item/materials/null/" + flagName;
-        RutileDynamicResourcePack.addItemModel(ResourceLocation.fromNamespaceAndPath(material.getNamespace(), flag.getIdPattern().formatted(material.getName())), ModelHelpers.simpleGeneratedModel("minecraft:item/generated", texture));
+        RutileDynamicResourcePack.addItemModel(ResourceLocation.fromNamespaceAndPath(material.getNamespace(), nameFormat.formatted(material.getName())), ModelHelpers.simpleGeneratedModel("minecraft:item/generated", texture));
+    }
+
+    public static void cubeAllBlockModel(Material material, ResourceLocation builderName, String nameFormat) {
+        ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
+        String namespace = material.getNamespace();
+        String flagName = (defaultFlagSources.contains(builderName.getNamespace()) ? "" : builderName.getNamespace() + "_") + builderName.getPath();
+        boolean texturePresent = resourceManager.getResource(ResourceLocation.fromNamespaceAndPath(namespace, "textures/block/materials/" + material.getName() + "/" + flagName + ".png")).isPresent();
+        String texture = texturePresent ? material.getNamespace() + ":block/materials/" + material.getName() + "/" + flagName : "metallurgica:block/materials/null/" + flagName;
+        RutileDynamicResourcePack.addBlockModel(ResourceLocation.fromNamespaceAndPath(namespace, nameFormat.formatted(material.getName())), ModelHelpers.simpleCubeAll(texture));
+        RutileDynamicResourcePack.addBlockState(ResourceLocation.fromNamespaceAndPath(namespace, nameFormat.formatted(material.getName())), ModelHelpers.singleVariantBlockstate(material.getNamespace() + ":block/" + nameFormat.formatted(material.getName())));
+        RutileDynamicResourcePack.addItemModel(ResourceLocation.fromNamespaceAndPath(namespace, nameFormat.formatted(material.getName())), ModelHelpers.simpleParentedModel(material.getNamespace() + ":block/" + nameFormat.formatted(material.getName())));
     }
 }

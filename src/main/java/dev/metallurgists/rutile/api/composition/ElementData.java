@@ -6,27 +6,34 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.metallurgists.rutile.api.composition.element.Element;
-import dev.metallurgists.rutile.api.registry.CustomRutileRegistries;
+import dev.metallurgists.rutile.api.composition.element.ElementStack;
 import dev.metallurgists.rutile.util.ClientUtil;
 import lombok.Getter;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceKey;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public record ElementData(@Getter Element element, @Getter int amount) {
+public record ElementData(@Getter ElementStack element, @Getter int amount) {
     public static final Codec<ElementData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CustomRutileRegistries.ELEMENTS.byNameCodec().fieldOf("element").forGetter(ElementData::getElement),
+            ElementStack.CODEC.fieldOf("element").forGetter(ElementData::getElement),
             Codec.INT.optionalFieldOf("amount", 1).forGetter(ElementData::getAmount)
     ).apply(instance, ElementData::new));
 
     public static ElementData create(Element element) {
+        return new ElementData(ElementStack.of(element), 1);
+    }
+
+    public static ElementData create(ElementStack element) {
         return new ElementData(element, 1);
     }
 
-    public static ElementData create(Element element, int amount) {
+    public static ElementData create(ElementStack element, int amount) {
         return new ElementData(element, amount);
+    }
+
+    public static ElementData create(Element element, int amount) {
+        return new ElementData(ElementStack.of(element), amount);
     }
 
     public ElementData withAmount(int amount) {
@@ -36,7 +43,7 @@ public record ElementData(@Getter Element element, @Getter int amount) {
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
         json.addProperty("amount", getAmount());
-        JsonElement elementKey = CustomRutileRegistries.ELEMENTS.byNameCodec().encodeStart(JsonOps.INSTANCE, getElement()).getOrThrow();
+        JsonElement elementKey = ElementStack.CODEC.encodeStart(JsonOps.INSTANCE, getElement()).getOrThrow();
         json.add("element", elementKey);
         return json;
     }
@@ -58,19 +65,19 @@ public record ElementData(@Getter Element element, @Getter int amount) {
     }
 
     public String getDisplay() {
-        StringBuilder display = new StringBuilder(element().symbol());
+        StringBuilder display = new StringBuilder(element().getElement().symbol());
         if (amount > 1)
             display.append(amount);
         return ClientUtil.toSmallDownNumbers(display.toString());
     }
 
     public void writeToPacket(FriendlyByteBuf buf) {
-        buf.writeResourceKey(CustomRutileRegistries.ELEMENTS.getResourceKey(element).orElseThrow());
+        buf.writeResourceLocation(element.id());
         buf.writeInt(amount);
     }
 
     public static ElementData fromNetwork(FriendlyByteBuf buf) {
-        Element element = CustomRutileRegistries.ELEMENTS.get(buf.readResourceKey(CustomRutileRegistries.ELEMENT_REGISTRY));
+        ElementStack element = ElementStack.of(buf.readResourceLocation());
         int amount = buf.readInt();
         return new ElementData(element, amount);
     }

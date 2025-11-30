@@ -1,10 +1,5 @@
 package dev.metallurgists.rutile.common;
 
-import com.google.common.collect.Multimaps;
-import com.tterrag.registrate.providers.ProviderType;
-import com.tterrag.registrate.providers.RegistrateLangProvider;
-import com.tterrag.registrate.providers.RegistrateProvider;
-import com.tterrag.registrate.util.nullness.NonNullConsumer;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.RutileDataGen;
 import dev.metallurgists.rutile.api.composition.data.ItemComposition;
@@ -13,48 +8,29 @@ import dev.metallurgists.rutile.api.dynamic_pack.RutilePackSource;
 import dev.metallurgists.rutile.api.dynamic_pack.asset.RutileDynamicResourcePack;
 import dev.metallurgists.rutile.api.dynamic_pack.data.RutileDynamicDataPack;
 import dev.metallurgists.rutile.api.material.base.Material;
-import dev.metallurgists.rutile.api.material.events.PostMaterialEvent;
-import dev.metallurgists.rutile.api.material.registry.block.MaterialBlockItem;
-import dev.metallurgists.rutile.api.material.registry.block.RutileMaterialBlocks;
+import dev.metallurgists.rutile.api.material.builder.FlagContainer;
+import dev.metallurgists.rutile.api.material.debug.DebugMaterialPrinter;
 import dev.metallurgists.rutile.api.material.registry.fluid.MaterialBucketItem;
-import dev.metallurgists.rutile.api.material.registry.fluid.RutileMaterialFluids;
-import dev.metallurgists.rutile.api.material.registry.item.RutileMaterialItems;
-import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
-import dev.metallurgists.rutile.api.plugin.RutilePluginFinder;
-import dev.metallurgists.rutile.api.registrate.MaterialLangGenerator;
-import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
 import dev.metallurgists.rutile.api.registry.CustomRutileRegistries;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
-import dev.metallurgists.rutile.api.registry.material.MaterialRegistry;
 import dev.metallurgists.rutile.config.RutileConfig;
-import dev.metallurgists.rutile.mixin.registrate.AbstractRegistrateAccessor;
 import dev.metallurgists.rutile.registry.*;
+import net.minecraft.client.model.geom.builders.MaterialDefinition;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
-import net.neoforged.neoforge.registries.ModifyRegistriesEvent;
-import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.registries.callback.BakeCallback;
-import org.jetbrains.annotations.ApiStatus;
-
-import java.util.List;
 
 
 public class CommonInit {
@@ -68,7 +44,6 @@ public class CommonInit {
         RutileConfig.register(modLoadingContext);
         modBus.addListener(RutileDataGen::gatherDataEvent);
         modBus.register(CommonInit.class);
-        CustomRutileRegistries.init(modBus);
         Rutile.registrate.registerEventListeners(modBus);
     }
 
@@ -81,63 +56,16 @@ public class CommonInit {
             return;
         }
         didRunRegistration = true;
-        RutileElements.init();
-        initMaterials();
-        RutileFlagKeys.init();
-
-        RutileBlocks.register();
-        RutileFluids.register();
-
-        RutileItems.register();
-    }
-
-    @ApiStatus.Internal
-    public static void initMaterials() {
-        Rutile.LOGGER.info("Registering Rutile Materials");
-        RutileMaterials.init();
-        RutileAPI.materialRegistry.setFallbackMaterial(Rutile.ID, RutileMaterials.Null);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onRegisterEarly(RegisterEvent event) {
-        if (event.getRegistryKey() == CustomRutileRegistries.MATERIAL_REGISTRY) {
-            CustomRutileRegistries.MATERIALS.close();
-            ModLoader.postEventWrapContainerInModOrder(new PostMaterialEvent());
-        } else if (event.getRegistryKey() == Registries.FLUID) {
-            // Material fluids
-            RutileMaterialFluids.generateMaterialFluids();
-            // --spacer--
-        } else if (event.getRegistryKey() == Registries.BLOCK) {
-            RutileMaterialBlocks.generateMaterialBlocks();
-            RutileMaterialBlocks.buildMaterialBlockTable();
-        } else if (event.getRegistryKey() == Registries.ITEM) {
-            RutileMaterialItems.generateMaterialItems();
-        }
-    }
-
-    private static void postInitMaterials() {
-        // Register all material manager registries, for materials with mod ids.
-        RutileAPI.materialRegistry.getUsedNamespaces().forEach(namespace -> {
-            // Force the material lang generator to be at index 0, so that addons' lang generators can override it.
-            RutileRegistrate registrate = RutileRegistrate.createIgnoringListenerErrors(namespace);
-            AbstractRegistrateAccessor accessor = (AbstractRegistrateAccessor) registrate;
-            if (accessor.getDoDatagen().get()) {
-                List<NonNullConsumer<? extends RegistrateProvider>> providers = Multimaps.asMap(accessor.getDatagens())
-                        .get(ProviderType.LANG);
-                if (providers != null)
-                    providers.addFirst(
-                        (provider) -> MaterialLangGenerator.generate((RegistrateLangProvider) provider, namespace));
-            }
-
-            ModList.get().getModContainerById(namespace)
-                    .map(ModContainer::getEventBus)
-                    .ifPresent(registrate::registerEventListeners);
-        });
-    }
-
-    @SubscribeEvent
-    public static void registerRegistries(NewRegistryEvent event) {
-        CustomRutileRegistries.getRegistries().forEach(event::register);
+        MaterialRegistry.getInstance().setAllowRegistration(true);
+        MaterialRegistry.getInstance().onRegisterObjects(event);
+        MaterialRegistry.getInstance().setAllowRegistration(false);
+        ElementRegistry.getInstance().setAllowRegistration(true);
+        ElementRegistry.getInstance().onRegisterObjects(event);
+        ElementRegistry.getInstance().setAllowRegistration(false);
     }
 
     @SubscribeEvent
@@ -146,14 +74,23 @@ public class CommonInit {
         event.dataPackRegistry(CustomRutileRegistries.MATERIAL_COMPOSITION_REGISTRY, MaterialComposition.CODEC, MaterialComposition.CODEC);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     @SubscribeEvent
-    public static void modifyRegistries(ModifyRegistriesEvent event) {
-        RutileAPI.materialRegistry.addCallback((BakeCallback<Material>) registry -> postInitMaterials());
+    public static void loadComplete(FMLLoadCompleteEvent event) {
+        DebugMaterialPrinter.print();
+        for (Material material : RutileAPI.getMaterialRegistry().getAll()) {
+            Rutile.LOGGER.debug("[DEBUG] Loading material {}", material.getId());
+            for (FlagContainer<?> flagContainer : material.getFlags().getFlagContainers()) {
+                Rutile.LOGGER.debug("{} Objects:", flagContainer.getRegistryType().resourceKey().location());
+                for (var key : flagContainer.getObjects().values()) {
+                    Rutile.LOGGER.debug("> {}", key);
+                }
+                Rutile.LOGGER.debug("{} Builders:", flagContainer.getRegistryType().resourceKey().location());
+                for (var builder : flagContainer.getBuilders().values()) {
+                    Rutile.LOGGER.debug("> {}", builder.getBuilderName());
+                }
+            }
+        }
     }
-
-    @SubscribeEvent
-    public static void loadComplete(FMLLoadCompleteEvent event) {}
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {

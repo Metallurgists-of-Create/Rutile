@@ -1,33 +1,22 @@
 package dev.metallurgists.rutile.api.registrate.builder;
 
 import com.google.common.base.Preconditions;
-import com.tterrag.registrate.AbstractRegistrate;
-import com.tterrag.registrate.builders.AbstractBuilder;
-import com.tterrag.registrate.builders.BuilderCallback;
-import com.tterrag.registrate.util.entry.RegistryEntry;
+import com.tterrag.registrate.builders.ItemBuilder;
 import com.tterrag.registrate.util.nullness.*;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.ElementData;
-import dev.metallurgists.rutile.api.composition.element.Element;
+import dev.metallurgists.rutile.api.composition.element.ElementStack;
 import dev.metallurgists.rutile.api.material.base.Material;
-import dev.metallurgists.rutile.api.material.base.MaterialFlags;
-import dev.metallurgists.rutile.api.material.flag.FlagKey;
-import dev.metallurgists.rutile.api.material.flag.IMaterialFlag;
-import dev.metallurgists.rutile.api.material.flag.types.IFlagRegistry;
+import dev.metallurgists.rutile.api.material.builder.FlagContainer;
+import dev.metallurgists.rutile.api.material.builder.FlagSource;
+import dev.metallurgists.rutile.api.material.builder.MaterialFlags;
+import dev.metallurgists.rutile.api.material.builder.MaterialRegistryBuilder;
+import dev.metallurgists.rutile.api.material.component.MaterialComponentType;
 import dev.metallurgists.rutile.api.material.registry.fluid.FluidFlagProperties;
-import dev.metallurgists.rutile.api.registry.CustomRutileRegistries;
-import dev.metallurgists.rutile.api.registry.RutileAPI;
-import dev.metallurgists.rutile.registry.RutileRegistries;
 import dev.metallurgists.rutile.util.NonNullTriFunction;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class MaterialBuilder<T extends Material> {
 
@@ -74,6 +63,11 @@ public class MaterialBuilder<T extends Material> {
         return this;
     }
 
+    public <C> MaterialBuilder<T> component(MaterialComponentType<C> type, C value) {
+        infoCallback.andThen(i -> i.component(type, value));
+        return this;
+    }
+
     public MaterialBuilder<T> meltingPoint(double temp) {
         infoCallback.andThen(i -> i.meltingPoint(temp));
         return this;
@@ -90,60 +84,40 @@ public class MaterialBuilder<T extends Material> {
             int amount = Integer.parseInt(split[0]) <= 0 ? 1 : Integer.parseInt(split[0]);
             String element = split[1];
             if (element.isEmpty()) throw new IllegalArgumentException("Element is invalid or empty");
-            ResourceKey<Element> elementKey = ResourceKey.create(CustomRutileRegistries.ELEMENT_REGISTRY, Rutile.id(element));
-            ElementData elementData = new ElementData(CustomRutileRegistries.ELEMENTS.get(elementKey), amount);
+            ResourceLocation elementKey = Rutile.id(element);
+            ElementData elementData = new ElementData(ElementStack.of(elementKey), amount);
             elementDataList.add(elementData);
         }
         ElementData.createFromList(elementDataList).forEach(e -> infoCallback.andThen(i -> i.composition().add(e)));
         return this;
     }
 
-    public MaterialBuilder<T> addFlags(IMaterialFlag... flags) {
-        for (var flag : flags) {
-            if (flag instanceof IFlagRegistry reg && !Objects.equals(reg.getExistingNamespace(), "")) {
-                flagsCallback.andThen(f -> f.noRegister(flag.getKey()));
-            }
-            flagsCallback.andThen(f -> f.setFlag(flag.getKey(), flag));
+    @SafeVarargs
+    public final <R> MaterialBuilder<T> addBuilders(MaterialRegistryBuilder<R>... builders) {
+        for (var builder : builders) {
+            flagsCallback.andThen(f -> f.addFlag(builder.getFlagSource(), builder.setMaterialKey(id)));
         }
         return this;
     }
 
-    @SafeVarargs
-    public final MaterialBuilder<T> noRegister(FlagKey<? extends IMaterialFlag>... matFlags) {
-        flagsCallback.andThen(f -> f.noRegister(matFlags));
+    public final <R> MaterialBuilder<T> addFlags(FlagsBuilder<R> flagsBuilder) {
+        flagsCallback.andThen(f -> f.addContainer(flagsBuilder, id));
         return this;
     }
 
-    public MaterialBuilder<T> existingIds(Object... components) {
+    public MaterialBuilder<T> existingIds(Object... o) {
         Preconditions.checkArgument(
-                components.length % 2 == 0,
+                o.length % 2 == 0,
                 "Material Existing Ids list malformed!");
 
-        for (int i = 0; i < components.length; i += 2) {
-            if (components[i] == null || components[i + 1] == null) {
+        for (int i = 0; i < o.length; i += 2) {
+            if (o[i] == null || o[i + 1] == null) {
                 throw new IllegalArgumentException(
                         "Existing Id in Existing Ids List is null");
             }
-            FlagKey<?> key = (FlagKey<?>) components[i];
-            String id = (String) components[i + 1];
-            infoCallback.andThen(l -> l.withExistingId(key, id));
-            flagsCallback.andThen(f -> f.noRegister(key));
-        }
-        return this;
-    }
-
-    public MaterialBuilder<T> nameAlternatives(Object... components) {
-        Preconditions.checkArgument(
-                components.length % 2 == 0,
-                "Material Name Alternatives list malformed!");
-        for (int i = 0; i < components.length; i += 2) {
-            if (components[i] == null || components[i + 1] == null) {
-                throw new IllegalArgumentException(
-                        "Name Alternative in Name Alternatives List is null");
-            }
-            FlagKey<?> key = (FlagKey<?>) components[i];
-            String name = (String) components[i + 1];
-            infoCallback.andThen(l -> l.withNameAlternative(key, name));
+            FlagSource<?> key = (FlagSource<?>) o[i];
+            String id = (String) o[i + 1];
+            flagsCallback.andThen(l -> l.addFlag(key, ResourceLocation.parse(id)));
         }
         return this;
     }
@@ -158,13 +132,57 @@ public class MaterialBuilder<T extends Material> {
         return this;
     }
 
-    public @NonnullType T createAndRegister() {
+    public @NonnullType T create() {
         Material.MaterialInfo info = this.initialInfo.get();
         info = infoCallback.apply(info);
         MaterialFlags flags = this.initialFlags.get();
         flags = flagsCallback.apply(flags);
-        T material = factory.apply(info, flags, id);
-        RutileAPI.materialRegistry.register(material);
-        return material;
+        return factory.apply(info, flags, id);
+    }
+
+    public static <T> FlagsBuilder<T> flagsBuilder(FlagContainer<T> flagContainer) {
+        return new FlagsBuilder<>(flagContainer);
+    }
+
+    public static class FlagsBuilder<T> {
+        private final FlagContainer<T> flagContainer;
+
+        private final List<MaterialRegistryBuilder<?>> flagBuilders;
+        private final Map<FlagSource<?>, ResourceLocation> flags;
+
+        public FlagsBuilder(FlagContainer<T> flagContainer) {
+            this.flagContainer = flagContainer;
+            this.flagBuilders = new ArrayList<>();
+            this.flags = new HashMap<>();
+        }
+
+        public FlagsBuilder<T> addFlag(FlagSource<T> source, ResourceLocation id) {
+            flags.put(source, id);
+            return this;
+        }
+
+        public FlagsBuilder<T> addFlag(FlagSource<T> source, String id) {
+            flags.put(source, ResourceLocation.parse(id));
+            return this;
+        }
+
+        public FlagsBuilder<T> addFlag(MaterialRegistryBuilder<T> builder) {
+            flagBuilders.add(builder);
+            return this;
+        }
+
+        @SuppressWarnings("unchecked")
+        public FlagContainer<T> build(ResourceLocation id) {
+            FlagContainer<T> flagContainer = this.flagContainer;
+            flagBuilders.forEach((builder) -> {
+                builder = builder.setMaterialKey(id);
+                flagContainer.add((FlagSource<T>)builder.getFlagSource(), (MaterialRegistryBuilder<T>)builder);
+                flagContainer.add((FlagSource<T>)builder.getFlagSource(), builder.getObjectId());
+            });
+            flags.forEach((source, key) -> {
+                flagContainer.add((FlagSource<T>)source, key);
+            });
+            return flagContainer;
+        }
     }
 }

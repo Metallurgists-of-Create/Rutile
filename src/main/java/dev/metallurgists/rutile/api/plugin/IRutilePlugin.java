@@ -1,49 +1,40 @@
 package dev.metallurgists.rutile.api.plugin;
 
-import com.tterrag.registrate.AbstractRegistrate;
-import dev.metallurgists.rutile.api.dynamic_pack.data.recipe.handler.*;
-import dev.metallurgists.rutile.api.material.flag.FlagKey;
-import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
-
-import java.util.ArrayList;
-import java.util.List;
+import dev.metallurgists.rutile.api.composition.element.Element;
+import dev.metallurgists.rutile.api.material.base.Material;
+import dev.metallurgists.rutile.api.registry.IRutileRegistry;
 
 public interface IRutilePlugin {
 
-    String getPluginNamespace();
-
-    List<FlagKey<?>> flagKeys = new ArrayList<>();
-
-    default List<FlagKey<?>> getFlagKeys() {
-        return flagKeys;
-    }
-
-    default IRutileRecipeHandler getRuntimeRecipes() { return new EmptyRecipeHandler(); };
-
-    default IRutileMaterialRecipeHandler getRuntimeMaterialRecipes() { return  new EmptyMaterialRecipeHandler(); };
-
-    default IRutileRecipeRemover getRuntimeRecipeRemover() { return new EmptyRecipeRemover(); };
+    /**
+     * Override this method to configure plugin wide settings
+     * @param config the plugin config
+     */
+    default void configure(PluginConfig config) { }
 
     /**
-        Register this in you mod container
+     * Override this method and use the supplied registry to register all of your materials
+     * @param registry the material registry
      */
-    default AbstractRegistrate<?> getRegistrate() {
-        return RutileRegistrate.create(getPluginNamespace());
-    }
+    default void onRegisterMaterials(IRutileRegistry<Material> registry) { }
 
-    default void registerElements() {
+    /**
+     * Override this method and use the supplied registry to modify materials from the material registry
+     * @param registry the material registry
+     */
+    default void onPostRegisterMaterials(IRutileRegistry<Material> registry) { }
 
-    }
+    /**
+     * Override this method and use the supplied registry to register all of your elements
+     * @param registry the element registry
+     */
+    default void onRegisterElements(IRutileRegistry<Element> registry) { }
 
-    default void registerFlags() {
+    /**
+     * Override this method and use the supplied registry to modify elements from the element registry
+     * @param registry the element registry
+     */
+    default void onPostRegisterElements(IRutileRegistry<Element> registry) { }
 
-    }
 
-    default void modifyMaterials() {
-
-    }
-
-    default void registerMaterials() {
-
-    }
 }

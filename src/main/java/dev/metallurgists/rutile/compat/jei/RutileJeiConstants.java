@@ -1,15 +1,16 @@
 package dev.metallurgists.rutile.compat.jei;
 
 import dev.metallurgists.rutile.api.composition.element.Element;
+import dev.metallurgists.rutile.api.composition.element.ElementStack;
 import mezz.jei.api.ingredients.IIngredientType;
 
 public class RutileJeiConstants {
 
-    public static final IIngredientType<Element> ELEMENT = new IIngredientType<>() {
+    public static final IIngredientType<ElementStack> ELEMENT = new IIngredientType<>() {
 
         @Override
-        public Class<? extends Element> getIngredientClass() {
-            return Element.class;
+        public Class<? extends ElementStack> getIngredientClass() {
+            return ElementStack.class;
         }
 
         public String getUid() {

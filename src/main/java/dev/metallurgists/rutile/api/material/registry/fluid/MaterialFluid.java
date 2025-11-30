@@ -1,7 +1,7 @@
 package dev.metallurgists.rutile.api.material.registry.fluid;
 
 import dev.metallurgists.rutile.api.material.base.Material;
-import dev.metallurgists.rutile.api.material.flag.types.IFluidRegistry;
+import dev.metallurgists.rutile.api.material.builder.MaterialFluidBuilder;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -10,12 +10,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class MaterialFluid extends BaseFlowingFluid implements IMaterialFluid {
     public final Material material;
-    public final IFluidRegistry fluidFlag;
+    public final MaterialFluidBuilder fluidBuilder;
 
-    public MaterialFluid(Properties properties, Material material, IFluidRegistry fluidFlag) {
+    public MaterialFluid(Properties properties, Material material, MaterialFluidBuilder fluidBuilder) {
         super(properties);
         this.material = material;
-        this.fluidFlag = fluidFlag;
+        this.fluidBuilder = fluidBuilder;
     }
 
     @Override
@@ -34,14 +34,14 @@ public class MaterialFluid extends BaseFlowingFluid implements IMaterialFluid {
     }
 
     @Override
-    public IFluidRegistry getFlag() {
-        return this.fluidFlag;
+    public MaterialFluidBuilder getBuilder() {
+        return this.fluidBuilder;
     }
 
     public static class Source extends MaterialFluid {
 
-        public Source(Properties properties, Material material, IFluidRegistry fluidFlag) {
-            super(properties, material, fluidFlag);
+        public Source(Properties properties, Material material, MaterialFluidBuilder fluidBuilder) {
+            super(properties, material, fluidBuilder);
         }
 
         @Override
@@ -57,8 +57,8 @@ public class MaterialFluid extends BaseFlowingFluid implements IMaterialFluid {
 
     public static class Flowing extends MaterialFluid {
 
-        public Flowing(Properties properties, Material material, IFluidRegistry fluidFlag) {
-            super(properties, material, fluidFlag);
+        public Flowing(Properties properties, Material material, MaterialFluidBuilder fluidBuilder) {
+            super(properties, material, fluidBuilder);
             registerDefaultState(getStateDefinition().any().setValue(LEVEL, 7));
         }
 

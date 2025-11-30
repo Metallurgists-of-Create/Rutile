@@ -1,10 +1,8 @@
 package dev.metallurgists.rutile.api.dynamic_pack.data.recipe;
 
 import dev.metallurgists.rutile.api.material.base.Material;
-import dev.metallurgists.rutile.api.material.flag.types.IRecipeHandler;
-import dev.metallurgists.rutile.api.plugin.RutilePluginFinder;
+import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
-import dev.metallurgists.rutile.registry.RutileRegistries;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
@@ -36,15 +34,11 @@ public class RutileRecipes {
         };
 
 
-        for (Material material : RutileAPI.materialRegistry) {
-            for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
-                if (material.hasFlag(flagKey) && material.getFlag(flagKey) instanceof IRecipeHandler handler) {
-                    handler.run(consumer, material);
-                }
-            }
-            RutilePluginFinder.getModPlugins().forEach(p -> p.getRuntimeMaterialRecipes().run(consumer, material));
+        for (Material material : RutileAPI.getMaterialRegistry().getAll()) {
+            material.getFlags().getFlagBuilders().forEach(b -> b.registerRecipes(consumer, material));
+            PluginRegistry.getInstance().forEach((pl, cf) -> cf.getRuntimeMaterialRecipes().run(consumer, material));
         }
-        RutilePluginFinder.getModPlugins().forEach(p -> p.getRuntimeRecipes().run(consumer));
+        PluginRegistry.getInstance().forEach((pl, cf) -> cf.getRuntimeRecipes().run(consumer));
     }
 
     public static void recipeRemoval(Consumer<ResourceLocation> registry) {
@@ -52,6 +46,6 @@ public class RutileRecipes {
         RECIPE_FILTERS.clear();
 
         RutileRecipeRemoval.init(actualConsumer);
-        RutilePluginFinder.getModPlugins().forEach(p -> p.getRuntimeRecipeRemover().removals(actualConsumer));
+        PluginRegistry.getInstance().forEach((pl, cf) -> cf.getRuntimeRecipeRemover().removals(actualConsumer));
     }
 }

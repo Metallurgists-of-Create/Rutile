@@ -7,8 +7,7 @@ import com.mojang.serialization.JsonOps;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.data.FinishedComposition;
 import dev.metallurgists.rutile.api.dynamic_pack.RutileDynamicPackContents;
-import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
-import dev.metallurgists.rutile.api.plugin.RutilePluginFinder;
+import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import dev.metallurgists.rutile.config.RutileConfig;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
@@ -50,7 +49,7 @@ public class RutileDynamicDataPack implements PackResources {
     }
 
     public RutileDynamicDataPack(PackLocationInfo info) {
-        this(info, RutilePluginFinder.getModPlugins().stream().map(IRutilePlugin::getPluginNamespace).collect(Collectors.toSet()));
+        this(info, PluginRegistry.getInstance().map((pl, cf) -> cf.getModId()).collect(Collectors.toSet()));
     }
 
     public RutileDynamicDataPack(PackLocationInfo info, Collection<String> domains) {

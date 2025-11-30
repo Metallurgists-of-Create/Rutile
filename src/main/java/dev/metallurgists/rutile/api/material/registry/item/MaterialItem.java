@@ -1,24 +1,24 @@
 package dev.metallurgists.rutile.api.material.registry.item;
 
 import dev.metallurgists.rutile.api.material.base.Material;
-import dev.metallurgists.rutile.api.material.flag.types.IItemRegistry;
+import dev.metallurgists.rutile.api.material.builder.MaterialItemBuilder;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 public class MaterialItem extends Item implements IMaterialItem {
     public final Material material;
-    public final IItemRegistry itemFlag;
+    public final MaterialItemBuilder itemBuilder;
 
-    public MaterialItem(Properties properties, Material material, IItemRegistry itemFlag) {
+    public MaterialItem(Properties properties, Material material, MaterialItemBuilder itemBuilder) {
         super(properties);
         this.material = material;
-        this.itemFlag = itemFlag;
+        this.itemBuilder = itemBuilder;
     }
 
     @Override
     public String getDescriptionId() {
-        return itemFlag.getUnlocalizedName(material);
+        return itemBuilder.getFlagSource().getUnlocalizedName(material, itemBuilder.nameFormat());
     }
 
     @Override
@@ -28,7 +28,7 @@ public class MaterialItem extends Item implements IMaterialItem {
 
     @Override
     public MutableComponent getDescription() {
-        return itemFlag.getLocalizedName(material);
+        return itemBuilder.getFlagSource().getLocalizedName(material, itemBuilder.nameFormat());
     }
 
     @Override
@@ -42,7 +42,7 @@ public class MaterialItem extends Item implements IMaterialItem {
     }
 
     @Override
-    public IItemRegistry getFlag() {
-        return this.itemFlag;
+    public MaterialItemBuilder getBuilder() {
+        return this.itemBuilder;
     }
 }

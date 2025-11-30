@@ -1,15 +1,9 @@
 package dev.metallurgists.rutile.util.helpers;
 
-import com.google.common.collect.Table;
-import com.tterrag.registrate.util.entry.BlockEntry;
-import com.tterrag.registrate.util.entry.FluidEntry;
+import dev.metallurgists.rutile.api.material.FlagRegistryTypes;
 import dev.metallurgists.rutile.api.material.base.Material;
-import dev.metallurgists.rutile.api.material.flag.FlagKey;
-import dev.metallurgists.rutile.api.material.flag.types.IHaveTags;
-import dev.metallurgists.rutile.api.material.registry.block.IMaterialBlock;
-import dev.metallurgists.rutile.api.material.registry.block.RutileMaterialBlocks;
+import dev.metallurgists.rutile.api.material.builder.FlagSource;
 import dev.metallurgists.rutile.api.material.registry.fluid.IMaterialFluid;
-import dev.metallurgists.rutile.api.material.registry.item.RutileMaterialItems;
 import dev.metallurgists.rutile.api.registrate.RutileClientFluidTypeExtensions;
 import dev.metallurgists.rutile.mixin.BlockBehaviourAccessor;
 import net.minecraft.core.Holder;
@@ -25,7 +19,6 @@ import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.tags.TagLoader;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ItemLike;
@@ -53,42 +46,55 @@ public class MixinHelpers {
 
     public static <T> void generateDynamicTags(Map<ResourceLocation, List<TagLoader.EntryWithSource>> tagMap, Registry<T> registry) {
         if (registry == BuiltInRegistries.ITEM) {
-            RutileMaterialItems.MATERIAL_ITEMS.rowMap().forEach((flag, map) -> {
-                map.forEach((material, itemEntry) -> {
-                    if (material != null && material.getFlag(flag) instanceof IHaveTags t && t.getTagHolder().has(Registries.ITEM)) {
-                        if (itemEntry != null) {
-                            List<TagKey<Item>> tags = t.getTagHolder().getTags(Registries.ITEM, material);
-                            for (TagKey<Item> tag : tags) {
-                                tagMap.computeIfAbsent(tag.location(), path -> new ArrayList<>()).add(makeItemEntry(itemEntry));
-                            }
+            MaterialHelpers.getAllItems(true).rowMap().forEach((flag, map) -> {
+                map.forEach((material, item) -> {
+                    if (material == null || item == null) return;
+                    var builder = material.getFlags().getFlagContainer(FlagRegistryTypes.ITEM).getBuilders().get(flag);
+                    if (builder != null) {
+                        List<TagKey<Item>> tags = builder.getTagHolder().getTags(Registries.ITEM, material);
+                        for (TagKey<Item> tag : tags) {
+                            tagMap.computeIfAbsent(tag.location(), path -> new ArrayList<>()).add(makeItemEntry(item));
                         }
                     }
                 });
             });
-            RutileMaterialBlocks.MATERIAL_BLOCKS.rowMap().forEach((flag, map) -> {
-                map.forEach((material, itemEntry) -> {
-                    if (material != null && material.getFlag(flag) instanceof IHaveTags t && t.getTagHolder().has(Registries.ITEM)) {
-                        if (itemEntry != null && itemEntry.asItem() != Items.AIR) {
-                            List<TagKey<Item>> tags = t.getTagHolder().getTags(Registries.ITEM, material);
-                            for (TagKey<Item> tag : tags) {
-                                tagMap.computeIfAbsent(tag.location(), path -> new ArrayList<>()).add(makeItemEntry(itemEntry.asItem()));
-                            }
+            MaterialHelpers.getAllBlocks(true).rowMap().forEach((flag, map) -> {
+                map.forEach((material, block) -> {
+                    if (material == null || block == null) return;
+                    var builder = material.getFlags().getFlagContainer(FlagRegistryTypes.BLOCK).getBuilders().get(flag);
+                    if (builder != null) {
+                        List<TagKey<Item>> tags = builder.getTagHolder().getTags(Registries.ITEM, material);
+                        for (TagKey<Item> tag : tags) {
+                            tagMap.computeIfAbsent(tag.location(), path -> new ArrayList<>()).add(makeItemEntry(block.asItem()));
                         }
                     }
                 });
             });
         }
         if (registry == BuiltInRegistries.BLOCK) {
-            for (Table.Cell<FlagKey<?>, Material, ? extends BlockEntry<? extends IMaterialBlock>> entryCell : RutileMaterialBlocks.MATERIAL_BLOCKS.cellSet()) {
-                FlagKey<?> flagKey = entryCell.getRowKey();
-                var material = entryCell.getColumnKey();
-                var blockEntry = entryCell.getValue();
-                if (material.getFlag(flagKey) instanceof IHaveTags t && t.getTagHolder().has(Registries.BLOCK)) {
-                    if (blockEntry != null) {
-                        List<TagKey<Block>> tags = t.getTagHolder().getTags(Registries.BLOCK, material);
-                        for (TagKey<Block> tag : tags) {
-                            tagMap.computeIfAbsent(tag.location(), path -> new ArrayList<>()).add(makeBlockEntry(blockEntry));
-                        }
+            for (var cell : MaterialHelpers.getAllBlocks(true).cellSet()) {
+                FlagSource<Block> flagSource = cell.getRowKey();
+                var material = cell.getColumnKey(); var block = cell.getValue();
+                if (material == null || block == null) return;
+                var builder = material.getFlags().getFlagContainer(FlagRegistryTypes.BLOCK).getBuilders().get(flagSource);
+                if (builder != null) {
+                    List<TagKey<Block>> tags = builder.getTagHolder().getTags(Registries.BLOCK, material);
+                    for (TagKey<Block> tag : tags) {
+                        tagMap.computeIfAbsent(tag.location(), path -> new ArrayList<>()).add(makeBlockEntry(block));
+                    }
+                }
+            }
+        }
+        if (registry == BuiltInRegistries.FLUID) {
+            for (var cell : MaterialHelpers.getAllFluids(true).cellSet()) {
+                FlagSource<Fluid> flagSource = cell.getRowKey();
+                var material = cell.getColumnKey(); var fluid = cell.getValue();
+                if (material == null || fluid == null) return;
+                var builder = material.getFlags().getFlagContainer(FlagRegistryTypes.FLUID).getBuilders().get(flagSource);
+                if (builder != null) {
+                    List<TagKey<Fluid>> tags = builder.getTagHolder().getTags(Registries.FLUID, material);
+                    for (TagKey<Fluid> tag : tags) {
+                        tagMap.computeIfAbsent(tag.location(), path -> new ArrayList<>()).add(makeFluidEntry(fluid));
                     }
                 }
             }
@@ -130,30 +136,29 @@ public class MixinHelpers {
         Holder<Enchantment> fortune = access.registryOrThrow(Registries.ENCHANTMENT)
                 .getHolderOrThrow(Enchantments.FORTUNE);
 
-        RutileMaterialBlocks.MATERIAL_BLOCKS.rowMap().forEach((flagKey, map) -> {
-            MixinHelpers.addMaterialBlockLootTables(lootTables, flagKey, map, blockLoot, access);
+        MaterialHelpers.getAllBlocks(true).rowMap().forEach((flagKey, map) -> {
+            MixinHelpers.addMaterialBlockLootTables(lootTables, map, blockLoot, access);
         });
     }
 
     public static void addMaterialBlockLootTables(TriConsumer<ResourceLocation, LootTable, RegistryAccess.Frozen> lootTables,
-                                                  FlagKey<?> flagKey,
-                                                  Map<Material, BlockEntry<? extends IMaterialBlock>> map,
+                                                  Map<Material, Block> map,
                                                   VanillaBlockLoot blockLoot, RegistryAccess.Frozen access) {
-        map.forEach((material, blockEntry) -> {
-            ResourceLocation lootTableId = blockEntry.getId().withPrefix("blocks/");
-            ((BlockBehaviourAccessor) blockEntry.get())
+        map.forEach((material, block) -> {
+            ResourceLocation lootTableId = BuiltInRegistries.BLOCK.getKey(block).withPrefix("blocks/");
+            ((BlockBehaviourAccessor) block)
                     .setDrops(ResourceKey.create(Registries.LOOT_TABLE, lootTableId));
             lootTables.accept(lootTableId,
-                    blockLoot.createSingleItemTable(blockEntry.get()).setParamSet(LootContextParamSets.BLOCK).build(),
+                    blockLoot.createSingleItemTable(block).setParamSet(LootContextParamSets.BLOCK).build(),
                     access);
         });
     }
 
-    public static void addFluidTexture(Material material, FlagKey<?> flagKey, Fluid value) {
+    public static void addFluidTexture(Material material, FlagSource<Fluid> flagSource, Fluid value) {
         IClientFluidTypeExtensions extensions = IClientFluidTypeExtensions.of(value);
         if (extensions instanceof RutileClientFluidTypeExtensions rutileExtensions) {
-            var flowTex = IMaterialFluid.getFlowingTexture(material, flagKey);
-            var stillTex = IMaterialFluid.getSourceTexture(material, flagKey);
+            var flowTex = IMaterialFluid.getFlowingTexture(material, flagSource);
+            var stillTex = IMaterialFluid.getSourceTexture(material, flagSource);
             rutileExtensions.setFlowingTexture(flowTex);
             rutileExtensions.setStillTexture(stillTex);
         }

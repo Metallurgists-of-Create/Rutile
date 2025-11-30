@@ -1,10 +1,16 @@
 package dev.metallurgists.rutile.util.helpers;
 
+import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Table;
 import dev.metallurgists.rutile.Rutile;
+import dev.metallurgists.rutile.api.material.FlagRegistryTypes;
+import dev.metallurgists.rutile.api.material.base.Material;
 import dev.metallurgists.rutile.api.material.base.MaterialLike;
-import dev.metallurgists.rutile.api.material.flag.FlagKey;
+import dev.metallurgists.rutile.api.material.builder.FlagContainer;
+import dev.metallurgists.rutile.api.material.builder.FlagSource;
 import dev.metallurgists.rutile.api.material.flag.types.*;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
+import dev.metallurgists.rutile.registry.MaterialRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -15,22 +21,56 @@ import java.util.*;
 
 public class MaterialHelpers {
 
+    public static Table<FlagSource<Item>, Material, Item> getAllItems(boolean onlyBuilderRegistered) {
+        ImmutableTable.Builder<FlagSource<Item>, Material, Item> tableBuilder = ImmutableTable.builder();
+        for (var material : RutileAPI.getMaterialRegistry().getAll()) {
+            var flagContainer = material.getFlagContainer(FlagRegistryTypes.ITEM);
+            if (flagContainer == null) return tableBuilder.build();
+            if (onlyBuilderRegistered) {
+                for (var builder : flagContainer.getBuilders().values()) {
+                    builder.setMaterialKey(material.getId());
+                    tableBuilder.put(builder.getFlagSource(), material, BuiltInRegistries.ITEM.get(builder.getObjectId()));
+                }
+            } else {
+                for (var entry : flagContainer.getObjects().entrySet()) {
+                    var item = BuiltInRegistries.ITEM.get(entry.getValue());
+                    tableBuilder.put(entry.getKey(), material, item);
+                }
+            }
+        }
+        return tableBuilder.build();
+    }
+
     public static List<Item> getAllItems(MaterialLike material) {
         return getAllItems(material.asMaterial(), false);
     }
 
     public static List<Item> getAllItems(MaterialLike material, boolean onlyChemicalTooltippable) {
         List<Item> allItems = new ArrayList<>();
-        for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
-            if (!material.asMaterial().hasFlag(flagKey)) continue;
-            var flag = material.asMaterial().getFlag(flagKey);
-            if (flag instanceof IItemRegistry itemFlag) {
-                if (onlyChemicalTooltippable)
-                    if (itemFlag instanceof IConditionalComposition conditionalComposition && !conditionalComposition.shouldHaveComposition()) continue;
-                allItems.add(getItem(material, flagKey));
-            }
+        for (var flag : material.asMaterial().getFlagContainer(FlagRegistryTypes.ITEM).getFlags()) {
+            allItems.add(getItem(material, flag));
         }
         return allItems;
+    }
+
+    public static Table<FlagSource<Block>, Material, Block> getAllBlocks(boolean onlyBuilderRegistered) {
+        ImmutableTable.Builder<FlagSource<Block>, Material, Block> tableBuilder = ImmutableTable.builder();
+        for (var material : RutileAPI.getMaterialRegistry().getAll()) {
+            var flagContainer = material.getFlagContainer(FlagRegistryTypes.BLOCK);
+            if (flagContainer == null) return tableBuilder.build();
+            if (onlyBuilderRegistered) {
+                for (var builder : flagContainer.getBuilders().values()) {
+                    builder.setMaterialKey(material.getId());
+                    tableBuilder.put(builder.getFlagSource(), material, BuiltInRegistries.BLOCK.get(builder.getObjectId()));
+                }
+            } else {
+                for (var entry : flagContainer.getObjects().entrySet()) {
+                    var block = BuiltInRegistries.BLOCK.get(entry.getValue());
+                    tableBuilder.put(entry.getKey(), material, block);
+                }
+            }
+        }
+        return tableBuilder.build();
     }
 
     public static List<Block> getAllBlocks(MaterialLike material) {
@@ -39,52 +79,54 @@ public class MaterialHelpers {
 
     public static List<Block> getAllBlocks(MaterialLike material, boolean onlyChemicalTooltippable) {
         List<Block> allBlocks = new ArrayList<>();
-        for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
-            if (!material.asMaterial().hasFlag(flagKey)) continue;
-            var flag = material.asMaterial().getFlag(flagKey);
-            if (flag instanceof IBlockRegistry blockFlag) {
-                if (onlyChemicalTooltippable)
-                    if (blockFlag instanceof IConditionalComposition conditionalComposition && !conditionalComposition.shouldHaveComposition()) continue;
-                allBlocks.add(getBlock(material, blockFlag.getKey()));
-            }
+        for (var flag : material.asMaterial().getFlagContainer(FlagRegistryTypes.BLOCK).getFlags()) {
+            allBlocks.add(getBlock(material, flag));
         }
         return allBlocks;
     }
 
+    public static Table<FlagSource<Fluid>, Material, Fluid> getAllFluids(boolean onlyBuilderRegistered) {
+        ImmutableTable.Builder<FlagSource<Fluid>, Material, Fluid> tableBuilder = ImmutableTable.builder();
+        for (var material : RutileAPI.getMaterialRegistry().getAll()) {
+            var flagContainer = material.getFlagContainer(FlagRegistryTypes.FLUID);
+            if (flagContainer == null) return tableBuilder.build();
+            if (onlyBuilderRegistered) {
+                for (var builder : flagContainer.getBuilders().values()) {
+                    builder.setMaterialKey(material.getId());
+                    tableBuilder.put(builder.getFlagSource(), material, BuiltInRegistries.FLUID.get(builder.getObjectId()));
+                }
+            } else {
+                for (var entry : flagContainer.getObjects().entrySet()) {
+                    var fluid = BuiltInRegistries.FLUID.get(entry.getValue());
+                    tableBuilder.put(entry.getKey(), material, fluid);
+                }
+            }
+        }
+        return tableBuilder.build();
+    }
+
     public static List<Fluid> getAllFluids(MaterialLike material) {
         List<Fluid> allFluids = new ArrayList<>();
-        for (var flagKey : RutileAPI.getRegisteredFlags().values()) {
-            if (!material.asMaterial().hasFlag(flagKey)) continue;
-            var flag = material.asMaterial().getFlag(flagKey);
-            if (flag instanceof IFluidRegistry fluidFlag) {
-                allFluids.add(getFluid(material, fluidFlag.getKey()));
-            }
+        for (var flag : material.asMaterial().getFlagContainer(FlagRegistryTypes.FLUID).getFlags()) {
+            allFluids.add(getFluid(material, flag));
         }
         return allFluids;
     }
 
-    public static Item getItem(MaterialLike material, FlagKey<?> flagKey) {
-        if (!material.asMaterial().hasFlag(flagKey)) throw new IllegalArgumentException("Material: " + material.asMaterial().getId() + " does not have the flag: " + flagKey.toString());
-        if (!(material.asMaterial().getFlag(flagKey) instanceof IItemRegistry flag)) throw new IllegalArgumentException("Flag: " + flagKey.toString() + " is not an item flag");
-        ResourceLocation resultId = flag.getExistingId(material.asMaterial());
-        Item item = BuiltInRegistries.ITEM.get(resultId);
-        return item;
+    public static Item getItem(MaterialLike material, FlagSource<Item> flagSource) {
+        if (!material.asMaterial().hasFlag(flagSource)) throw new IllegalArgumentException("Material: " + material.asMaterial().getId() + " does not have the flag: " + flagSource.rlForm());
+        return material.asMaterial().getFlagContainer(FlagRegistryTypes.ITEM).getObject(flagSource);
     }
 
-    public static Block getBlock(MaterialLike material, FlagKey<?> flagKey) {
-        if (!material.asMaterial().hasFlag(flagKey)) throw new IllegalArgumentException("Material: " + material.asMaterial().getId() + " does not have the flag: " + flagKey.toString());
-        if (!(material.asMaterial().getFlag(flagKey) instanceof IBlockRegistry flag)) throw new IllegalArgumentException("Flag: " + flagKey.toString() + " is not a block flag");
-        ResourceLocation resultId = flag.getExistingId(material.asMaterial());
-        Block block = BuiltInRegistries.BLOCK.get(resultId);
-        return block;
+    public static Block getBlock(MaterialLike material, FlagSource<Block> flagSource) {
+        if (!material.asMaterial().hasFlag(flagSource)) throw new IllegalArgumentException("Material: " + material.asMaterial().getId() + " does not have the flag: " + flagSource.rlForm());
+        return material.asMaterial().getFlagContainer(FlagRegistryTypes.BLOCK).getObject(flagSource);
     }
 
-    public static Fluid getFluid(MaterialLike material, FlagKey<?> flagKey) {
-        if (!material.asMaterial().hasFlag(flagKey)) throw new IllegalArgumentException("Material: " + material.asMaterial().getId() + " does not have the flag: " + flagKey.toString());
-        if (!(material.asMaterial().getFlag(flagKey) instanceof IFluidRegistry flag)) throw new IllegalArgumentException("Flag: " + flagKey.toString() + " is not a fluid flag");
-        ResourceLocation resultId = flag.getExistingId(material.asMaterial());
-        Fluid fluid = BuiltInRegistries.FLUID.get(resultId);
-        return fluid;
+    public static Fluid getFluid(MaterialLike material, FlagSource<Fluid> flagSource) {
+        FlagContainer<Fluid> flagContainer = material.asMaterial().getFlagContainer(FlagRegistryTypes.FLUID);
+        ResourceLocation resultId = flagContainer.get(flagSource);
+        return BuiltInRegistries.FLUID.get(resultId);
     }
 
     public static List<Item> getAllMaterialItems(MaterialLike material) {
@@ -113,14 +155,7 @@ public class MaterialHelpers {
         Rutile.LOGGER.error("Material is null, cannot get all items for null material.");
     }
 
-    public static String getNameForRecipe(MaterialLike material, FlagKey<?> flagKey) {
-        if (material.asMaterial().getFlag(flagKey) instanceof IIdPattern idPattern) {
-            String namespacePrefix = Objects.equals(material.asMaterial().getNamespace(), "rutile") ? "" : material.asMaterial().getNamespace() + "_";
-            return namespacePrefix + idPattern.getIdPattern().formatted(material.asMaterial().getName());
-        } else throw new IllegalArgumentException("FlagKey: " + flagKey.toString() + " does not implement IIdPattern and thus cannot be used for a recipe path.");
-    }
-
-    public static boolean hasExternalId(MaterialLike material, FlagKey<?> flagKey) {
-        return material.asMaterial().noRegister(flagKey);
+    public static boolean namespaceMatch(MaterialLike material, ResourceLocation location) {
+        return material.asMaterial().getId().getNamespace().equals(location.getNamespace());
     }
 }

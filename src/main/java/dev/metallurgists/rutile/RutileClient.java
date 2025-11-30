@@ -20,7 +20,7 @@ public class RutileClient {
     public static class ClientEvents {
         @SubscribeEvent
         public static void onItemTooltip(ItemTooltipEvent event) {
-            CompositionTooltipHandler.addToTooltip(event.getToolTip(), event.getItemStack(), Objects.requireNonNull(event.getContext().registries()));
+            CompositionTooltipHandler.addToTooltip(event.getToolTip(), event.getItemStack(), event.getContext().registries());
         }
     }
 }

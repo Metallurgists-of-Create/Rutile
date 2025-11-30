@@ -1,7 +1,7 @@
 package dev.metallurgists.rutile.api.material.registry.block;
 
 import dev.metallurgists.rutile.api.material.base.Material;
-import dev.metallurgists.rutile.api.material.flag.types.IBlockRegistry;
+import dev.metallurgists.rutile.api.material.builder.MaterialBlockBuilder;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
@@ -11,13 +11,13 @@ import net.minecraft.world.level.block.state.StateDefinition;
 
 public class AxisMaterialBlock extends MaterialBlock{
 
-    public AxisMaterialBlock(Properties properties, Material material, IBlockRegistry blockFlag, boolean registerModel) {
-        super(properties, material, blockFlag, registerModel);
+    public AxisMaterialBlock(Properties properties, Material material, MaterialBlockBuilder blockBuilder, boolean registerModel) {
+        super(properties, material, blockBuilder, registerModel);
         this.registerDefaultState(this.defaultBlockState().setValue(AXIS, Direction.Axis.Y));
     }
 
-    public AxisMaterialBlock(Properties properties, Material material, IBlockRegistry blockFlag) {
-        this(properties, material, blockFlag, true);
+    public AxisMaterialBlock(Properties properties, Material material, MaterialBlockBuilder blockBuilder) {
+        this(properties, material, blockBuilder, true);
     }
 
     public BlockState rotate(BlockState state, Rotation rot) {

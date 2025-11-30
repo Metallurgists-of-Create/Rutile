@@ -1,15 +1,12 @@
 package dev.metallurgists.rutile.compat.jei.custom.element;
 
-import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.element.Element;
-import dev.metallurgists.rutile.registry.RutileElements;
+import dev.metallurgists.rutile.api.composition.element.ElementStack;
 import lombok.RequiredArgsConstructor;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import net.createmod.catnip.animation.AnimationTickHolder;
-import net.createmod.catnip.platform.CatnipClientServices;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -31,7 +28,7 @@ import java.util.Optional;
 @SuppressWarnings("removal")
 @ParametersAreNonnullByDefault
 @RequiredArgsConstructor
-public class ElementIngredientRenderer implements IIngredientRenderer<Element> {
+public class ElementIngredientRenderer implements IIngredientRenderer<ElementStack> {
     private final int size;
 
     @Override
@@ -45,16 +42,16 @@ public class ElementIngredientRenderer implements IIngredientRenderer<Element> {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, Element element) {
+    public void render(GuiGraphics guiGraphics, ElementStack element) {
         render(guiGraphics, element, 0, 0);
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, @NotNull Element element, int posX, int posY) {
+    public void render(GuiGraphics guiGraphics, @NotNull ElementStack element, int posX, int posY) {
         if (element != null) {
             RenderSystem.enableBlend();
 
-            drawFluid(guiGraphics, 16, 16, element, posX, posY);
+            drawFluid(guiGraphics, 16, 16, element.getElement(), posX, posY);
 
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
@@ -142,11 +139,11 @@ public class ElementIngredientRenderer implements IIngredientRenderer<Element> {
     }
 
     @Override
-    public @NotNull List<Component> getTooltip(Element element, TooltipFlag flag) {
+    public @NotNull List<Component> getTooltip(ElementStack element, TooltipFlag flag) {
         List<Component> tooltip = new ArrayList<>();
-        tooltip.add(element.getDisplayName());
+        tooltip.add(element.getElement().getDisplayName());
         if (flag.isAdvanced()) {
-            tooltip.add((Component.literal(element.getId().toString())).withStyle(ChatFormatting.DARK_GRAY));
+            tooltip.add((Component.literal(element.id().toString())).withStyle(ChatFormatting.DARK_GRAY));
         }
         return tooltip;
     }

@@ -2,11 +2,7 @@ package dev.metallurgists.rutile.api.registrate;
 
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.util.OneTimeEventReceiver;
-import com.tterrag.registrate.util.nullness.NonNullBiFunction;
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.material.base.Material;
-import dev.metallurgists.rutile.api.material.base.MaterialFlags;
-import dev.metallurgists.rutile.api.registrate.builder.MaterialBuilder;
 import dev.metallurgists.rutile.mixin.registrate.AbstractRegistrateAccessor;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.neoforged.bus.api.EventPriority;

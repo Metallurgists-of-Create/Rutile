@@ -3,7 +3,6 @@ package dev.metallurgists.rutile.api.material.base;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.registry.RutileAPI;
 import dev.metallurgists.rutile.registry.RutileMaterials;
-import dev.metallurgists.rutile.registry.RutileRegistries;
 import dev.metallurgists.rutile.util.ClientUtil;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -53,7 +52,7 @@ public record MaterialStack(@NotNull Material material, long amount) {
         }
 
         ResourceLocation key = Rutile.id(copy);
-        Material mat = RutileAPI.materialRegistry.getOptional(key).orElse(RutileMaterials.Null);
+        Material mat = RutileAPI.getMaterialRegistry().getOptional(key).orElse(RutileMaterials.Null);
         cached = new MaterialStack(mat, count);
         PARSE_CACHE.put(trimmed, cached);
         return cached;

@@ -20,13 +20,13 @@ public class CompositionTooltipHandler {
         boolean notAMaterialCheckSingleCompositions = false;
         var itemLookup = registries.lookupOrThrow(CustomRutileRegistries.ITEM_COMPOSITION_REGISTRY);
         var materialLookup = registries.lookupOrThrow(CustomRutileRegistries.MATERIAL_COMPOSITION_REGISTRY);
-        for (Material material : RutileAPI.materialRegistry) {
+        for (Material material : RutileAPI.getMaterialRegistry().getAll()) {
             var validComp = materialLookup.listElements().filter(m -> m.value().material().equals(material)).map(r -> r.value().compositions()).toList();
             if (!validComp.isEmpty()) {
                 var allMatItem = MaterialHelpers.getAllMaterialItemsForTooltips(material);
                 if (allMatItem.contains(stack.getItem())) {
                     LangBuilder compositionName = ClientUtil.lang();
-                    createTooltip(compositionName, validComp.getFirst(), registries);
+                    createTooltip(compositionName, validComp.getFirst());
                     add(toolTip, compositionName);
                     break;
                 }
@@ -39,7 +39,7 @@ public class CompositionTooltipHandler {
             if (!validComp.isEmpty()) {
                 var comp = validComp.getFirst();
                 LangBuilder compositionName = ClientUtil.lang();
-                createTooltip(compositionName, comp, registries);
+                createTooltip(compositionName, comp);
                 add(toolTip, compositionName);
             }
         }
@@ -57,7 +57,7 @@ public class CompositionTooltipHandler {
         }
     }
 
-    private static void createTooltip(LangBuilder compositionName, List<SubComposition> subCompositions, HolderLookup.Provider registries) {
+    public static void createTooltip(LangBuilder compositionName, List<SubComposition> subCompositions) {
         for (SubComposition composition : subCompositions) {
             if (composition == null) continue;
             LangBuilder subComp = ClientUtil.lang();

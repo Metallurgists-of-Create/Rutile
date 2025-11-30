@@ -2,15 +2,15 @@ package dev.metallurgists.rutile.api.material.registry.fluid;
 
 import com.google.common.base.Preconditions;
 import com.tterrag.registrate.util.nullness.NonNullFunction;
-import dev.metallurgists.rutile.api.material.flag.FlagKey;
-import dev.metallurgists.rutile.api.material.flag.types.IFluidRegistry;
+import dev.metallurgists.rutile.api.material.builder.FlagSource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.world.level.material.Fluid;
 
 @RequiredArgsConstructor
 public class FluidFlagProperties {
     @Getter
-    final FlagKey<? extends IFluidRegistry> flagKey;
+    final FlagSource<Fluid> flagSource;
 
     /**
      * Example: "%s/%s"<p>%s(1) -> Material path</p>%s(2) -> Flag Key name (_flow appended to end)
@@ -74,16 +74,16 @@ public class FluidFlagProperties {
         return this;
     }
 
-    public static Builder b(FlagKey<? extends IFluidRegistry> flag) {
-        return new Builder(flag);
+    public static Builder b(FlagSource<Fluid> flagSource) {
+        return new Builder(flagSource);
     }
 
     @RequiredArgsConstructor
     public static class Builder {
         @Getter
-        final FlagKey<? extends IFluidRegistry> flagKey;
+        final FlagSource<Fluid> flagSource;
 
-        NonNullFunction<FlagKey<? extends IFluidRegistry>, FluidFlagProperties> propsCallback = FluidFlagProperties::new;
+        NonNullFunction<FlagSource<Fluid>, FluidFlagProperties> propsCallback = FluidFlagProperties::new;
 
         public Builder texture(String texture) {
             propsCallback.andThen(p -> p.setTextureFormat(texture));
@@ -116,7 +116,7 @@ public class FluidFlagProperties {
         }
 
         public FluidFlagProperties build() {
-            return propsCallback.apply(flagKey);
+            return propsCallback.apply(flagSource);
         }
     }
 
