@@ -1,5 +1,6 @@
 package dev.metallurgists.rutile.mixin.plugin;
 
+
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -20,7 +21,7 @@ public class RutileMixinsPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return true;
+        return false;
     }
 
     @Override

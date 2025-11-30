@@ -1,13 +1,6 @@
 package dev.metallurgists.rutile;
 
 import com.mojang.logging.LogUtils;
-import dev.metallurgists.rutile.api.plugin.PluginRegistry;
-import dev.metallurgists.rutile.api.registrate.RutileRegistrate;
-import dev.metallurgists.rutile.api.registry.RutileAPI;
-import dev.metallurgists.rutile.common.CommonInit;
-import dev.metallurgists.rutile.events.RutileEventHandler;
-import dev.metallurgists.rutile.registry.ElementRegistry;
-import dev.metallurgists.rutile.registry.MaterialRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -16,7 +9,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
@@ -29,46 +21,22 @@ public class Rutile {
     public static final String DISPLAY_NAME = "Rutile";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static final RutileRegistrate registrate = RutileRegistrate.create(ID);
 
     private final IEventBus modEventBus;
 
-    public Rutile(IEventBus modEventBus) throws NoSuchFieldException, IllegalAccessException {
-        RutileAPI.instance = this;
+    public Rutile(IEventBus modEventBus) {
         this.modEventBus = modEventBus;
         INSTANCE = this;
-        initAPI(this);
-        PluginRegistry.getInstance().loadPlugins();
-
-        new RutileEventHandler(modEventBus).register();
         Rutile.init();
     }
 
     public static void init() {
         LOGGER.info("{} is initializing...", DISPLAY_NAME);
-        CommonInit.init(INSTANCE.modEventBus);
         RutileClient.init();
     }
 
     @SubscribeEvent
     public void onCommonSetup(FMLCommonSetupEvent event) {
-        RutileAPI.getMaterialRegistry().onCommonSetup();
-        RutileAPI.getElementRegistry().onCommonSetup();
-    }
-
-    private static void initAPI(Rutile rutile) throws NoSuchFieldException, IllegalAccessException {
-        var api = RutileAPI.class;
-
-        var instance = api.getDeclaredField("instance");
-        var materialRegistry = api.getDeclaredField("materialRegistry");
-        var elementRegistry = api.getDeclaredField("elementRegistry");
-
-        materialRegistry.setAccessible(true);
-        materialRegistry.set(null, MaterialRegistry.getInstance());
-        elementRegistry.setAccessible(true);
-        elementRegistry.set(null, ElementRegistry.getInstance());
-        instance.setAccessible(true);
-        instance.set(null, rutile);
     }
 
     public static ResourceLocation id(String path) {
@@ -93,9 +61,5 @@ public class Rutile {
 
     public static boolean isClientSide() {
         return FMLEnvironment.dist.isClient();
-    }
-
-    public static @NotNull RutileRegistrate registrate() {
-        return registrate;
     }
 }
