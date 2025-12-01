@@ -1,6 +1,13 @@
 package dev.metallurgists.rutile;
 
 import com.mojang.logging.LogUtils;
+import dev.metallurgists.rutile.api.RutileApi;
+import dev.metallurgists.rutile.api.data.ItemCompositionManager;
+import dev.metallurgists.rutile.api.data.MaterialCompositionManager;
+import dev.metallurgists.rutile.api.plugin.PluginRegistry;
+import dev.metallurgists.rutile.api.registry.ElementRegistry;
+import dev.metallurgists.rutile.api.registry.MaterialRegistry;
+import dev.metallurgists.rutile.events.CommonEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -9,6 +16,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
@@ -21,13 +29,19 @@ public class Rutile {
     public static final String DISPLAY_NAME = "Rutile";
     public static final Logger LOGGER = LogUtils.getLogger();
 
+    public static final RutileRegistrate registrate = RutileRegistrate.create(ID);
 
     private final IEventBus modEventBus;
 
-    public Rutile(IEventBus modEventBus) {
+    public Rutile(IEventBus modEventBus) throws NoSuchFieldException, IllegalAccessException {
         this.modEventBus = modEventBus;
         INSTANCE = this;
-        Rutile.init();
+
+        initAPI();
+
+        CommonEvents.init(INSTANCE.modEventBus);
+
+        PluginRegistry.getInstance().loadPlugins();
     }
 
     public static void init() {
@@ -37,7 +51,9 @@ public class Rutile {
 
     @SubscribeEvent
     public void onCommonSetup(FMLCommonSetupEvent event) {
+
     }
+
 
     public static ResourceLocation id(String path) {
         if (path.contains(":")) {
@@ -61,5 +77,27 @@ public class Rutile {
 
     public static boolean isClientSide() {
         return FMLEnvironment.dist.isClient();
+    }
+
+    public static @NotNull RutileRegistrate registrate() {
+        return registrate;
+    }
+
+    private static void initAPI() throws NoSuchFieldException, IllegalAccessException {
+        var api = RutileApi.class;
+
+        var materialRegistry = api.getDeclaredField("materialRegistry");
+        var elementRegistry = api.getDeclaredField("elementRegistry");
+        var itemCompositionManager = api.getDeclaredField("itemCompositionManager");
+        var materialCompositionManager = api.getDeclaredField("materialCompositionManager");
+
+        materialRegistry.setAccessible(true);
+        materialRegistry.set(null, MaterialRegistry.getInstance());
+        elementRegistry.setAccessible(true);
+        elementRegistry.set(null, ElementRegistry.getInstance());
+        itemCompositionManager.setAccessible(true);
+        itemCompositionManager.set(null, ItemCompositionManager.getInstance());
+        materialCompositionManager.setAccessible(true);
+        materialCompositionManager.set(null, MaterialCompositionManager.getInstance());
     }
 }

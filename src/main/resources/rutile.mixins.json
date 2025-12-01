@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "plugin": "dev.metallurgists.rutile.mixin.plugin.RutileMixinsPlugin",
   "mixins": [
+    "registrate.AbstractRegistrateAccessor"
   ],
   "client": [
   ],
