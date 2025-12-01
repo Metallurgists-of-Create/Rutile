@@ -1,10 +1,11 @@
-package dev.metallurgists.rutile.api.data;
+package dev.metallurgists.rutile.api.data.manager.composition;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.JsonOps;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.Composition;
+import dev.metallurgists.rutile.api.data.manager.AbstractReloadManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;

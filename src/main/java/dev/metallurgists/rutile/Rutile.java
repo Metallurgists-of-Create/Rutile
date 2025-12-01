@@ -2,16 +2,19 @@ package dev.metallurgists.rutile;
 
 import com.mojang.logging.LogUtils;
 import dev.metallurgists.rutile.api.RutileApi;
-import dev.metallurgists.rutile.api.data.ItemCompositionManager;
-import dev.metallurgists.rutile.api.data.MaterialCompositionManager;
+import dev.metallurgists.rutile.api.data.manager.composition.ItemCompositionManager;
+import dev.metallurgists.rutile.api.data.manager.composition.MaterialCompositionManager;
 import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import dev.metallurgists.rutile.api.registry.ElementRegistry;
 import dev.metallurgists.rutile.api.registry.MaterialRegistry;
+import dev.metallurgists.rutile.api.registry.TagPrefixRegistry;
+import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.events.CommonEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -35,13 +38,16 @@ public class Rutile {
 
     public Rutile(IEventBus modEventBus) throws NoSuchFieldException, IllegalAccessException {
         this.modEventBus = modEventBus;
+        ModLoadingContext modLoadingContext = ModLoadingContext.get();
         INSTANCE = this;
 
         initAPI();
-
+        RutileConfig.register(modLoadingContext);
         CommonEvents.init(INSTANCE.modEventBus);
 
         PluginRegistry.getInstance().loadPlugins();
+
+        modEventBus.addListener(RutileDataGen::gatherDataEvent);
     }
 
     public static void init() {
@@ -88,6 +94,7 @@ public class Rutile {
 
         var materialRegistry = api.getDeclaredField("materialRegistry");
         var elementRegistry = api.getDeclaredField("elementRegistry");
+        var tagPrefixRegistry = api.getDeclaredField("tagPrefixRegistry");
         var itemCompositionManager = api.getDeclaredField("itemCompositionManager");
         var materialCompositionManager = api.getDeclaredField("materialCompositionManager");
 
@@ -95,6 +102,8 @@ public class Rutile {
         materialRegistry.set(null, MaterialRegistry.getInstance());
         elementRegistry.setAccessible(true);
         elementRegistry.set(null, ElementRegistry.getInstance());
+        tagPrefixRegistry.setAccessible(true);
+        tagPrefixRegistry.set(null, TagPrefixRegistry.getInstance());
         itemCompositionManager.setAccessible(true);
         itemCompositionManager.set(null, ItemCompositionManager.getInstance());
         materialCompositionManager.setAccessible(true);

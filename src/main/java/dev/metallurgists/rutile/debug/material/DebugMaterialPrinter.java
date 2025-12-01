@@ -5,7 +5,6 @@ import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.debug.DebugPrinter;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 public class DebugMaterialPrinter implements DebugPrinter {
@@ -13,8 +12,7 @@ public class DebugMaterialPrinter implements DebugPrinter {
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug");
         for (Material material : RutileApi.getMaterialRegistry().getAll()) {
             MaterialJson materialJson = new MaterialJson(material);
-            byte[] materialBytes = materialJson.json().toString().getBytes(StandardCharsets.UTF_8);
-            new DebugMaterialPrinter().writeJson(materialJson.getName(), "materials", parent, materialBytes);
+            new DebugMaterialPrinter().writeJson(materialJson.getName(), "materials", parent, materialJson.json());
         }
     }
 }

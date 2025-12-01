@@ -57,4 +57,12 @@ public class Element implements IDisplayedName {
         }
         return this.descriptionId;
     }
+
+    public ElementStack asStack() {
+        return ElementStack.of(this);
+    }
+
+    public ElementStack asStack(int amount) {
+        return ElementStack.of(this, amount);
+    }
 }

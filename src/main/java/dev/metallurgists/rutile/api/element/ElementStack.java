@@ -31,8 +31,16 @@ public class ElementStack implements ISerializable {
         return new ElementStack(id, 1);
     }
 
+    public static ElementStack of(ResourceLocation id, int amount) {
+        return new ElementStack(id, amount);
+    }
+
     public static ElementStack of(Element element) {
         return new ElementStack(element.getId(), 1);
+    }
+
+    public static ElementStack of(Element element, int amount) {
+        return new ElementStack(element.getId(), amount);
     }
 
     public Element getElement() {

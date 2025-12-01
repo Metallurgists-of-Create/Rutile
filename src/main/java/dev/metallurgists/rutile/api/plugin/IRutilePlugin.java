@@ -3,6 +3,7 @@ package dev.metallurgists.rutile.api.plugin;
 import dev.metallurgists.rutile.api.element.Element;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.registry.IRutileRegistry;
+import dev.metallurgists.rutile.api.tag.TagPrefix;
 
 public interface IRutilePlugin {
     /**
@@ -34,4 +35,8 @@ public interface IRutilePlugin {
      * @param registry the element registry
      */
     default void onPostRegisterElements(IRutileRegistry<Element> registry) { }
+
+    default void onRegisterTagPrefixes(IRutileRegistry<TagPrefix> registry) { }
+
+    default void onPostRegisterTagPrefixes(IRutileRegistry<TagPrefix> registry) { }
 }

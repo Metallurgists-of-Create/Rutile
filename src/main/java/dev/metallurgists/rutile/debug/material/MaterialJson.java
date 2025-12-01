@@ -1,8 +1,12 @@
 package dev.metallurgists.rutile.debug.material;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.material.Material;
+import dev.metallurgists.rutile.api.material.MaterialInfo;
+import dev.metallurgists.rutile.api.material.flags.MaterialFlags;
 import net.minecraft.resources.ResourceLocation;
 
 public class MaterialJson {
@@ -25,29 +29,23 @@ public class MaterialJson {
 
     public void writeInfo(JsonObject json) {
         JsonObject jsonObject = new JsonObject();
-        //MaterialInfo materialInfo = material.materialInfo();
-        //jsonObject.addProperty("color", materialInfo.colour());
-        //jsonObject.addProperty("melting_point", materialInfo.meltingPoint());
-        //jsonObject.addProperty("composition", composition());
+        MaterialInfo materialInfo = material.getInfo();
+        jsonObject.addProperty("color", materialInfo.getColour());
+        Composition composition = materialInfo.getComposition();
+        if (composition != null) {
+            jsonObject.addProperty("composition", composition.getString());
+        }
         json.add("info", jsonObject);
     }
 
     public void writeFlags(JsonObject json) {
-        JsonObject jsonObject = new JsonObject();
-        //MaterialFlags materialFlags = material.getFlags();
-        //for (var c : materialFlags.getFlagContainers()) {
-        //    JsonObject objects = new JsonObject();
-        //    for (var obj : c.getObjects().entrySet()) {
-        //        objects.addProperty(obj.getKey().rlForm(), obj.getValue().toString());
-        //    }
-        //    JsonObject builders = new JsonObject();
-        //    for (var build : c.getBuilders().entrySet()) {
-        //        var builder = build.getValue().setMaterialKey(material.getId());
-        //        builders.addProperty(build.getKey().rlForm(), builder.getObjectId().toString());
-        //    }
-        //    jsonObject.add("objects", objects);
-        //    jsonObject.add("builders", builders);
-        //}
-        json.add("flags", jsonObject);
+        MaterialFlags materialFlags = material.getFlags();
+        JsonArray jsonArray = new JsonArray();
+        for (var c : materialFlags.getFlagKeys()) {
+            JsonObject flagDebug = material.getFlag(c).debugJson();
+            flagDebug.addProperty("id", c.getKey());
+            jsonArray.add(flagDebug);
+        }
+        json.add("flags", jsonArray);
     }
 }

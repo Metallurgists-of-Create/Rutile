@@ -1,4 +1,4 @@
-package dev.metallurgists.rutile.api.data;
+package dev.metallurgists.rutile.api.data.manager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

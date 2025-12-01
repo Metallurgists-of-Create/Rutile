@@ -28,8 +28,7 @@ public class DebugElementPrinter implements DebugPrinter {
             });
         }
         ElementJson elementJson = new ElementJson(groupedElements);
-        byte[] bytes = elementJson.json().toString().getBytes(StandardCharsets.UTF_8);
-        new DebugMaterialPrinter().writeJson(Rutile.id("elements"), "", parent, bytes);
+        new DebugMaterialPrinter().writeJson(Rutile.id("elements"), "", parent, elementJson.json());
     }
 
     static class ElementJson {
@@ -45,7 +44,7 @@ public class DebugElementPrinter implements DebugPrinter {
             for (Map.Entry<String, List<Element>> entry : elements.entrySet()) {
                 JsonArray jsonArray = new JsonArray();
                 for (Element element : entry.getValue()) {
-                    jsonArray.add(element.getName() + "[" + element.getSymbol() + "]");
+                    jsonArray.add(element.getName() + " [" + element.getSymbol() + "]");
                 }
                 jsonObject.add(entry.getKey(), jsonArray);
             }

@@ -5,9 +5,16 @@
   "compatibilityLevel": "JAVA_21",
   "plugin": "dev.metallurgists.rutile.mixin.plugin.RutileMixinsPlugin",
   "mixins": [
+    "BlockBehaviourAccessor",
+    "RecipeManagerEarlyMixin",
+    "RecipeManagerLateMixin",
+    "ReloadableServerResourcesMixin",
+    "TagLoaderMixin",
+    "TagManagerMixin",
     "registrate.AbstractRegistrateAccessor"
   ],
   "client": [
+    "ModelManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1,

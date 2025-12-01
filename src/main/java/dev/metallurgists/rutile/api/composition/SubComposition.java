@@ -17,7 +17,7 @@ public class SubComposition implements ISerializable {
 
     @Getter
     @Setter
-    private int amount;
+    private int amount = 1;
     @Getter
     private final List<ElementStack> elements;
 
@@ -28,10 +28,6 @@ public class SubComposition implements ISerializable {
     public SubComposition(List<ElementStack> elements, int amount) {
         this.elements = elements;
         this.amount = amount;
-    }
-
-    public boolean shouldHaveBrackets() {
-        return getElements().size() > 1;
     }
 
     public ElementStack getElement(int index) {

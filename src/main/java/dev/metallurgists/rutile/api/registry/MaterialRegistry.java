@@ -14,7 +14,10 @@ import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import dev.metallurgists.rutile.api.registrate.MaterialLangGenerator;
 import dev.metallurgists.rutile.debug.material.DebugMaterialPrinter;
 import dev.metallurgists.rutile.mixin.registrate.AbstractRegistrateAccessor;
+import dev.metallurgists.rutile.registry.RutileMaterialBlocks;
+import dev.metallurgists.rutile.registry.RutileMaterialItems;
 import lombok.Setter;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
@@ -30,6 +33,7 @@ public class MaterialRegistry implements IRutileRegistry<Material> {
 
     @Setter
     private boolean allowRegistration = false;
+    @Setter
     private PluginConfig currentPluginConfig = null;
 
     @Override
@@ -70,25 +74,32 @@ public class MaterialRegistry implements IRutileRegistry<Material> {
         return INSTANCE;
     }
 
-    public void onRegisterObjects(RegisterEvent event) {
-        PluginRegistry.getInstance().forEach((plugin, config) -> {
-            this.currentPluginConfig = config;
-
-            plugin.onRegisterMaterials(this);
-        });
-
-        initializeMaterialObjects(event);
-
-        PluginRegistry.getInstance().forEach((plugin, config) -> plugin.onPostRegisterMaterials(this));
-        postInitMaterials();
-        this.currentPluginConfig = null;
+    @Override
+    public Optional<Material> getOptional(ResourceLocation key) {
+        Material material = getById(key);
+        return Optional.ofNullable(material);
     }
 
-    public void initializeMaterialObjects(RegisterEvent event) {
-        var materials = this.materials.values();
-        for (Material material : materials) {
+    public void onLoadComplete() {
+        Rutile.LOGGER.info("Loaded {} materials", this.materials.size());
+    }
 
-        }
+    public void registerAll() {
+        PluginRegistry.getInstance().forEach((plugin, config) -> {
+            this.setCurrentPluginConfig(config);
+            plugin.onRegisterMaterials(this);
+            Rutile.LOGGER.debug("Registered materials for plugin {}", config.getModId());
+        });
+
+        var materials = this.materials.values();
+        Rutile.LOGGER.info("Registered {} materials", materials.size());
+
+        PluginRegistry.getInstance().forEach((plugin, config) -> {
+            plugin.onPostRegisterMaterials(this);
+            Rutile.LOGGER.debug("Ran material post-registry for plugin {}", config.getModId());
+        });
+        postInitMaterials();
+        this.setCurrentPluginConfig(null);
     }
 
     private static void postInitMaterials() {
@@ -109,15 +120,5 @@ public class MaterialRegistry implements IRutileRegistry<Material> {
                     .map(ModContainer::getEventBus)
                     .ifPresent(registrate::registerEventListeners);
         });
-    }
-
-    @Override
-    public Optional<Material> getOptional(ResourceLocation key) {
-        Material material = getById(key);
-        return Optional.ofNullable(material);
-    }
-
-    public void onLoadComplete() {
-        Rutile.LOGGER.info("Loaded {} materials", this.materials.size());
     }
 }
