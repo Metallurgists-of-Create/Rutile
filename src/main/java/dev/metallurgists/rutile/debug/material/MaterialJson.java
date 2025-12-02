@@ -3,11 +3,15 @@ package dev.metallurgists.rutile.debug.material;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.MaterialInfo;
 import dev.metallurgists.rutile.api.material.flags.MaterialFlags;
+import net.createmod.catnip.lang.LangBuilder;
 import net.minecraft.resources.ResourceLocation;
+
+import static dev.metallurgists.rutile.api.composition.CompositionHandler.createTooltip;
 
 public class MaterialJson {
     private final Material material;
@@ -33,7 +37,9 @@ public class MaterialJson {
         jsonObject.addProperty("color", materialInfo.getColour());
         Composition composition = materialInfo.getComposition();
         if (composition != null) {
-            jsonObject.addProperty("composition", composition.getString());
+            LangBuilder compositionName = RutileClient.lang();
+            createTooltip(compositionName, composition);
+            jsonObject.addProperty("composition", compositionName.string());
         }
         json.add("info", jsonObject);
     }

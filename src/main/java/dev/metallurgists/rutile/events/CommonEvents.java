@@ -1,6 +1,7 @@
 package dev.metallurgists.rutile.events;
 
 import dev.metallurgists.rutile.Rutile;
+import dev.metallurgists.rutile.api.fluid.MaterialBucketItem;
 import dev.metallurgists.rutile.api.registry.ElementRegistry;
 import dev.metallurgists.rutile.api.registry.MaterialRegistry;
 import dev.metallurgists.rutile.api.registry.TagPrefixRegistry;
@@ -11,16 +12,22 @@ import dev.metallurgists.rutile.debug.material.DebugElementPrinter;
 import dev.metallurgists.rutile.debug.material.DebugMaterialPrinter;
 import dev.metallurgists.rutile.debug.material.DebugTagPrefixPrinter;
 import dev.metallurgists.rutile.registry.RutileMaterialBlocks;
+import dev.metallurgists.rutile.registry.RutileMaterialFluids;
 import dev.metallurgists.rutile.registry.RutileMaterialItems;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 public class CommonEvents {
@@ -55,6 +62,9 @@ public class CommonEvents {
         event.register(Registries.ITEM, registry -> {
             RutileMaterialItems.generateMaterialItems();
         });
+        event.register(Registries.FLUID, registry -> {
+            RutileMaterialFluids.generateMaterialFluids();
+        });
     }
 
 
@@ -86,6 +96,16 @@ public class CommonEvents {
                     event.getPackType(),
                     Pack.Position.BOTTOM,
                     RutileDynamicDataPack::new));
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        for (Item item : BuiltInRegistries.ITEM) {
+            if (item instanceof MaterialBucketItem) {
+                event.registerItem(Capabilities.FluidHandler.ITEM,
+                        (stack, ctx) -> new FluidBucketWrapper(stack), item);
+            }
         }
     }
 }

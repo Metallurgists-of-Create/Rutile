@@ -1,12 +1,14 @@
 package dev.metallurgists.rutile.api.material.flags;
 
-import dev.metallurgists.rutile.api.registry.flags.BurnableFlag;
-import dev.metallurgists.rutile.api.registry.flags.GemFlag;
-import dev.metallurgists.rutile.api.registry.flags.HarvestTierFlag;
-import dev.metallurgists.rutile.api.registry.flags.IngotFlag;
+import dev.metallurgists.rutile.api.registry.flags.*;
 import lombok.Getter;
 
 public class FlagKey<T extends IMaterialFlag> {
+    // For Fluids
+    public static final FlagKey<FluidFlag> FLUID = new FlagKey<>("fluid", FluidFlag.class);
+    public static final FlagKey<ViscosityFlag> VISCOSITY = new FlagKey<>("viscosity", ViscosityFlag.class);
+    public static final FlagKey<LuminosityFlag> LUMINOSITY = new FlagKey<>("luminosity", LuminosityFlag.class);
+
     // For Prefixes
     public static final FlagKey<GemFlag> GEM = new FlagKey<>("gem", GemFlag.class);
     public static final FlagKey<IngotFlag> INGOT = new FlagKey<>("ingot", IngotFlag.class);

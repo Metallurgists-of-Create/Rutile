@@ -11,6 +11,7 @@
     "ReloadableServerResourcesMixin",
     "TagLoaderMixin",
     "TagManagerMixin",
+    "jei.FluidHelperMixin",
     "registrate.AbstractRegistrateAccessor"
   ],
   "client": [

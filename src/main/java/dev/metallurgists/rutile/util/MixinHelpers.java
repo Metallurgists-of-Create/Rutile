@@ -2,9 +2,15 @@ package dev.metallurgists.rutile.util;
 
 import com.tterrag.registrate.util.entry.BlockEntry;
 import dev.metallurgists.rutile.api.RutileApi;
+import dev.metallurgists.rutile.api.fluid.FluidState;
+import dev.metallurgists.rutile.api.fluid.MaterialFluid;
+import dev.metallurgists.rutile.api.fluid.RutileClientFluidTypeExtensions;
+import dev.metallurgists.rutile.api.fluid.storage.FluidStorage;
+import dev.metallurgists.rutile.api.fluid.storage.FluidStorageKey;
 import dev.metallurgists.rutile.api.material.ItemMaterialData;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
+import dev.metallurgists.rutile.api.registry.flags.FluidFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.mixin.BlockBehaviourAccessor;
 import dev.metallurgists.rutile.registry.RutileMaterialBlocks;
@@ -27,11 +33,9 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.apache.commons.lang3.function.TriConsumer;
 
 import java.util.ArrayList;
@@ -87,42 +91,41 @@ public class MixinHelpers {
                     }
                 }
             });
-        } //else
-            //if (registry == BuiltInRegistries.FLUID) {
-            //for (Material material : RutileApi.getMaterialRegistry().getAll()) {
-            //    FluidFlag flag = material.getFlag(FlagKey.FLUID);
-            //    if (flag == null) {
-            //        continue;
-            //    }
-            //    for (FluidStorageKey key : FluidStorageKey.allKeys()) {
-            //        Fluid fluid = flag.get(key);
-            //        if (fluid == null) {
-            //            continue;
-            //        }
-            //        ItemMaterialData.FLUID_MATERIAL.put(fluid, material);
-//
-            //        TagLoader.EntryWithSource entry = makeFluidEntry(fluid);
-//
-            //        ResourceLocation fluidIdTag = fluid.builtInRegistryHolder().key().location();
-            //        fluidIdTag = ResourceLocation.fromNamespaceAndPath("c", fluidIdTag.getPath());
-            //        tagMap.computeIfAbsent(fluidIdTag, path -> new ArrayList<>()).add(entry);
-//
-            //        FluidState state;
-            //        if (fluid instanceof MaterialFluid materialFluid) {
-            //            state = materialFluid.getState();
-            //        } else {
-            //            state = key.getDefaultFluidState();
-            //        }
-            //        if (state != null) {
-            //            tagMap.computeIfAbsent(state.getTagKey().location(), path -> new ArrayList<>()).add(entry);
-            //        }
-//
-            //        if (key.getExtraTag() != null) {
-            //            tagMap.computeIfAbsent(key.getExtraTag().location(), path -> new ArrayList<>()).add(entry);
-            //        }
-            //    }
-            //}
-        //}
+        } else if (registry == BuiltInRegistries.FLUID) {
+            for (Material material : RutileApi.getMaterialRegistry().getAll()) {
+                FluidFlag flag = material.getFlag(FlagKey.FLUID);
+                if (flag == null) {
+                    continue;
+                }
+                for (FluidStorageKey key : FluidStorageKey.allKeys()) {
+                    Fluid fluid = flag.get(key);
+                    if (fluid == null) {
+                        continue;
+                    }
+                    ItemMaterialData.FLUID_MATERIAL.put(fluid, material);
+
+                    TagLoader.EntryWithSource entry = makeFluidEntry(fluid);
+
+                    ResourceLocation fluidIdTag = fluid.builtInRegistryHolder().key().location();
+                    fluidIdTag = ResourceLocation.fromNamespaceAndPath("c", fluidIdTag.getPath());
+                    tagMap.computeIfAbsent(fluidIdTag, path -> new ArrayList<>()).add(entry);
+
+                    FluidState state;
+                    if (fluid instanceof MaterialFluid materialFluid) {
+                        state = materialFluid.getState();
+                    } else {
+                        state = key.getDefaultFluidState();
+                    }
+                    if (state != null) {
+                        tagMap.computeIfAbsent(state.getTagKey().location(), path -> new ArrayList<>()).add(entry);
+                    }
+
+                    if (key.getExtraTag() != null) {
+                        tagMap.computeIfAbsent(key.getExtraTag().location(), path -> new ArrayList<>()).add(entry);
+                    }
+                }
+            }
+        }
     }
 
     private static <T> Collector<T, ?, ArrayList<T>> toArrayList() {
@@ -179,13 +182,13 @@ public class MixinHelpers {
         });
     }
 
-    //public static void addFluidTexture(Material material, FluidStorage.FluidEntry value) {
-    //    IClientFluidTypeExtensions extensions = IClientFluidTypeExtensions.of(value.getFluid().get());
-    //    if (extensions instanceof GTClientFluidTypeExtensions gtExtensions && value.getBuilder() != null) {
-    //        value.getBuilder().determineTextures(material, value.getKey());
+    public static void addFluidTexture(Material material, FluidStorage.FluidEntry value) {
+        IClientFluidTypeExtensions extensions = IClientFluidTypeExtensions.of(value.getFluid().get());
+        if (extensions instanceof RutileClientFluidTypeExtensions rutileExtensions && value.getBuilder() != null) {
+            value.getBuilder().determineTextures(material, value.getKey());
 
-    //        gtExtensions.setFlowingTexture(value.getBuilder().flowing());
-    //        gtExtensions.setStillTexture(value.getBuilder().still());
-    //    }
-    //}
+            rutileExtensions.setFlowingTexture(value.getBuilder().flowing());
+            rutileExtensions.setStillTexture(value.getBuilder().still());
+        }
+    }
 }

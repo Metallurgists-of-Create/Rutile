@@ -2,7 +2,9 @@ package dev.metallurgists.rutile.registry;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
+import dev.metallurgists.rutile.api.material.flags.MaterialFlags;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
+import net.minecraft.tags.BlockTags;
 
 import static dev.metallurgists.rutile.api.tag.TagPrefix.Conditions.hasFlag;
 
@@ -14,8 +16,15 @@ public class RutileTagPrefixes {
             .materialAmount(TagPrefix.M)
             .unificationEnabled(true)
             .generateItem(true)
-            .generationCondition(hasFlag(FlagKey.INGOT))
-            ;
+            .generationCondition(hasFlag(FlagKey.INGOT));
+
+    public static final TagPrefix Nugget = new TagPrefix(Rutile.id("nugget"))
+            .defaultTagPath("nuggets/%s")
+            .unformattedTagPath("nuggets")
+            .materialAmount(TagPrefix.M / 9)
+            .unificationEnabled(true)
+            .generateItem(true)
+            .generationCondition(hasFlag(FlagKey.INGOT));
 
     public static final TagPrefix Gem = new TagPrefix(Rutile.id("gem"))
             .defaultTagPath("gems/%s")
@@ -24,6 +33,16 @@ public class RutileTagPrefixes {
             .materialAmount(TagPrefix.M)
             .unificationEnabled(true)
             .generateItem(true)
-            .generationCondition(hasFlag(FlagKey.GEM))
-            ;
+            .generationCondition(hasFlag(FlagKey.GEM));
+
+    public static final TagPrefix Block = new TagPrefix(Rutile.id("block"))
+            .defaultTagPath("storage_blocks/%s")
+            .unformattedTagPath("storage_blocks")
+            .langValue("Block of %s")
+            .materialAmount(TagPrefix.M * 9)
+            .miningToolTag(BlockTags.MINEABLE_WITH_PICKAXE)
+            .generateBlock(true)
+            .generationCondition(material -> material.hasFlag(FlagKey.INGOT) ||
+                    material.hasFlag(FlagKey.GEM))
+            .unificationEnabled(true);
 }

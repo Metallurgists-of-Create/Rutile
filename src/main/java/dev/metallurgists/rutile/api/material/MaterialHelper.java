@@ -3,9 +3,12 @@ package dev.metallurgists.rutile.api.material;
 import com.mojang.datafixers.util.Pair;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.RutileApi;
+import dev.metallurgists.rutile.api.fluid.storage.FluidStorageKey;
+import dev.metallurgists.rutile.api.material.flags.FlagKey;
 import dev.metallurgists.rutile.api.material.stack.ItemMaterialInfo;
 import dev.metallurgists.rutile.api.material.stack.MaterialEntry;
 import dev.metallurgists.rutile.api.material.stack.MaterialStack;
+import dev.metallurgists.rutile.api.registry.flags.FluidFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.api.tag.TagUtil;
 import dev.metallurgists.rutile.registry.RutileMaterials;
@@ -90,21 +93,21 @@ public class MaterialHelper {
         if (FLUID_MATERIAL.isEmpty()) {
             Set<TagKey<Fluid>> allFluidTags = BuiltInRegistries.FLUID.getTagNames().collect(Collectors.toSet());
             for (final Material material : RutileApi.getMaterialRegistry().getAll()) {
-                //if (material.hasProperty(PropertyKey.FLUID)) {
-                //    FluidProperty property = material.getProperty(PropertyKey.FLUID);
-                //    FluidStorageKey.allKeys().stream()
-                //            .map(property::get)
-                //            .filter(Objects::nonNull)
-                //            .map(f -> Pair.of(f, TagUtil.createFluidTag(BuiltInRegistries.FLUID.getKey(f).getPath())))
-                //            .filter(pair -> allFluidTags.contains(pair.getSecond()))
-                //            .forEach(pair -> {
-                //                allFluidTags.remove(pair.getSecond());
-                //                FLUID_MATERIAL.put(pair.getFirst(), material);
-                //            });
-                //}
+                if (material.hasFlag(FlagKey.FLUID)) {
+                    FluidFlag flag = material.getFlag(FlagKey.FLUID);
+                    FluidStorageKey.allKeys().stream()
+                            .map(flag::get)
+                            .filter(Objects::nonNull)
+                            .map(f -> Pair.of(f, TagUtil.createFluidTag(BuiltInRegistries.FLUID.getKey(f).getPath())))
+                            .filter(pair -> allFluidTags.contains(pair.getSecond()))
+                            .forEach(pair -> {
+                                allFluidTags.remove(pair.getSecond());
+                                FLUID_MATERIAL.put(pair.getFirst(), material);
+                            });
+                }
             }
         }
-        return FLUID_MATERIAL.getOrDefault(fluid, RutileMaterials.Null);
+        return FLUID_MATERIAL.get(fluid);
     }
 
     public static TagPrefix getPrefix(ItemLike itemLike) {
