@@ -1,6 +1,8 @@
 package dev.metallurgists.rutile.api.tag;
 
 import com.google.common.collect.Table;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import dev.metallurgists.rutile.Rutile;
@@ -10,6 +12,7 @@ import dev.metallurgists.rutile.api.material.ItemMaterialData;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
 import dev.metallurgists.rutile.api.material.flags.IMaterialFlag;
+import dev.metallurgists.rutile.api.material.flags.UnitFlag;
 import dev.metallurgists.rutile.api.material.registry.MaterialBlock;
 import dev.metallurgists.rutile.api.material.registry.MaterialBlockItem;
 import dev.metallurgists.rutile.api.material.registry.MaterialItem;
@@ -32,6 +35,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.common.util.TriPredicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -69,8 +74,75 @@ public class TagPrefix {
     }
 
     public static class Conditions {
-        public static <T extends IMaterialFlag> Predicate<Material> hasFlag(FlagKey<T> key) {
-            return mat -> mat.hasFlag(key);
+        public static <T extends IMaterialFlag> BiPredicate<Material, TagPrefix> hasFlag(FlagKey<T> key) {
+            return (mat, tag) -> mat.hasFlag(key);
+        }
+        public static BiPredicate<Material, TagPrefix> hasAnyFlag(FlagKey<?>... keys) {
+            return (mat, tag) -> {
+                for (FlagKey<?> key : keys) {
+                    if (mat.hasFlag(key)) return true;
+                }
+                return false;
+            };
+        }
+
+        public static <V, T extends UnitFlag<V>> BiPredicate<Material, TagPrefix> flagValue(FlagKey<T> key, TriPredicate<Material, TagPrefix, V> valuePredicate) {
+            return (mat, tag) -> {
+                if (!mat.hasFlag(key)) return true;
+                return valuePredicate.test(mat, tag, mat.getFlagValue(key));
+            };
+        }
+    }
+
+    public record BlockAssetProperties(BiFunction<Material, TagPrefix, JsonElement> model,
+                                       BiFunction<Material, TagPrefix, JsonElement> blockState,
+                                       BiFunction<Material, TagPrefix, JsonElement> itemModel) {
+        static BiFunction<Material, TagPrefix, JsonElement> EMPTY_FUNC = (m, t) -> new JsonObject();
+        public static BlockAssetProperties EMPTY = new BlockAssetProperties(EMPTY_FUNC,EMPTY_FUNC,EMPTY_FUNC);
+
+        public boolean isEmpty() {
+            return this == EMPTY;
+        }
+
+        public boolean hasModel() {
+            return model() != EMPTY_FUNC;
+        }
+
+        public boolean hasBlockState() {
+            return blockState() != EMPTY_FUNC;
+        }
+
+        public boolean hasItemModel() {
+            return itemModel() != EMPTY_FUNC;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private BiFunction<Material, TagPrefix, JsonElement> model = EMPTY_FUNC;
+            private BiFunction<Material, TagPrefix, JsonElement> blockState = EMPTY_FUNC;
+            private BiFunction<Material, TagPrefix, JsonElement> itemModel = EMPTY_FUNC;
+
+            public BlockAssetProperties.Builder model(BiFunction<Material, TagPrefix, JsonElement> model) {
+                this.model = model;
+                return this;
+            }
+
+            public BlockAssetProperties.Builder blockState(BiFunction<Material, TagPrefix, JsonElement> blockState) {
+                this.blockState = blockState;
+                return this;
+            }
+
+            public BlockAssetProperties.Builder itemModel(BiFunction<Material, TagPrefix, JsonElement> itemModel) {
+                this.itemModel = itemModel;
+                return this;
+            }
+
+            public BlockAssetProperties build() {
+                return new BlockAssetProperties(model, blockState, itemModel);
+            }
         }
     }
 
@@ -79,6 +151,9 @@ public class TagPrefix {
 
     @Getter
     public final ResourceLocation id;
+    @Getter
+    @Setter
+    public ResourceLocation langAlias;
     @Getter
     @Setter
     private String idPattern;
@@ -118,7 +193,11 @@ public class TagPrefix {
 
     @Getter
     @Setter
-    private @Nullable Predicate<Material> generationCondition;
+    private BlockAssetProperties blockAssetProperties = BlockAssetProperties.EMPTY;
+
+    @Getter
+    @Setter
+    private @Nullable BiPredicate<Material, TagPrefix> generationCondition;
 
     @Setter
     private Supplier<Table<TagPrefix, Material, ? extends Supplier<? extends ItemLike>>> itemTable;
@@ -141,6 +220,7 @@ public class TagPrefix {
 
     public TagPrefix(ResourceLocation id) {
         this.id = id;
+        this.langAlias = id;
         String lowerCaseUnder = getLowerCaseName();
         this.idPattern = "%s_" + lowerCaseUnder;
         this.langValue = "%s " + RutileClient.toEnglishName(lowerCaseUnder);
@@ -261,7 +341,7 @@ public class TagPrefix {
 
     public boolean doGenerateItem(Material material) {
         return generateItem && !isIgnored(material) &&
-                (generationCondition == null || generationCondition.test(material)) ||
+                (generationCondition == null || generationCondition.test(material, this)) ||
                 (hasItemTable() && this.itemTable.get() != null && getItemFromTable(material) != null);
     }
 
@@ -271,7 +351,7 @@ public class TagPrefix {
 
     public boolean doGenerateBlock(Material material) {
         return generateBlock && !isIgnored(material) &&
-                (generationCondition == null || generationCondition.test(material)) ||
+                (generationCondition == null || generationCondition.test(material, this)) ||
                 hasItemTable() && this.itemTable.get() != null && getItemFromTable(material) != null;
     }
 
@@ -280,7 +360,7 @@ public class TagPrefix {
     }
 
     public String getUnlocalizedName() {
-        return id().toLanguageKey("materialflag");
+        return langAlias().toLanguageKey("materialflag");
     }
 
     public MutableComponent getLocalizedName(Material material) {

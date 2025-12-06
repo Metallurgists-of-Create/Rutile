@@ -71,9 +71,8 @@ public class MaterialItem extends Item {
     }
 
     public int getItemBurnTime() {
-        BurnableFlag flag = material.getFlag(FlagKey.BURNABLE);
-        if (flag != null)
-            return (int) (flag.getBurnTime() * tagPrefix.getMaterialAmount(material) / TagPrefix.M);
+        if (material.hasFlag(FlagKey.BURNABLE))
+            return (int) (material.getFlagValue(FlagKey.BURNABLE) * tagPrefix.getMaterialAmount(material) / TagPrefix.M);
         return 0;
     }
 }

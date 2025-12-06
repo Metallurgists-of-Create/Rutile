@@ -32,12 +32,6 @@ public class RutileCorePlugin implements IRutilePlugin {
         registry.register(RutileMaterials.Quartz);
         registry.register(RutileMaterials.Amethyst);
 
-        registry.register(RutileMaterials.IronChloride);
-        registry.register(RutileMaterials.TinTetrachloride);
-        registry.register(RutileMaterials.SiliconTetrachloride);
-        registry.register(RutileMaterials.TitaniumTetrachloride);
-        registry.register(RutileMaterials.CrudeTitaniumTetrachloride);
-
         Ingot.setIgnored(RutileMaterials.Iron, Items.IRON_INGOT);
         Ingot.setIgnored(RutileMaterials.Gold, Items.GOLD_INGOT);
         Ingot.setIgnored(RutileMaterials.Copper, Items.COPPER_INGOT);

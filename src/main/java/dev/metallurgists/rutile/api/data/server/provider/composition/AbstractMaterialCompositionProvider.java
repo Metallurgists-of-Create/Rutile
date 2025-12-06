@@ -1,4 +1,4 @@
-package dev.metallurgists.rutile.api.data.provider.composition;
+package dev.metallurgists.rutile.api.data.server.provider.composition;
 
 import dev.metallurgists.rutile.api.material.Material;
 import net.minecraft.core.HolderLookup;

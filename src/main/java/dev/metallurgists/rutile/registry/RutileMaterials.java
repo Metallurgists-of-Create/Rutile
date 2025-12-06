@@ -5,38 +5,9 @@ import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
 import dev.metallurgists.rutile.api.registry.flags.BurnableFlag;
 import dev.metallurgists.rutile.api.registry.flags.HarvestTierFlag;
+import dev.metallurgists.rutile.api.registry.flags.PillarModelFlag;
 
 public class RutileMaterials {
-
-    public static Material IronChloride = new Material.Builder(Rutile.id("iron_chloride"))
-            .composition("1 iron", "1 chlorine")
-            .colour(0xff48180E)
-            .fluid()
-            .build();
-
-    public static Material TinTetrachloride = new Material.Builder(Rutile.id("tin_tetrachloride"))
-            .composition("1 tin", "4 chlorine")
-            .colour(0xffC2D4D4)
-            .fluid()
-            .build();
-
-    public static Material SiliconTetrachloride = new Material.Builder(Rutile.id("silicon_tetrachloride"))
-            .composition("1 silicon", "4 chlorine")
-            .colour(0xff42495E)
-            .fluid()
-            .build();
-
-    public static Material TitaniumTetrachloride = new Material.Builder(Rutile.id("titanium_tetrachloride"))
-            .composition("1 titanium", "4 chlorine")
-            .colour(0xffA76F6F)
-            .fluid()
-            .build();
-
-    public static Material CrudeTitaniumTetrachloride = new Material.Builder(Rutile.id("crude_titanium_tetrachloride"))
-            .components(IronChloride, 6, TitaniumTetrachloride, 24, TinTetrachloride, 9, SiliconTetrachloride, 3)
-            .colour(0xff876253)
-            .fluid()
-            .build();
 
     public static Material Null = new Material.Builder(Rutile.id("null"))
             .element("null")
@@ -45,6 +16,7 @@ public class RutileMaterials {
             .fluid()
             .flag(FlagKey.HARVEST_TIER)
             .flag(FlagKey.BURNABLE, new BurnableFlag(60))
+            .flag(FlagKey.PILLAR_MODEL, new PillarModelFlag(RutileTagPrefixes.Block, RutileTagPrefixes.BlockPillar))
             .build();
 
     public static Material Iron = new Material.Builder(Rutile.id("iron"))

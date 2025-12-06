@@ -1,4 +1,4 @@
-package dev.metallurgists.rutile.api.data.manager.composition;
+package dev.metallurgists.rutile.api.data.server.manager.composition;
 
 import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.composition.Composition;

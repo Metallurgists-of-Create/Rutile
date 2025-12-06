@@ -2,8 +2,8 @@ package dev.metallurgists.rutile;
 
 import com.mojang.logging.LogUtils;
 import dev.metallurgists.rutile.api.RutileApi;
-import dev.metallurgists.rutile.api.data.manager.composition.ItemCompositionManager;
-import dev.metallurgists.rutile.api.data.manager.composition.MaterialCompositionManager;
+import dev.metallurgists.rutile.api.data.server.manager.composition.ItemCompositionManager;
+import dev.metallurgists.rutile.api.data.server.manager.composition.MaterialCompositionManager;
 import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import dev.metallurgists.rutile.api.registry.ElementRegistry;
 import dev.metallurgists.rutile.api.registry.MaterialRegistry;

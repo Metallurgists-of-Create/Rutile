@@ -18,7 +18,7 @@ public class MaterialBlockRenderer {
     public static void reinitModels() {
         for (MaterialBlockRenderer model : MODELS) {
             if (model.tagPrefix.doGenerateBlock(model.material)) {
-                ModelHelpers.cubeAllBlockModel(model.material, model.tagPrefix);
+                ModelHelpers.blockModel(model.material, model.tagPrefix);
             }
         }
     }

@@ -17,6 +17,8 @@ public class FlagKey<T extends IMaterialFlag> {
     public static final FlagKey<HarvestTierFlag> HARVEST_TIER = new FlagKey<>("harvest_tier", HarvestTierFlag.class);
     public static final FlagKey<BurnableFlag> BURNABLE = new FlagKey<>("burnable", BurnableFlag.class);
 
+    // For Runtime Generation
+    public static final FlagKey<PillarModelFlag> PILLAR_MODEL = new FlagKey<>("pillar_model", PillarModelFlag.class);
 
     @Getter
     private final String key;

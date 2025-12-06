@@ -3,7 +3,7 @@ package dev.metallurgists.rutile.api.runtime.data;
 import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.composition.FinishedComposition;
-import dev.metallurgists.rutile.api.data.builder.MaterialCompositionBuilder;
+import dev.metallurgists.rutile.api.data.server.builder.MaterialCompositionBuilder;
 import dev.metallurgists.rutile.api.material.Material;
 
 import java.util.function.Consumer;

@@ -1,25 +1,22 @@
 package dev.metallurgists.rutile.api.registry.flags;
 
 import com.google.gson.JsonObject;
-import dev.metallurgists.rutile.api.material.flags.IMaterialFlag;
 import dev.metallurgists.rutile.api.material.flags.MaterialFlags;
-import lombok.Getter;
+import dev.metallurgists.rutile.api.material.flags.UnitFlag;
 
-public class HarvestTierFlag implements IMaterialFlag {
-    @Getter
-    private int harvestLevel;
+public class HarvestTierFlag extends UnitFlag<Integer> {
 
     public HarvestTierFlag() {
-        this.harvestLevel = 2;
+        super(2);
     }
 
-    public HarvestTierFlag(int harvestLevel) {
-        this.harvestLevel = harvestLevel;
+    public HarvestTierFlag(int value) {
+        super(value);
     }
 
-    public void setHarvestLevel(int harvestLevel) {
-        if (harvestLevel <= 0) throw new IllegalArgumentException("Harvest Level must be greater than zero!");
-        this.harvestLevel = harvestLevel;
+    @Override
+    public boolean validValue(Integer value) {
+        return value > 0;
     }
 
     @Override
@@ -30,7 +27,7 @@ public class HarvestTierFlag implements IMaterialFlag {
     @Override
     public JsonObject debugJson() {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("harvestLevel", harvestLevel);
+        jsonObject.addProperty("harvestLevel", getValue());
         return jsonObject;
     }
 }

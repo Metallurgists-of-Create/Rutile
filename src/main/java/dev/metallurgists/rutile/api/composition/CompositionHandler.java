@@ -2,8 +2,8 @@ package dev.metallurgists.rutile.api.composition;
 
 import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.api.RutileApi;
-import dev.metallurgists.rutile.api.data.manager.composition.ItemCompositionManager;
-import dev.metallurgists.rutile.api.data.manager.composition.MaterialCompositionManager;
+import dev.metallurgists.rutile.api.data.server.manager.composition.ItemCompositionManager;
+import dev.metallurgists.rutile.api.data.server.manager.composition.MaterialCompositionManager;
 import dev.metallurgists.rutile.api.element.ElementStack;
 import dev.metallurgists.rutile.api.fluid.MaterialFluid;
 import dev.metallurgists.rutile.api.material.Material;

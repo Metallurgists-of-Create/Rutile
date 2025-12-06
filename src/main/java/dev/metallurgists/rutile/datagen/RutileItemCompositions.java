@@ -1,10 +1,8 @@
 package dev.metallurgists.rutile.datagen;
 
-import dev.metallurgists.rutile.api.data.provider.composition.AbstractItemCompositionProvider;
-import dev.metallurgists.rutile.registry.RutileElements;
+import dev.metallurgists.rutile.api.data.server.provider.composition.AbstractItemCompositionProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;

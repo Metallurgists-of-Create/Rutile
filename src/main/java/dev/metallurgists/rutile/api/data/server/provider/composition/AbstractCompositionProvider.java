@@ -1,6 +1,5 @@
-package dev.metallurgists.rutile.api.data.provider.composition;
+package dev.metallurgists.rutile.api.data.server.provider.composition;
 
-import com.mojang.datafixers.util.Either;
 import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.composition.SubComposition;
 import dev.metallurgists.rutile.api.element.ElementStack;
@@ -9,8 +8,6 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.EitherHolder;
-import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;

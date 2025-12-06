@@ -1,4 +1,4 @@
-package dev.metallurgists.rutile.api.data.builder;
+package dev.metallurgists.rutile.api.data.server.builder;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;

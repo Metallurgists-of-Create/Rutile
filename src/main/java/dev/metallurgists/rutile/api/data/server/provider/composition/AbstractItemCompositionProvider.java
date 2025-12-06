@@ -1,4 +1,4 @@
-package dev.metallurgists.rutile.api.data.provider.composition;
+package dev.metallurgists.rutile.api.data.server.provider.composition;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;

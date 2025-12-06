@@ -3,11 +3,13 @@ package dev.metallurgists.rutile;
 
 import com.google.common.base.CaseFormat;
 import dev.metallurgists.rutile.api.composition.CompositionHandler;
+import dev.metallurgists.rutile.api.data.client.manager.MaterialAssetManager;
 import net.createmod.catnip.lang.LangBuilder;
 import net.createmod.catnip.lang.LangNumberFormat;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -90,6 +92,11 @@ public class RutileClient {
         @SubscribeEvent
         public static void onItemTooltip(ItemTooltipEvent event) {
             CompositionHandler.addToTooltip(event.getToolTip(), event.getItemStack(), event.getContext().registries());
+        }
+
+        @SubscribeEvent
+        static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
+            MaterialAssetManager.register(event);
         }
     }
 }

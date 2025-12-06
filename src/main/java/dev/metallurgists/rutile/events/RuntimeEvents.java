@@ -1,7 +1,7 @@
 package dev.metallurgists.rutile.events;
 
-import dev.metallurgists.rutile.api.data.manager.composition.ItemCompositionManager;
-import dev.metallurgists.rutile.api.data.manager.composition.MaterialCompositionManager;
+import dev.metallurgists.rutile.api.data.server.manager.composition.ItemCompositionManager;
+import dev.metallurgists.rutile.api.data.server.manager.composition.MaterialCompositionManager;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;

@@ -13,6 +13,7 @@ import dev.metallurgists.rutile.api.fluid.storage.FluidStorageKeys;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
 import dev.metallurgists.rutile.api.material.flags.IMaterialFlag;
 import dev.metallurgists.rutile.api.material.flags.MaterialFlags;
+import dev.metallurgists.rutile.api.material.flags.UnitFlag;
 import dev.metallurgists.rutile.api.registry.IDisplayedName;
 import dev.metallurgists.rutile.api.registry.flags.FluidFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
@@ -108,11 +109,18 @@ public class Material implements IDisplayedName {
         return this.flags.getFlag(key);
     }
 
+    public <V, T extends UnitFlag<V>> V getFlagValue(FlagKey<T> key) {
+        if (!this.flags.hasFlag(key)) {
+            return null;
+        }
+        return this.flags.getFlag(key).getValue();
+    }
+
     public int getBlockHarvestLevel() {
         if (!hasFlag(FlagKey.HARVEST_TIER))
             throw new IllegalArgumentException("Material " + info.resourceLocation +
                     " does not have a harvest level! Is probably a Fluid");
-        int harvestLevel = getFlag(FlagKey.HARVEST_TIER).getHarvestLevel();
+        int harvestLevel = getFlagValue(FlagKey.HARVEST_TIER);
         return harvestLevel > 0 ? harvestLevel - 1 : harvestLevel;
     }
 
