@@ -8,6 +8,7 @@ import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.data.ISerializable;
 import dev.metallurgists.rutile.api.material.Material;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import lombok.Getter;
 import lombok.Setter;
@@ -71,7 +72,7 @@ public class MaterialStack implements ISerializable {
     }
 
     public Material getMaterial() {
-        return RutileApi.getMaterialRegistry().getById(id);
+        return RutileRegistries.MATERIALS.get(id);
     }
 
     public static MaterialStack fromString(CharSequence str) {

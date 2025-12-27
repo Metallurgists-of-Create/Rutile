@@ -2,15 +2,15 @@ package dev.metallurgists.rutile.registry;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.RutileRegistrate;
-import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 
 public class RutileMaterialFluids {
 
     public static void generateMaterialFluids() {
         Rutile.LOGGER.info("Generating material fluids...");
         int registeredFluids = 0;
-        for (var material : RutileApi.getMaterialRegistry().getAll()) {
+        for (var material : RutileRegistries.MATERIALS) {
             var flag = material.getFlag(FlagKey.FLUID);
 
             if (flag != null) {

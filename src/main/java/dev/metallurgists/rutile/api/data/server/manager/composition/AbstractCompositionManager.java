@@ -6,6 +6,9 @@ import com.mojang.serialization.JsonOps;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.data.AbstractReloadManager;
+import lombok.Getter;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -15,11 +18,16 @@ import java.util.Map;
 
 public abstract class AbstractCompositionManager<T> extends AbstractReloadManager {
 
-    private final String type;
+    @Getter
+    private final ResourceLocation type;
 
-    public AbstractCompositionManager(String type) {
-        super("composition/" + type);
+    @Getter
+    private final ResourceKey<Registry<T>> typeRegistry;
+
+    public AbstractCompositionManager(ResourceLocation type,  ResourceKey<Registry<T>> typeRegistry) {
+        super("composition/" + (type.getNamespace().equals(Rutile.ID) ? type.getPath() : type.getNamespace() + "/" + type.getPath()));
         this.type = type;
+        this.typeRegistry = typeRegistry;
     }
 
     public abstract Map<T, Composition> getCompositions();

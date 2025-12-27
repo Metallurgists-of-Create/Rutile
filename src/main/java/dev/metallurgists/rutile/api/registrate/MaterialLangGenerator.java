@@ -2,6 +2,7 @@ package dev.metallurgists.rutile.api.registrate;
 
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 import dev.metallurgists.rutile.api.RutileApi;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -10,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class MaterialLangGenerator {
     public static void generate(RegistrateLangProvider provider, final String modId) {
-        RutileApi.getMaterialRegistry().getAll().stream()
+        RutileRegistries.MATERIALS.stream()
                 .filter(mat -> mat.getModId().equals(modId))
                 .forEach(material -> provider.add(material.getDescriptionId(), toEnglishName(material.getName())));
     }

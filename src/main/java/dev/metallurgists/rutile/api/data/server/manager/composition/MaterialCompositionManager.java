@@ -1,8 +1,11 @@
 package dev.metallurgists.rutile.api.data.server.manager.composition;
 
+import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.composition.Composition;
+import dev.metallurgists.rutile.api.composition.RutileCompositions;
 import dev.metallurgists.rutile.api.material.Material;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 
@@ -18,7 +21,7 @@ public class MaterialCompositionManager extends AbstractCompositionManager<Mater
     public List<Material> composed = new ArrayList<>();
 
     public MaterialCompositionManager() {
-        super("material");
+        super(Rutile.id("material"), RutileRegistries.MATERIAL_REGISTRY);
     }
 
     public static MaterialCompositionManager getInstance() {
@@ -49,10 +52,6 @@ public class MaterialCompositionManager extends AbstractCompositionManager<Mater
 
     @Override
     public Material getFromKey(ResourceLocation key) {
-        return RutileApi.getMaterialRegistry().getById(key);
-    }
-
-    public static void register(AddReloadListenerEvent event) {
-        event.addListener(RutileApi.getMaterialCompositionManager());
+        return RutileRegistries.MATERIALS.get(key);
     }
 }

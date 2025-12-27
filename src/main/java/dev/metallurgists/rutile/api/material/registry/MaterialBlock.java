@@ -5,6 +5,7 @@ import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.client.MaterialBlockRenderer;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.block.Block;
 
 public class MaterialBlock extends Block {
@@ -22,6 +23,12 @@ public class MaterialBlock extends Block {
 
     public MaterialBlock(Properties properties, TagPrefix tagPrefix, Material material) {
         this(properties, tagPrefix, material, true);
+    }
+
+    // This should only be enabled if the material is
+    @Override
+    public boolean isEnabled(FeatureFlagSet enabledFeatures) {
+        return material.isEnabled(enabledFeatures) && super.isEnabled(enabledFeatures);
     }
 
     @Override

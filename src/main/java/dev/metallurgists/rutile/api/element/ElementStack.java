@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.data.ISerializable;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
@@ -44,7 +45,12 @@ public class ElementStack implements ISerializable {
     }
 
     public Element getElement() {
-        return RutileApi.getElementRegistry().getById(id);
+        return RutileRegistries.ELEMENTS.get(id);
+    }
+
+    public int getColor() {
+        Element element = getElement();
+        return element != null ? element.getColor() : 0xFFFFFFFF;
     }
 
     public ElementStack copy() {

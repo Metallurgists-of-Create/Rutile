@@ -9,6 +9,7 @@ import dev.metallurgists.rutile.api.fluid.MaterialFluid;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.MaterialHelper;
 import dev.metallurgists.rutile.api.material.stack.MaterialEntry;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.util.ColourUtil;
@@ -17,10 +18,12 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.material.EmptyFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -40,12 +43,8 @@ public class CompositionHandler {
         }
     }
 
-    public static void appendFluidTooltips(FluidStack fluidStack, Consumer<Component> tooltips, TooltipFlag flag,
-                                           Item.TooltipContext context) {
+    public static void appendFluidTooltips(FluidStack fluidStack, Consumer<Component> tooltips) {
         Fluid fluid = fluidStack.getFluid();
-        int amount = fluidStack.getAmount();
-        FluidType fluidType = fluid.getFluidType();
-
         var material = MaterialHelper.getMaterial(fluid);
         if (material != null) {
             var composition = material.getComposition();
@@ -63,26 +62,26 @@ public class CompositionHandler {
                 }
             }
         }
-
         if (fluid instanceof MaterialFluid attributedFluid) {
             attributedFluid.getAttributes().forEach(a -> a.appendFluidTooltips(tooltips));
         }
     }
 
     public static boolean materialComposition(List<Component> toolTip, ItemStack stack) {
-        for (TagPrefix tagPrefix : RutileApi.getTagPrefixRegistry().getAll()) {
-            for (Material material : RutileApi.getMaterialRegistry().getAll()) {
-                MaterialEntry materialEntry = new MaterialEntry(tagPrefix, material);
-                List<Item> items = MaterialHelper.getItems(materialEntry).stream().map(ItemLike::asItem).toList();
-                if (items.contains(stack.getItem())) {
-                    Composition composition = MaterialCompositionManager.getInstance().getComposition(material);
-                    if (composition != null) {
-                        LangBuilder compositionName = RutileClient.lang();
-                        createTooltip(compositionName, composition);
-                        add(toolTip, compositionName);
-                        return true;
-                    }
-                }
+        var materialEntry = MaterialHelper.getMaterialEntry(stack.getItem());
+        if (!materialEntry.isEmpty()) {
+            Composition composition = MaterialCompositionManager.getInstance().getComposition(materialEntry.material);
+            if (composition != null) {
+                LangBuilder compositionName = RutileClient.lang();
+                createTooltip(compositionName, composition);
+                add(toolTip, compositionName);
+                return true;
+            }
+        }
+        if (stack.getItem() instanceof BucketItem bucket) {
+            var fluid = bucket.content;
+            if (!(fluid instanceof EmptyFluid)) {
+                appendFluidTooltips(new FluidStack(fluid, FluidType.BUCKET_VOLUME), toolTip::add);
             }
         }
         return false;
@@ -120,7 +119,7 @@ public class CompositionHandler {
             LangBuilder subComp = RutileClient.lang();
             int subCompAmount = composition.compositions().size();
             boolean encaseInBrackets = subCompAmount > 1;
-            int outerColour = calculateColour(subComposition);
+            int outerColour = ColourUtil.blendAll(subComposition.getElements().stream().map(ElementStack::getColor).toList());
             var outerStyle = Style.EMPTY.withColor(outerColour);
             if (!RutileConfig.client().elementColorForTooltip.get()) {
                 outerStyle = Style.EMPTY.withColor(RutileConfig.client().tooltipColor.get());
@@ -131,7 +130,7 @@ public class CompositionHandler {
                 ElementStack elementStack = subComposition.getElements().get(j);
                 MutableComponent elementComp = Component.literal(elementStack.getDisplay());
                 if (RutileConfig.client().elementColorForTooltip.get()) {
-                    elementComp = elementComp.setStyle(Style.EMPTY.withColor(elementStack.getElement().getColor()));
+                    elementComp = elementComp.setStyle(Style.EMPTY.withColor(elementStack.getColor()));
                 }
                 subComp.add(elementComp);
             }
@@ -140,10 +139,4 @@ public class CompositionHandler {
             compositionName.add(subComp);
         }
     }
-
-    private static int calculateColour(SubComposition subComposition) {
-        List<Integer> colours = subComposition.getElements().stream().map(es -> es.getElement().getColor()).toList();
-        return ColourUtil.blendAll(colours);
-    }
-
 }

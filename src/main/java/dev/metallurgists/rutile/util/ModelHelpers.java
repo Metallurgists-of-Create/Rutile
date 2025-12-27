@@ -85,7 +85,7 @@ public class ModelHelpers {
     public static List<String> defaultFlagSources = List.of("rutile", "metallurgica");
 
     public static String getFlagName(TagPrefix tagPrefix) {
-        return (defaultFlagSources.contains(tagPrefix.getModId()) ? "" : tagPrefix.getModId() + "_") + tagPrefix.getName();
+        return (defaultFlagSources.contains(tagPrefix.getModId()) ? "" : tagPrefix.getModId() + "_") + tagPrefix.getName().replace('/', '_');
     }
 
     public static boolean isTexturePresent(Material material, TagPrefix tagPrefix, String type) {

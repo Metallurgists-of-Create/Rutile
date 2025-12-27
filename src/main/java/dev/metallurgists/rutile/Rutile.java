@@ -1,13 +1,7 @@
 package dev.metallurgists.rutile;
 
 import com.mojang.logging.LogUtils;
-import dev.metallurgists.rutile.api.RutileApi;
-import dev.metallurgists.rutile.api.data.server.manager.composition.ItemCompositionManager;
-import dev.metallurgists.rutile.api.data.server.manager.composition.MaterialCompositionManager;
 import dev.metallurgists.rutile.api.plugin.PluginRegistry;
-import dev.metallurgists.rutile.api.registry.ElementRegistry;
-import dev.metallurgists.rutile.api.registry.MaterialRegistry;
-import dev.metallurgists.rutile.api.registry.TagPrefixRegistry;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.events.CommonEvents;
 import net.minecraft.client.Minecraft;
@@ -41,7 +35,6 @@ public class Rutile {
         ModLoadingContext modLoadingContext = ModLoadingContext.get();
         INSTANCE = this;
 
-        initAPI();
         RutileConfig.register(modLoadingContext);
         CommonEvents.init(INSTANCE.modEventBus);
 
@@ -89,24 +82,7 @@ public class Rutile {
         return registrate;
     }
 
-    private static void initAPI() throws NoSuchFieldException, IllegalAccessException {
-        var api = RutileApi.class;
-
-        var materialRegistry = api.getDeclaredField("materialRegistry");
-        var elementRegistry = api.getDeclaredField("elementRegistry");
-        var tagPrefixRegistry = api.getDeclaredField("tagPrefixRegistry");
-        var itemCompositionManager = api.getDeclaredField("itemCompositionManager");
-        var materialCompositionManager = api.getDeclaredField("materialCompositionManager");
-
-        materialRegistry.setAccessible(true);
-        materialRegistry.set(null, MaterialRegistry.getInstance());
-        elementRegistry.setAccessible(true);
-        elementRegistry.set(null, ElementRegistry.getInstance());
-        tagPrefixRegistry.setAccessible(true);
-        tagPrefixRegistry.set(null, TagPrefixRegistry.getInstance());
-        itemCompositionManager.setAccessible(true);
-        itemCompositionManager.set(null, ItemCompositionManager.getInstance());
-        materialCompositionManager.setAccessible(true);
-        materialCompositionManager.set(null, MaterialCompositionManager.getInstance());
+    public static boolean isDev() {
+        return !FMLEnvironment.production;
     }
 }

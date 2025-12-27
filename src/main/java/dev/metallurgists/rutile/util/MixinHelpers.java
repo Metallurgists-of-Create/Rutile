@@ -10,6 +10,7 @@ import dev.metallurgists.rutile.api.fluid.storage.FluidStorageKey;
 import dev.metallurgists.rutile.api.material.ItemMaterialData;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.registry.flags.FluidFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.mixin.BlockBehaviourAccessor;
@@ -92,7 +93,7 @@ public class MixinHelpers {
                 }
             });
         } else if (registry == BuiltInRegistries.FLUID) {
-            for (Material material : RutileApi.getMaterialRegistry().getAll()) {
+            for (Material material : RutileRegistries.MATERIALS) {
                 FluidFlag flag = material.getFlag(FlagKey.FLUID);
                 if (flag == null) {
                     continue;

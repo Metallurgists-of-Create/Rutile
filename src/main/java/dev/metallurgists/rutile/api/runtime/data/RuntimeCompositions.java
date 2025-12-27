@@ -5,12 +5,13 @@ import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.composition.FinishedComposition;
 import dev.metallurgists.rutile.api.data.server.builder.MaterialCompositionBuilder;
 import dev.metallurgists.rutile.api.material.Material;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 
 import java.util.function.Consumer;
 
 public class RuntimeCompositions {
     public static void compositionAddition(Consumer<FinishedComposition> originalConsumer) {
-        for (Material material : RutileApi.getMaterialRegistry().getAll()) {
+        for (Material material : RutileRegistries.MATERIALS) {
             if (material.getComposition() != null) {
                 createComposition(originalConsumer, material, material.getComposition());
             }

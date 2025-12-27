@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 
-public class AxisMaterialBlock extends MaterialBlock{
+public class AxisMaterialBlock extends MaterialBlock {
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.AXIS;
 
     public AxisMaterialBlock(Properties properties, TagPrefix tagPrefix, Material material, boolean registerModel) {

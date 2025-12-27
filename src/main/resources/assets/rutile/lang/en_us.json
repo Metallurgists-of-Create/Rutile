@@ -21,6 +21,8 @@
   "rutile.fluid.type_acid.tooltip": "§6Acidic",
   "rutile.fluid_container.acid_proof": "§6Can handle Acids",
 
+  "gui.rutile.element_composition_jei": "Element Compositions",
+
   "element.rutile.actinium": "Actinium",
   "element.rutile.aluminum": "Aluminum",
   "element.rutile.americium": "Americium",
@@ -141,11 +143,5 @@
   "element.rutile.zinc": "Zinc",
   "element.rutile.zirconium": "Zirconium",
 
-  "material.rutile.null": "Null",
-
-  "material.rutile.iron_chloride": "Iron Chloride",
-  "material.rutile.tin_tetrachloride": "Tin Tetrachloride",
-  "material.rutile.silicon_tetrachloride": "Silicon Tetrachloride",
-  "material.rutile.titanium_tetrachloride": "Titanium Tetrachloride",
-  "material.rutile.crude_titanium_tetrachloride": "Crude Titanium Tetrachloride"
+  "material.rutile.null": "Null"
 }

@@ -7,6 +7,7 @@ import dev.metallurgists.rutile.api.registry.flags.BurnableFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -28,6 +29,12 @@ public class MaterialItem extends Item {
         if (Rutile.isClientSide()) {
             //TagPrefixItemRenderer.create(this, tagPrefix.materialIconType(), material.getMaterialIconSet());
         }
+    }
+
+    // This should only be enabled if the material is
+    @Override
+    public boolean isEnabled(FeatureFlagSet enabledFeatures) {
+        return material.isEnabled(enabledFeatures) && super.isEnabled(enabledFeatures);
     }
 
     @Override

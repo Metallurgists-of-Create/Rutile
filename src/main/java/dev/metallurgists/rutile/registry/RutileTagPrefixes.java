@@ -4,6 +4,7 @@ import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
 import dev.metallurgists.rutile.api.material.flags.MaterialFlags;
 import dev.metallurgists.rutile.api.material.registry.AxisMaterialBlock;
+import dev.metallurgists.rutile.api.tag.InheritedTagPrefix;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.util.ModelHelpers;
 import net.minecraft.tags.BlockTags;
@@ -45,24 +46,17 @@ public class RutileTagPrefixes {
             .miningToolTag(BlockTags.MINEABLE_WITH_PICKAXE)
             .generateBlock(true)
             .generationCondition(hasAnyFlag(FlagKey.INGOT, FlagKey.GEM).and(
-                    flagValue(FlagKey.PILLAR_MODEL, (m, t, v) -> (!v.containsKey(t) || v.get(t) == false))))
+                    flagValue(FlagKey.PILLAR_MODEL, (m, t, v) -> (v.containsKey(t) || v.get(t) == false))))
             .unificationEnabled(true);
 
-    public static final TagPrefix BlockPillar = new TagPrefix(Rutile.id("block_pillar"))
-            .defaultTagPath("storage_blocks/%s")
-            .unformattedTagPath("storage_blocks")
-            .langAlias(Rutile.id("block"))
-            .idPattern("%s_block")
-            .langValue("Block of %s")
-            .materialAmount(TagPrefix.M * 9)
-            .miningToolTag(BlockTags.MINEABLE_WITH_PICKAXE)
+    public static final TagPrefix BlockPillar = new InheritedTagPrefix(Block, "pillar")
+            .replaceParent(true)
             .blockConstructor(AxisMaterialBlock::new)
             .blockAssetProperties(TagPrefix.BlockAssetProperties.builder()
                     .model(ModelHelpers.BlockModel::pillar)
                     .blockState(ModelHelpers.BlockState::axis)
                     .build())
-            .generateBlock(true)
-            .generationCondition(hasAnyFlag(FlagKey.INGOT, FlagKey.GEM).and(
-                    flagValue(FlagKey.PILLAR_MODEL, (m, t, v) -> (v.containsKey(t) && v.get(t) == true))))
-            .unificationEnabled(true);
+            .generationCondition(hasAnyFlag(FlagKey.INGOT, FlagKey.GEM).and(hasFlag(FlagKey.PILLAR_MODEL)).and(flagValue(FlagKey.PILLAR_MODEL, (m, t, v) -> (v.containsKey(t) && v.get(t) == true))));
+
+    public static void init() {}
 }

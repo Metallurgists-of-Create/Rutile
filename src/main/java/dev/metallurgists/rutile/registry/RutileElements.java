@@ -3,6 +3,8 @@ package dev.metallurgists.rutile.registry;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.element.Element;
 import dev.metallurgists.rutile.api.registry.IRutileRegistry;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
+import net.minecraft.world.flag.FeatureFlag;
 
 public class RutileElements {
 
@@ -126,36 +128,17 @@ public class RutileElements {
             Ts =  create("tennessine", "Ts", 0xff262628),
             Og =  create("oganesson", "Og", 0xff2a2a2a);
 
+    public static void init() {}
+
     public static Element create(String name, String symbol, int colour) {
-        return new Element(symbol, colour, Rutile.id(name));
+        Element element = new Element(symbol, colour, Rutile.id(name));
+        RutileRegistries.register(RutileRegistries.ELEMENTS, element.getId(), element);
+        return element;
     }
 
-    public static void init(IRutileRegistry<Element> registry) {
-        //Null doesn't deserve a space on the table
-        registry.register(NULL);
-
-        registerTable(registry,
-                H ,                                                                 He,
-                Li, Be,                                         B , C , N , O , F , Ne,
-                Na, Mg,                                         Al, Si, P , S , Cl, Ar,
-                K , Ca, Sc, Ti, V , Cr, Mn, Fe, Co, Ni, Cu, Zn, Ga, Ge, As, Se, Br, Kr,
-                Rb, Sr, Y , Zr, Nb, Mo, Tc, Ru, Rh, Pd, Ag, Cd, In, Sn, Sb, Te, I , Xe,
-                Cs, Ba, La, Hf, Ta, W , Re, Os, Ir, Pt, Au, Hg, Tl, Pb, Bi, Po, At, Rn,
-                Fr, Ra, Ac, Rf, Db, Sg, Bh, Hs, Mt, Ds, Rg, Cn, Nh, Fl, Mc, Lv, Ts, Og,
-
-                            Ce, Pr, Nd, Pm, Sm, Eu, Gd, Tb, Dy, Ho, Er, Tm, Yb, Lu,
-                            Th, Pa, U , Np, Pu, Am, Cm, Bk, Cf, Es, Fm, Md, No, Lr
-        );
-    }
-
-    /**
-     * Just a silly way for me to register the elements in a periodic table pattern :3
-     * @param registry the registry to register to
-     * @param elements all the elements to register
-     */
-    private static void registerTable(IRutileRegistry<Element> registry, Element... elements) {
-        for (Element e : elements) {
-            registry.register(e);
-        }
+    public static Element create(String name, String symbol, int colour, FeatureFlag... requiredFeatures) {
+        Element element = new Element(symbol, colour, Rutile.id(name), requiredFeatures);
+        RutileRegistries.register(RutileRegistries.ELEMENTS, element.getId(), element);
+        return element;
     }
 }

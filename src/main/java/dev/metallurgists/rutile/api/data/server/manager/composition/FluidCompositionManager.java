@@ -1,13 +1,12 @@
 package dev.metallurgists.rutile.api.data.server.manager.composition;
 
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.composition.RutileCompositions;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 
 import java.util.ArrayList;
@@ -15,27 +14,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ItemCompositionManager extends AbstractCompositionManager<Item> {
-    public static ItemCompositionManager INSTANCE = new ItemCompositionManager();
+public class FluidCompositionManager extends AbstractCompositionManager<Fluid> {
+    public static FluidCompositionManager INSTANCE = new FluidCompositionManager();
 
-    public Map<Item, Composition> compositions = new HashMap<>();
-    public List<Item> composed = new ArrayList<>();
+    public Map<Fluid, Composition> compositions = new HashMap<>();
+    public List<Fluid> composed = new ArrayList<>();
 
-    public ItemCompositionManager() {
-        super(Rutile.id("item"), Registries.ITEM);
+    public FluidCompositionManager() {
+        super(Rutile.id("fluid"), Registries.FLUID);
     }
 
-    public static ItemCompositionManager getInstance() {
+    public static FluidCompositionManager getInstance() {
         return INSTANCE;
     }
 
     @Override
-    public Map<Item, Composition> getCompositions() {
+    public Map<Fluid, Composition> getCompositions() {
         return this.compositions;
     }
 
     @Override
-    public List<Item> getComposed() {
+    public List<Fluid> getComposed() {
         return this.composed;
     }
 
@@ -46,13 +45,13 @@ public class ItemCompositionManager extends AbstractCompositionManager<Item> {
     }
 
     @Override
-    public void putComposition(Item composed, Composition composition) {
+    public void putComposition(Fluid composed, Composition composition) {
         this.compositions.put(composed, composition);
         this.composed.add(composed);
     }
 
     @Override
-    public Item getFromKey(ResourceLocation key) {
-        return BuiltInRegistries.ITEM.get(key);
+    public Fluid getFromKey(ResourceLocation key) {
+        return BuiltInRegistries.FLUID.get(key);
     }
 }

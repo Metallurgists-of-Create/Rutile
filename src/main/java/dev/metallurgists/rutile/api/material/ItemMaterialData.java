@@ -6,6 +6,7 @@ import dev.metallurgists.rutile.api.material.stack.ItemMaterialInfo;
 import dev.metallurgists.rutile.api.material.stack.MaterialEntry;
 import dev.metallurgists.rutile.api.material.stack.MaterialStack;
 import dev.metallurgists.rutile.api.memorizer.MemorizedBlockSupplier;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.util.ItemStackHashStrategy;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
@@ -124,7 +125,7 @@ public class ItemMaterialData {
         ITEM_MATERIAL_ENTRY.clear();
         FLUID_MATERIAL.clear();
 
-        for (TagPrefix prefix : RutileApi.getTagPrefixRegistry().getAll()) {
+        for (TagPrefix prefix : RutileRegistries.TAG_PREFIXES) {
             prefix.getIgnored().forEach((mat, items) -> registerMaterialEntries(items, prefix, mat));
         }
     }

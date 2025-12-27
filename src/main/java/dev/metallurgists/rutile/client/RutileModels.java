@@ -13,6 +13,7 @@ import dev.metallurgists.rutile.api.material.flags.IMaterialFlag;
 import dev.metallurgists.rutile.api.material.flags.IPartialHolder;
 import dev.metallurgists.rutile.api.material.flags.ISpecialAssetGen;
 import dev.metallurgists.rutile.api.material.registry.asset.MaterialAsset;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.runtime.assets.RutileDynamicResourcePack;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.util.MixinHelpers;
@@ -29,7 +30,7 @@ import java.io.IOException;
 public class RutileModels {
 
     public static void registerMaterialAssets() {
-        for (Material material : RutileApi.getMaterialRegistry().getAll()) {
+        for (Material material : RutileRegistries.MATERIALS) {
             generatePartialModels(material);
             generateObjectAssets(material);
             generateSpecialAssets(material);
@@ -56,7 +57,7 @@ public class RutileModels {
     }
 
     private static void generateObjectAssets(Material material) {
-        for (TagPrefix tagPrefix : RutileApi.getTagPrefixRegistry().getAll()) {
+        for (TagPrefix tagPrefix : RutileRegistries.TAG_PREFIXES) {
             if (tagPrefix.doGenerateItem(material)) {
                 ModelHelpers.itemModel(material, tagPrefix);
             }

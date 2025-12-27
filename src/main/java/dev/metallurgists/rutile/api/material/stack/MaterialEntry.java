@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.material.Material;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.registry.RutileMaterials;
 import lombok.Getter;
@@ -67,7 +68,7 @@ public class MaterialEntry {
                 ResourceLocation key = Rutile.id(values[0]);
                 var prefix = TagPrefix.get(key);
                 if (prefix == null) throw new IllegalArgumentException("Invalid TagPrefix: " + key);
-                cached = new MaterialEntry(prefix, RutileApi.getMaterialRegistry().getById(Rutile.id(values[1])));
+                cached = new MaterialEntry(prefix, RutileRegistries.MATERIALS.get(Rutile.id(values[1])));
                 PARSE_CACHE.put(str, cached);
                 return cached;
             }

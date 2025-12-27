@@ -17,9 +17,11 @@ import dev.metallurgists.rutile.api.material.registry.MaterialBlock;
 import dev.metallurgists.rutile.api.material.registry.MaterialBlockItem;
 import dev.metallurgists.rutile.api.material.registry.MaterialItem;
 import dev.metallurgists.rutile.api.memorizer.Memorizer;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.registry.RutileMaterials;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -35,7 +37,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.util.TriPredicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +57,7 @@ public class TagPrefix {
     public static void init() {}
 
     public static TagPrefix get(ResourceLocation id) {
-        return RutileApi.getTagPrefixRegistry().getById(id);
+        return RutileRegistries.TAG_PREFIXES.get(id);
     }
 
     public boolean isEmpty() {
@@ -83,6 +84,15 @@ public class TagPrefix {
                     if (mat.hasFlag(key)) return true;
                 }
                 return false;
+            };
+        }
+        public static BiPredicate<Material, TagPrefix> hasNoFlag(FlagKey<?>... keys) {
+            return (mat, tag) -> {
+                boolean hasFlag = false;
+                for (FlagKey<?> key : keys) {
+                    if (mat.hasFlag(key)) hasFlag = true;
+                }
+                return !hasFlag;
             };
         }
 
@@ -173,12 +183,12 @@ public class TagPrefix {
     private boolean unificationEnabled;
 
     @Setter
-    private boolean generateItem;
+    boolean generateItem;
     @Getter
     @Setter
     private ItemConstructor itemConstructor = MaterialItem::new;
     @Setter
-    private boolean generateBlock;
+    boolean generateBlock;
     @Getter
     @Setter
     private BlockConstructor blockConstructor = MaterialBlock::new;
@@ -197,10 +207,10 @@ public class TagPrefix {
 
     @Getter
     @Setter
-    private @Nullable BiPredicate<Material, TagPrefix> generationCondition;
+    @Nullable BiPredicate<Material, TagPrefix> generationCondition;
 
     @Setter
-    private Supplier<Table<TagPrefix, Material, ? extends Supplier<? extends ItemLike>>> itemTable;
+    Supplier<Table<TagPrefix, Material, ? extends Supplier<? extends ItemLike>>> itemTable;
 
     @Nullable
     @Getter
@@ -224,7 +234,41 @@ public class TagPrefix {
         String lowerCaseUnder = getLowerCaseName();
         this.idPattern = "%s_" + lowerCaseUnder;
         this.langValue = "%s " + RutileClient.toEnglishName(lowerCaseUnder);
-        RutileApi.getTagPrefixRegistry().register(this);
+        RutileRegistries.register(RutileRegistries.TAG_PREFIXES, id, this);
+    }
+
+    public TagPrefix(ResourceLocation id, TagPrefix base) {
+        this.id = id;
+        this.langAlias = base.langAlias;
+        this.idPattern = base.idPattern;
+        this.langValue = base.langValue;
+        this.tags.addAll(base.tags);
+        this.materialAmount = base.materialAmount;
+        this.unificationEnabled = base.unificationEnabled;
+        this.generateItem = base.generateItem;
+        this.itemConstructor = base.itemConstructor;
+        this.generateBlock = base.generateBlock;
+        this.blockConstructor = base.blockConstructor;
+        this.blockItemConstructor = base.blockItemConstructor;
+        this.blockProperties = base.blockProperties;
+        this.blockAssetProperties = base.blockAssetProperties;
+        this.generationCondition = base.generationCondition;
+        this.itemTable = base.itemTable;
+        this.tooltip = base.tooltip;
+        RutileRegistries.register(RutileRegistries.TAG_PREFIXES, id, this);
+    }
+
+    public boolean hasOverridingChild(Material material) {
+        for (TagPrefix prefix : RutileRegistries.TAG_PREFIXES) {
+            if (!prefix.isIgnored(material)) {
+                if (prefix instanceof InheritedTagPrefix inherited) {
+                    if (inherited.parentId() == this.id) {
+                        return inherited.replaceParent();
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public TagPrefix defaultTagPath(String path) {
@@ -340,7 +384,7 @@ public class TagPrefix {
     }
 
     public boolean doGenerateItem(Material material) {
-        return generateItem && !isIgnored(material) &&
+        return generateItem && !hasOverridingChild(material) && !isIgnored(material) &&
                 (generationCondition == null || generationCondition.test(material, this)) ||
                 (hasItemTable() && this.itemTable.get() != null && getItemFromTable(material) != null);
     }
@@ -350,7 +394,7 @@ public class TagPrefix {
     }
 
     public boolean doGenerateBlock(Material material) {
-        return generateBlock && !isIgnored(material) &&
+        return generateBlock && !hasOverridingChild(material) && !isIgnored(material) &&
                 (generationCondition == null || generationCondition.test(material, this)) ||
                 hasItemTable() && this.itemTable.get() != null && getItemFromTable(material) != null;
     }
@@ -453,7 +497,7 @@ public class TagPrefix {
     }
 
     public static Iterable<TagPrefix> values() {
-        return RutileApi.getTagPrefixRegistry().getAll();
+        return RutileRegistries.TAG_PREFIXES;
     }
 
     @Override

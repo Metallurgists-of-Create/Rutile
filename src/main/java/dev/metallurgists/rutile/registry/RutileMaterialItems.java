@@ -9,11 +9,11 @@ import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
 import com.tterrag.registrate.util.nullness.NonNullFunction;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.RutileRegistrate;
-import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.material.ItemMaterialData;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.stack.MaterialEntry;
 import dev.metallurgists.rutile.api.memorizer.Memorizer;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
@@ -32,9 +32,9 @@ public class RutileMaterialItems {
 
     public static void generateMaterialItems() {
         Rutile.LOGGER.info("Generating material items...");
-        for (TagPrefix tagPrefix : RutileApi.getTagPrefixRegistry().getAll()) {
+        for (TagPrefix tagPrefix : RutileRegistries.TAG_PREFIXES) {
             if (tagPrefix.doGenerateItem()) {
-                for (Material material : RutileApi.getMaterialRegistry().getAll()) {
+                for (Material material : RutileRegistries.MATERIALS) {
                     RutileRegistrate registrate = RutileRegistrate.createIgnoringListenerErrors(material.getModId());
                     if (tagPrefix.doGenerateItem(material)) {
                         generateMaterialItem(tagPrefix, material, registrate);

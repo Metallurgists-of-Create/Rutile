@@ -4,28 +4,38 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.RutileApi;
-import dev.metallurgists.rutile.api.element.Element;
 import dev.metallurgists.rutile.api.material.Material;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
-import dev.metallurgists.rutile.api.tag.TagType;
 import dev.metallurgists.rutile.debug.DebugPrinter;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 
 import java.nio.file.Path;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class DebugTagPrefixPrinter implements DebugPrinter {
 
     public static void print() {
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug");
-        for (String modid : RutileApi.getTagPrefixRegistry().getUsedNamespaces()) {
-            List<TagPrefix> tagPrefixes = RutileApi.getTagPrefixRegistry().getAll().stream().filter(t -> t.id().getNamespace().equals(modid)).toList();
+        List<String> usedNamespaces = collectNamespaces(RutileRegistries.TAG_PREFIXES);
+        for (String modid : usedNamespaces) {
+            List<TagPrefix> tagPrefixes = RutileRegistries.TAG_PREFIXES.stream().filter(t -> t.id().getNamespace().equals(modid)).toList();
             TagPrefixJson tagPrefixJson = new TagPrefixJson(tagPrefixes);
             new DebugMaterialPrinter().writeJson(Rutile.id(modid), "tag_prefixes", parent, tagPrefixJson.json());
         }
+    }
+
+    private static <T> List<String> collectNamespaces(Registry<T> registry) {
+        List<String> namespaces = new ArrayList<>();
+        for (T obj : registry) {
+            ResourceLocation location = registry.getKey(obj);
+            if (location != null && !namespaces.contains(location.getNamespace())) {
+                namespaces.add(location.getNamespace());
+            }
+        }
+        return namespaces;
     }
 
     static class TagPrefixJson {

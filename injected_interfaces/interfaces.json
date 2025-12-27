@@ -1,0 +1,5 @@
+{
+    "net/minecraft/core/MappedRegistry": [
+        "dev/metallurgists/rutile/util/IMappedRegistryAccess<T>"
+    ]
+}

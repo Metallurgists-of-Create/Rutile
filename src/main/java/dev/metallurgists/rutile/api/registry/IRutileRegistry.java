@@ -3,10 +3,9 @@ package dev.metallurgists.rutile.api.registry;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
-public interface IRutileRegistry<T> {
+public interface IRutileRegistry<T> extends Iterable<T> {
     /**
      * Get a list of all used namespaces
      * @return a set of all used namespaces
@@ -17,7 +16,7 @@ public interface IRutileRegistry<T> {
      * Register something in this registry
      * @param object the object to register
      */
-    void register(T object);
+    T register(T object);
 
     /**
      * Get an unmodifiable list of all the registered objects
@@ -30,16 +29,17 @@ public interface IRutileRegistry<T> {
      * @param id the resource location id of the object
      * @return the object for this id
      */
-    T getById(ResourceLocation id);
+    T getByKey(ResourceLocation id);
 
     /**
-     * Gets the object with the specified internal name from this registry
-     * @param name the internal name of this object
-     * @return the object for this name
+     * Get the key of the object.
+     * @param object the object
+     * @return the object's resource key
      */
-    T getByName(String name);
+    ResourceLocation getKey(T object);
+
+    boolean isFrozen();
 
     void onLoadComplete();
 
-    Optional<T> getOptional(ResourceLocation key);
 }

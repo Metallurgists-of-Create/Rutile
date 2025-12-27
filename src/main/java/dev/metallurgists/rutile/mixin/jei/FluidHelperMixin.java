@@ -20,7 +20,6 @@ public class FluidHelperMixin {
             require = 0)
     private void gtceu$injectFluidTooltips(ITooltipBuilder tooltip, FluidStack ingredient, TooltipFlag tooltipFlag,
                                            CallbackInfo ci) {
-        CompositionHandler.appendFluidTooltips(ingredient, tooltip::add, tooltipFlag,
-                Item.TooltipContext.of(Minecraft.getInstance().level));
+        CompositionHandler.appendFluidTooltips(ingredient, tooltip::add);
     }
 }

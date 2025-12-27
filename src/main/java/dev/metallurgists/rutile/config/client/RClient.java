@@ -10,7 +10,7 @@ public class RClient extends ConfigBase {
 
     public final ConfigBase.ConfigGroup chemicalCompositions = this.group(1, "chemicalCompositions", "Chemical Compositions");
     public final ConfigBase.ConfigInt tooltipColor = this.i(0xFFFFFF, "tooltipColor", "Color of the tooltip text for chemical compositions");
-    public final ConfigBase.ConfigBool elementColorForTooltip = this.b(false, "elementColorForTooltip", "Should each element in the tooltip use the colour of the element.", "Overrides tooltipColor");
+    public final ConfigBase.ConfigBool elementColorForTooltip = this.b(true, "elementColorForTooltip", "Should each element in the tooltip use the colour of the element.", "Overrides tooltipColor");
 
     @Override
     public String getName() {

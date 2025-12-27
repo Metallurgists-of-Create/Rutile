@@ -15,6 +15,7 @@ import dev.metallurgists.rutile.api.material.flags.IMaterialFlag;
 import dev.metallurgists.rutile.api.material.flags.MaterialFlags;
 import dev.metallurgists.rutile.api.material.flags.UnitFlag;
 import dev.metallurgists.rutile.api.registry.IDisplayedName;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.registry.flags.FluidFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.api.tag.TagUtil;
@@ -23,6 +24,10 @@ import lombok.Setter;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.flag.FeatureElement;
+import net.minecraft.world.flag.FeatureFlag;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -32,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.function.Function;
 
-public class Material implements IDisplayedName {
+public class Material implements IDisplayedName, FeatureElement {
 
     @NotNull
     @Getter
@@ -82,6 +87,13 @@ public class Material implements IDisplayedName {
         return this.descriptionId;
     }
 
+    public <T extends IMaterialFlag> void addFlag(FlagKey<T> key, T value) {
+        if (RutileRegistries.MATERIALS.isFrozen()) {
+            throw new IllegalStateException("Cannot add flag to material when registry is frozen!");
+        }
+        this.flags.setFlag(key, value);
+    }
+
     public <T extends IMaterialFlag> boolean hasFlag(FlagKey<T> key) {
         return this.flags.hasFlag(key);
     }
@@ -104,6 +116,8 @@ public class Material implements IDisplayedName {
         }
         return false;
     }
+
+
 
     public <T extends IMaterialFlag> T getFlag(FlagKey<T> key) {
         return this.flags.getFlag(key);
@@ -208,6 +222,15 @@ public class Material implements IDisplayedName {
         return hasFlag(FlagKey.FLUID);
     }
 
+    protected void register() {
+        RutileRegistries.register(RutileRegistries.MATERIALS, this.getId(), this);
+    }
+
+    @Override
+    public FeatureFlagSet requiredFeatures() {
+        return getInfo().getRequiredFeatures();
+    }
+
     public static class Builder {
         private final MaterialFlags flags;
         private final MaterialInfo info;
@@ -296,7 +319,7 @@ public class Material implements IDisplayedName {
                     throw new IllegalArgumentException(
                             "Material in Components List is null for Material " + this.info.resourceLocation);
                 }
-                Material material = components[i] instanceof CharSequence chars ? RutileApi.getMaterialRegistry().getByName(chars.toString()) :
+                Material material = components[i] instanceof CharSequence chars ? RutileRegistries.MATERIALS.get(Rutile.id(chars.toString())) :
                         (Material) components[i];
                 int amount = (Integer) components[i + 1];
                 SubComposition.Builder subCompositionBuilder = SubComposition.builder();
@@ -317,12 +340,19 @@ public class Material implements IDisplayedName {
             return this;
         }
 
+        public Builder requiredFeatures(FeatureFlag... requiredFeatures) {
+            FeatureFlagSet flagSet = FeatureFlags.REGISTRY.subset(requiredFeatures);
+            info.setRequiredFeatures(flagSet);
+            return this;
+        }
+
         public Material build() {
             info.setComposition(new Composition(this.subCompositions));
             var mat = new Material(info, flags);
             if (!itemTags.isEmpty()) {
                 mat.setItemTags(itemTags);
             }
+            mat.register();
             if (ignoredTagPrefixes != null) {
                 ignoredTagPrefixes.forEach(p -> p.setIgnored(mat));
             }

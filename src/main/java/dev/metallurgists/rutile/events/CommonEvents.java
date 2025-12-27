@@ -2,18 +2,17 @@ package dev.metallurgists.rutile.events;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.fluid.MaterialBucketItem;
-import dev.metallurgists.rutile.api.registry.ElementRegistry;
-import dev.metallurgists.rutile.api.registry.MaterialRegistry;
-import dev.metallurgists.rutile.api.registry.TagPrefixRegistry;
+import dev.metallurgists.rutile.api.registry.PostRutileRegistryEvent;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
+import dev.metallurgists.rutile.api.registry.RutileRegistry;
 import dev.metallurgists.rutile.api.runtime.RutilePackSource;
 import dev.metallurgists.rutile.api.runtime.assets.RutileDynamicResourcePack;
 import dev.metallurgists.rutile.api.runtime.data.RutileDynamicDataPack;
+import dev.metallurgists.rutile.datagen.RutileTags;
 import dev.metallurgists.rutile.debug.material.DebugElementPrinter;
 import dev.metallurgists.rutile.debug.material.DebugMaterialPrinter;
 import dev.metallurgists.rutile.debug.material.DebugTagPrefixPrinter;
-import dev.metallurgists.rutile.registry.RutileMaterialBlocks;
-import dev.metallurgists.rutile.registry.RutileMaterialFluids;
-import dev.metallurgists.rutile.registry.RutileMaterialItems;
+import dev.metallurgists.rutile.registry.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.packs.PackType;
@@ -22,12 +21,13 @@ import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 public class CommonEvents {
@@ -37,20 +37,30 @@ public class CommonEvents {
     public static void init(final IEventBus modBus) {
         CommonEvents.modBus = modBus;
         modBus.register(CommonEvents.class);
+
+        RutileRegistries.init(modBus);
+        Rutile.registrate.registerEventListeners(modBus);
     }
 
     // Only register everything once.
     private static boolean didRunRegistration = false;
 
+    @SubscribeEvent
+    public static void onRegister(RegisterEvent event) {
+        if (didRunRegistration) {
+            return;
+        }
+        RutileElements.init();
+        RutileMaterials.init();
+        RutileTagPrefixes.init();
+        didRunRegistration = true;
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onRegisterEarly(RegisterEvent event) {
-        if (!didRunRegistration) {
-            TagPrefixRegistry.getInstance().onRegisterObjects(event);
-            MaterialRegistry.getInstance().setAllowRegistration(true);
-            MaterialRegistry.getInstance().registerAll();
-            ElementRegistry.getInstance().onRegisterObjects(event);
-            Rutile.LOGGER.info("Registered rutile registries");
-            didRunRegistration = true;
+        if (event.getRegistryKey() == RutileRegistries.MATERIAL_REGISTRY) {
+            RutileRegistries.MATERIALS.close();
+            ModLoader.postEventWrapContainerInModOrder(PostRutileRegistryEvent.MATERIAL);
         }
         registerMaterials(event);
     }
@@ -70,14 +80,17 @@ public class CommonEvents {
 
     @SubscribeEvent
     public static void loadComplete(FMLLoadCompleteEvent event) {
-        if (!FMLEnvironment.production) {
+        if (Rutile.isDev()) {
             DebugTagPrefixPrinter.print();
             DebugMaterialPrinter.print();
             DebugElementPrinter.print();
         }
-        MaterialRegistry.getInstance().onLoadComplete();
-        ElementRegistry.getInstance().onLoadComplete();
-        TagPrefixRegistry.getInstance().onLoadComplete();
+        RutileRegistries.getRutileRegistries().forEach(RutileRegistry::onLoadComplete);
+    }
+
+    @SubscribeEvent
+    public static void registerRegistries(NewRegistryEvent event) {
+        RutileRegistries.getRegistries().forEach(event::register);
     }
 
     @SubscribeEvent

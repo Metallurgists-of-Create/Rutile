@@ -44,6 +44,12 @@ neoForge {
         }
     }
 
+    interfaceInjectionData {
+        var file = project.file('injected_interfaces/interfaces.json')
+        from(file)
+        publish file
+    }
+
     mods {
         "${mod_id}" {
             sourceSet(sourceSets.main)

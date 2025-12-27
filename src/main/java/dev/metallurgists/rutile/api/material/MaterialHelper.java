@@ -8,6 +8,7 @@ import dev.metallurgists.rutile.api.material.flags.FlagKey;
 import dev.metallurgists.rutile.api.material.stack.ItemMaterialInfo;
 import dev.metallurgists.rutile.api.material.stack.MaterialEntry;
 import dev.metallurgists.rutile.api.material.stack.MaterialStack;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.registry.flags.FluidFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.api.tag.TagUtil;
@@ -92,7 +93,7 @@ public class MaterialHelper {
     public static Material getMaterial(Fluid fluid) {
         if (FLUID_MATERIAL.isEmpty()) {
             Set<TagKey<Fluid>> allFluidTags = BuiltInRegistries.FLUID.getTagNames().collect(Collectors.toSet());
-            for (final Material material : RutileApi.getMaterialRegistry().getAll()) {
+            for (final Material material : RutileRegistries.MATERIALS) {
                 if (material.hasFlag(FlagKey.FLUID)) {
                     FluidFlag flag = material.getFlag(FlagKey.FLUID);
                     FluidStorageKey.allKeys().stream()
@@ -150,8 +151,8 @@ public class MaterialHelper {
             // If the map is empty, resolve all possible tags to their values in an attempt to save time on later
             // lookups.
             Set<TagKey<Item>> allItemTags = BuiltInRegistries.ITEM.getTagNames().collect(Collectors.toSet());
-            for (TagPrefix prefix : RutileApi.getTagPrefixRegistry().getAll()) {
-                for (Material material : RutileApi.getMaterialRegistry().getAll()) {
+            for (TagPrefix prefix : RutileRegistries.TAG_PREFIXES) {
+                for (Material material : RutileRegistries.MATERIALS) {
                     prefix.getItemTags(material).stream()
                             .filter(allItemTags::contains)
                             .forEach(tagKey -> {
