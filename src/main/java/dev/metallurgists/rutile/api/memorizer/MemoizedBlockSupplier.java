@@ -4,9 +4,9 @@ import net.minecraft.world.level.block.Block;
 
 import java.util.function.Supplier;
 
-public class MemorizedBlockSupplier<T extends Block> extends MemorizedSupplier<T> {
+public class MemoizedBlockSupplier<T extends Block> extends MemoizedSupplier<T> {
 
-    protected MemorizedBlockSupplier(Supplier<T> delegate) {
+    protected MemoizedBlockSupplier(Supplier<T> delegate) {
         super(delegate);
     }
 }

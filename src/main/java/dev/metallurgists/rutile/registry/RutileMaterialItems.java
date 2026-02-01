@@ -12,7 +12,7 @@ import dev.metallurgists.rutile.RutileRegistrate;
 import dev.metallurgists.rutile.api.material.ItemMaterialData;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.stack.MaterialEntry;
-import dev.metallurgists.rutile.api.memorizer.Memorizer;
+import dev.metallurgists.rutile.api.memorizer.Memoizer;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import net.minecraft.world.item.Item;
@@ -49,7 +49,7 @@ public class RutileMaterialItems {
     private static void generateMaterialItem(TagPrefix tagPrefix, Material material, RutileRegistrate registrate) {
         MATERIAL_ITEMS_BUILDER.put(tagPrefix, material, registrate
                 .item(tagPrefix.idPattern().formatted(material.getName()),
-                        properties -> tagPrefix.itemConstructor().create(properties, tagPrefix, material))
+                        properties -> tagPrefix.getItemConstructor(material).create(properties, tagPrefix, material))
                 .setData(ProviderType.LANG, NonNullBiConsumer.noop())
                 .transform(unificationItem(tagPrefix, material))
                 .properties(p -> p.stacksTo(tagPrefix.maxStackSize()))
@@ -62,7 +62,7 @@ public class RutileMaterialItems {
                                                                                   @NotNull Material mat) {
         return builder -> {
             builder.onRegister(item -> {
-                Supplier<ItemLike> supplier = Memorizer.memorize(() -> item);
+                Supplier<ItemLike> supplier = Memoizer.memoize(() -> item);
                 MaterialEntry entry = new MaterialEntry(tagPrefix, mat);
                 toUnify.put(entry, supplier);
                 ItemMaterialData.registerMaterialEntry(supplier, entry);

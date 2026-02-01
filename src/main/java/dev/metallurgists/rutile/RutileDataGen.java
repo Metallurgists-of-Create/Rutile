@@ -1,11 +1,10 @@
 package dev.metallurgists.rutile;
 
+import dev.metallurgists.rutile.datagen.RutileFluidCompositions;
 import dev.metallurgists.rutile.datagen.RutileItemCompositions;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
@@ -25,7 +24,9 @@ public class RutileDataGen {
         final boolean includeServer = event.includeServer();
 
         RutileItemCompositions itemCompositions = new RutileItemCompositions(modId, packOutput, fileHelper, lookupProvider);
+        RutileFluidCompositions fluidCompositions = new RutileFluidCompositions(packOutput, fileHelper, lookupProvider);
 
         dataGenerator.addProvider(includeServer, itemCompositions);
+        dataGenerator.addProvider(includeServer, fluidCompositions);
     }
 }

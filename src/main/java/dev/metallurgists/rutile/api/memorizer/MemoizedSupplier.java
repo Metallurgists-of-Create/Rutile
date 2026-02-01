@@ -2,13 +2,13 @@ package dev.metallurgists.rutile.api.memorizer;
 
 import java.util.function.Supplier;
 
-public class MemorizedSupplier<T> implements Supplier<T> {
+public class MemoizedSupplier<T> implements Supplier<T> {
 
     protected T value = null;
     protected boolean initialized = false;
     protected final Supplier<T> delegate;
 
-    protected MemorizedSupplier(Supplier<T> delegate) {
+    protected MemoizedSupplier(Supplier<T> delegate) {
         this.delegate = delegate;
     }
 

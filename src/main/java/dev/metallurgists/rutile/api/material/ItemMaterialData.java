@@ -1,11 +1,10 @@
 package dev.metallurgists.rutile.api.material;
 
 import com.mojang.datafixers.util.Pair;
-import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.material.stack.ItemMaterialInfo;
 import dev.metallurgists.rutile.api.material.stack.MaterialEntry;
 import dev.metallurgists.rutile.api.material.stack.MaterialStack;
-import dev.metallurgists.rutile.api.memorizer.MemorizedBlockSupplier;
+import dev.metallurgists.rutile.api.memorizer.MemoizedBlockSupplier;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.util.ItemStackHashStrategy;
@@ -113,7 +112,7 @@ public class ItemMaterialData {
             if (key.isFor(Registries.BLOCK)) {
                 return (Supplier<? extends Block>) registryObject;
             }
-        } else if (supplier instanceof MemorizedBlockSupplier<?> blockSupplier) {
+        } else if (supplier instanceof MemoizedBlockSupplier<?> blockSupplier) {
             return blockSupplier;
         }
         return null;

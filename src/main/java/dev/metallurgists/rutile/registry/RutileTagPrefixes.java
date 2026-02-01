@@ -45,18 +45,8 @@ public class RutileTagPrefixes {
             .materialAmount(TagPrefix.M * 9)
             .miningToolTag(BlockTags.MINEABLE_WITH_PICKAXE)
             .generateBlock(true)
-            .generationCondition(hasAnyFlag(FlagKey.INGOT, FlagKey.GEM).and(
-                    flagValue(FlagKey.PILLAR_MODEL, (m, t, v) -> (v.containsKey(t) || v.get(t) == false))))
+            .generationCondition(hasAnyFlag(FlagKey.INGOT, FlagKey.GEM))
             .unificationEnabled(true);
-
-    public static final TagPrefix BlockPillar = new InheritedTagPrefix(Block, "pillar")
-            .replaceParent(true)
-            .blockConstructor(AxisMaterialBlock::new)
-            .blockAssetProperties(TagPrefix.BlockAssetProperties.builder()
-                    .model(ModelHelpers.BlockModel::pillar)
-                    .blockState(ModelHelpers.BlockState::axis)
-                    .build())
-            .generationCondition(hasAnyFlag(FlagKey.INGOT, FlagKey.GEM).and(hasFlag(FlagKey.PILLAR_MODEL)).and(flagValue(FlagKey.PILLAR_MODEL, (m, t, v) -> (v.containsKey(t) && v.get(t) == true))));
 
     public static void init() {}
 }

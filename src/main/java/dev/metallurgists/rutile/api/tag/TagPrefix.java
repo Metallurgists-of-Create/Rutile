@@ -7,7 +7,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.RutileClient;
-import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.material.ItemMaterialData;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
@@ -16,12 +15,11 @@ import dev.metallurgists.rutile.api.material.flags.UnitFlag;
 import dev.metallurgists.rutile.api.material.registry.MaterialBlock;
 import dev.metallurgists.rutile.api.material.registry.MaterialBlockItem;
 import dev.metallurgists.rutile.api.material.registry.MaterialItem;
-import dev.metallurgists.rutile.api.memorizer.Memorizer;
+import dev.metallurgists.rutile.api.memorizer.Memoizer;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.registry.RutileMaterials;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -218,6 +216,13 @@ public class TagPrefix {
     private BiConsumer<Material, List<Component>> tooltip;
 
     private final Map<Material, Collection<Supplier<? extends ItemLike>>> ignoredMaterials = new HashMap<>();
+
+    private final Map<Material, BlockConstructor> specialBlockConstructors = new HashMap<>();
+
+    private final Map<Material, ItemConstructor> specialItemConstructors = new HashMap<>();
+
+    private final Map<Material, BlockAssetProperties> specialBlockAssets = new HashMap<>();
+
     @Getter
     private final Object2FloatMap<Material> materialAmounts = new Object2FloatOpenHashMap<>();
 
@@ -425,6 +430,18 @@ public class TagPrefix {
         return ignoredMaterials.containsKey(material);
     }
 
+    public BlockConstructor getBlockConstructor(Material material) {
+        return specialBlockConstructors.getOrDefault(material, blockConstructor());
+    }
+
+    public ItemConstructor getItemConstructor(Material material) {
+        return specialItemConstructors.getOrDefault(material, itemConstructor());
+    }
+
+    public BlockAssetProperties getBlockAssetProperties(Material material) {
+        return specialBlockAssets.getOrDefault(material, blockAssetProperties());
+    }
+
     @SafeVarargs
     public final void setIgnored(Material material, Supplier<? extends ItemLike>... items) {
         setIgnored(material, Arrays.asList(items));
@@ -456,9 +473,25 @@ public class TagPrefix {
         }
     }
 
+    public void setBlockConstructor(Material material, BlockConstructor blockConstructor) {
+        if (this.doGenerateBlock()) {
+            specialBlockConstructors.put(material, blockConstructor);
+        }
+    }
+
+    public void setItemConstructor(Material material, ItemConstructor itemConstructor) {
+        if (this.doGenerateItem()) {
+            specialItemConstructors.put(material, itemConstructor);
+        }
+    }
+
+    public void setBlockAssets(Material material, BlockAssetProperties assetProperties) {
+        specialBlockAssets.put(material, assetProperties);
+    }
+
     public void setIgnoredBlock(Material material, Block... blocks) {
         this.setIgnored(material, Arrays.stream(blocks)
-                .map(block -> Memorizer.memorizeBlockSupplier(() -> block))
+                .map(block -> Memoizer.memoizeBlockSupplier(() -> block))
                 .collect(Collectors.toSet()));
     }
 

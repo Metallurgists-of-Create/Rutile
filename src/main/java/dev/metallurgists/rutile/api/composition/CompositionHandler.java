@@ -2,6 +2,7 @@ package dev.metallurgists.rutile.api.composition;
 
 import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.api.RutileApi;
+import dev.metallurgists.rutile.api.data.server.manager.composition.FluidCompositionManager;
 import dev.metallurgists.rutile.api.data.server.manager.composition.ItemCompositionManager;
 import dev.metallurgists.rutile.api.data.server.manager.composition.MaterialCompositionManager;
 import dev.metallurgists.rutile.api.element.ElementStack;
@@ -45,20 +46,23 @@ public class CompositionHandler {
 
     public static void appendFluidTooltips(FluidStack fluidStack, Consumer<Component> tooltips) {
         Fluid fluid = fluidStack.getFluid();
-        var material = MaterialHelper.getMaterial(fluid);
-        if (material != null) {
-            var composition = material.getComposition();
-            if (composition != null) {
-                LangBuilder compositionName = RutileClient.lang();
-                createTooltip(compositionName, composition);
-                if (!compositionName.string().isEmpty()) {
-                    MutableComponent component = RutileClient.lang().space().space().space()
-                            .add(compositionName)
-                            .component();
-                    if (!RutileConfig.client().elementColorForTooltip.get()) {
-                        component = component.withStyle(style -> style.withColor(RutileConfig.client().tooltipColor.get()));
+        boolean hasSpecificComposition = fluidComposition(tooltips, fluidStack);
+        if (!hasSpecificComposition) {
+            var material = MaterialHelper.getMaterial(fluid);
+            if (material != null) {
+                var composition = material.getComposition();
+                if (composition != null) {
+                    LangBuilder compositionName = RutileClient.lang();
+                    createTooltip(compositionName, composition);
+                    if (!compositionName.string().isEmpty()) {
+                        MutableComponent component = RutileClient.lang().space().space().space()
+                                .add(compositionName)
+                                .component();
+                        if (!RutileConfig.client().elementColorForTooltip.get()) {
+                            component = component.withStyle(style -> style.withColor(RutileConfig.client().tooltipColor.get()));
+                        }
+                        tooltips.accept(component);
                     }
-                    tooltips.accept(component);
                 }
             }
         }
@@ -98,6 +102,17 @@ public class CompositionHandler {
         return false;
     }
 
+    public static boolean fluidComposition(Consumer<Component> toolTip, FluidStack stack) {
+        Composition composition = FluidCompositionManager.getInstance().getComposition(stack.getFluid());
+        if (composition != null) {
+            LangBuilder compositionName = RutileClient.lang();
+            createTooltip(compositionName, composition);
+            add(toolTip, compositionName);
+            return true;
+        }
+        return false;
+    }
+
     private static void add(List<Component> toolTip, LangBuilder composition) {
         if (!composition.string().isEmpty()) {
             MutableComponent component = RutileClient.lang().space().space().space()
@@ -110,6 +125,18 @@ public class CompositionHandler {
                 toolTip.add(component);
             else
                 toolTip.add(1, component);
+        }
+    }
+
+    private static void add(Consumer<Component> toolTip, LangBuilder composition) {
+        if (!composition.string().isEmpty()) {
+            MutableComponent component = RutileClient.lang().space().space().space()
+                    .add(composition)
+                    .component();
+            if (!RutileConfig.client().elementColorForTooltip.get()) {
+                component = component.withStyle(style -> style.withColor(RutileConfig.client().tooltipColor.get()));
+            }
+            toolTip.accept(component);
         }
     }
 

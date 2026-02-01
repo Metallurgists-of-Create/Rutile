@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.api.element.ElementStack;
 import dev.metallurgists.rutile.config.RutileConfig;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.createmod.catnip.lang.LangBuilder;
@@ -17,6 +18,7 @@ import net.neoforged.neoforge.common.conditions.WithConditions;
 import java.util.List;
 import java.util.Optional;
 
+@Builder
 @Accessors(chain = true, fluent = true)
 public class Composition {
     @Getter

@@ -6,6 +6,8 @@ import com.mojang.serialization.JsonOps;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import dev.metallurgists.rutile.api.runtime.RutileDynamicPackContents;
+import dev.metallurgists.rutile.api.runtime.data.RutileDynamicDataPack;
+import dev.metallurgists.rutile.config.RutileConfig;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.SharedConstants;
@@ -77,6 +79,10 @@ public class RutileDynamicResourcePack implements PackResources {
     public static void addBlockModel(ResourceLocation loc, JsonElement obj) {
         ResourceLocation l = getBlockModelLocation(loc);
         byte[] modelBytes = obj.toString().getBytes(StandardCharsets.UTF_8);
+        Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/assets");
+        if (RutileConfig.client().dumpAssets.get()) {
+            RutileDynamicDataPack.writeJson(l, null, parent, modelBytes);
+        }
         CONTENTS.addToData(l, modelBytes);
     }
 
@@ -87,6 +93,10 @@ public class RutileDynamicResourcePack implements PackResources {
     public static void addItemModel(ResourceLocation loc, JsonElement obj) {
         ResourceLocation l = getItemModelLocation(loc);
         byte[] modelBytes = obj.toString().getBytes(StandardCharsets.UTF_8);
+        Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/assets");
+        if (RutileConfig.client().dumpAssets.get()) {
+            RutileDynamicDataPack.writeJson(l, null, parent, modelBytes);
+        }
         CONTENTS.addToData(l, modelBytes);
     }
 
@@ -97,6 +107,10 @@ public class RutileDynamicResourcePack implements PackResources {
     public static void addBlockState(ResourceLocation loc, JsonElement stateJson) {
         ResourceLocation l = getBlockStateLocation(loc);
         byte[] stateBytes = stateJson.toString().getBytes(StandardCharsets.UTF_8);
+        Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/assets");
+        if (RutileConfig.client().dumpAssets.get()) {
+            RutileDynamicDataPack.writeJson(l, null, parent, stateBytes);
+        }
         CONTENTS.addToData(l, stateBytes);
     }
 
@@ -107,6 +121,10 @@ public class RutileDynamicResourcePack implements PackResources {
     public static void addPartialModel(ResourceLocation loc, JsonElement partialJson) {
         ResourceLocation l = getBlockModelLocation(loc);
         byte[] partialBytes = partialJson.toString().getBytes(StandardCharsets.UTF_8);
+        Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/assets");
+        if (RutileConfig.client().dumpAssets.get()) {
+            RutileDynamicDataPack.writeJson(l, null, parent, partialBytes);
+        }
         CONTENTS.addToData(l, partialBytes);
     }
 

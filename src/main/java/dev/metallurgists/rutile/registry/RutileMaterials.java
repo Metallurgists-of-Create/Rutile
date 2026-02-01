@@ -1,14 +1,13 @@
 package dev.metallurgists.rutile.registry;
 
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.element.Element;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
-import dev.metallurgists.rutile.api.registry.IRutileRegistry;
+import dev.metallurgists.rutile.api.material.registry.AxisMaterialBlock;
 import dev.metallurgists.rutile.api.registry.flags.BurnableFlag;
 import dev.metallurgists.rutile.api.registry.flags.HarvestTierFlag;
-import dev.metallurgists.rutile.api.registry.flags.PillarModelFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
+import dev.metallurgists.rutile.util.ModelHelpers;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
@@ -24,7 +23,6 @@ public class RutileMaterials {
             .fluid()
             .flag(FlagKey.HARVEST_TIER)
             .flag(FlagKey.BURNABLE, new BurnableFlag(60))
-            .flag(FlagKey.PILLAR_MODEL, new PillarModelFlag(RutileTagPrefixes.Block, RutileTagPrefixes.BlockPillar))
             .build();
 
     public static Material Iron = new Material.Builder(Rutile.id("iron"))
@@ -101,5 +99,11 @@ public class RutileMaterials {
         Block.setIgnored(RutileMaterials.Amethyst, Blocks.AMETHYST_BLOCK);
         Block.modifyMaterialAmount(RutileMaterials.Quartz, TagPrefix.M * 4);
         Block.modifyMaterialAmount(RutileMaterials.Amethyst, TagPrefix.M * 4);
+
+        Block.setBlockConstructor(Null, AxisMaterialBlock::new);
+        Block.setBlockAssets(Null, TagPrefix.BlockAssetProperties.builder()
+                .blockState(ModelHelpers.BlockState::axis)
+                .model(ModelHelpers.BlockModel::pillar)
+                .build());
     }
 }

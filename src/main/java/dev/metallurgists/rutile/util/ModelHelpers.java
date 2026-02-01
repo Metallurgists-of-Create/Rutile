@@ -130,7 +130,7 @@ public class ModelHelpers {
     }
 
     public static void blockModel(Material material, TagPrefix tagPrefix, ResourceLocation path) {
-        TagPrefix.BlockAssetProperties assetProps = tagPrefix.blockAssetProperties();
+        TagPrefix.BlockAssetProperties assetProps = tagPrefix.getBlockAssetProperties(material);
         if (assetProps != null) {
             if (assetProps.hasModel()) {
                 toPack(RutileDynamicResourcePack::addBlockModel, path, assetProps.model().apply(material, tagPrefix));
