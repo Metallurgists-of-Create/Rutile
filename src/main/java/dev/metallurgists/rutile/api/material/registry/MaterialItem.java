@@ -3,7 +3,6 @@ package dev.metallurgists.rutile.api.material.registry;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
-import dev.metallurgists.rutile.api.registry.flags.BurnableFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;

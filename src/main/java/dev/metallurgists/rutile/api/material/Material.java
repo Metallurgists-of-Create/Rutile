@@ -1,8 +1,8 @@
 package dev.metallurgists.rutile.api.material;
 
 import com.google.common.base.Preconditions;
+import com.mojang.datafixers.util.Pair;
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.composition.SubComposition;
 import dev.metallurgists.rutile.api.element.ElementStack;
@@ -10,15 +10,13 @@ import dev.metallurgists.rutile.api.fluid.FluidBuilder;
 import dev.metallurgists.rutile.api.fluid.FluidState;
 import dev.metallurgists.rutile.api.fluid.storage.FluidStorageKey;
 import dev.metallurgists.rutile.api.fluid.storage.FluidStorageKeys;
-import dev.metallurgists.rutile.api.material.flags.FlagKey;
-import dev.metallurgists.rutile.api.material.flags.IMaterialFlag;
-import dev.metallurgists.rutile.api.material.flags.MaterialFlags;
-import dev.metallurgists.rutile.api.material.flags.UnitFlag;
+import dev.metallurgists.rutile.api.material.flags.*;
 import dev.metallurgists.rutile.api.registry.IDisplayedName;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
-import dev.metallurgists.rutile.api.registry.flags.FluidFlag;
+import dev.metallurgists.rutile.api.registry.flags.registry.FluidFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.api.tag.TagUtil;
+import dev.metallurgists.rutile.registry.RutileMaterials;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.Util;
@@ -130,6 +128,25 @@ public class Material implements IDisplayedName, FeatureElement {
         return this.flags.getFlag(key).getValue();
     }
 
+    public <A, B, T extends BiUnitFlag<A, B>> Pair<A, B> getFlagValues(FlagKey<T> key) {
+        if (!this.flags.hasFlag(key)) {
+            return null;
+        }
+        BiUnitFlag<A, B> flag = this.flags.getFlag(key);
+        return Pair.of(flag.getFirstValue(), flag.getSecondValue());
+    }
+
+    public <K, V, T extends MapFlag<K, V>> V getFlagValue(FlagKey<T> key, K mapKey) {
+        if (!this.flags.hasFlag(key)) {
+            return null;
+        }
+        return this.flags.getFlag(key).getValue().get(mapKey);
+    }
+
+    public boolean shouldGenerateRecipesFor(@NotNull TagPrefix prefix) {
+        return (!this.hasFlag(FlagKey.DISABLE_RECIPES)) && !MaterialHelper.get(prefix, this).isEmpty();
+    }
+
     public int getBlockHarvestLevel() {
         if (!hasFlag(FlagKey.HARVEST_TIER))
             throw new IllegalArgumentException("Material " + info.resourceLocation +
@@ -224,6 +241,10 @@ public class Material implements IDisplayedName, FeatureElement {
 
     protected void register() {
         RutileRegistries.register(RutileRegistries.MATERIALS, this.getId(), this);
+    }
+
+    public boolean isNull() {
+        return this == RutileMaterials.Null;
     }
 
     @Override

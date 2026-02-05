@@ -38,7 +38,7 @@ public class MaterialFlags {
         if (!key.getType().isInstance(value))
             throw new IllegalArgumentException("Material Flag must be of the same type as the flag key!");
         if (hasFlag(key))
-            throw new IllegalArgumentException("Material Flag " + key.toString() + " already registered!");
+            throw new IllegalArgumentException("Material Flag " + key + " already registered!");
         flagMap.put(key, value);
     }
 

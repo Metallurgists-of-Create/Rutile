@@ -8,6 +8,7 @@ import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.FinishedComposition;
 import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import dev.metallurgists.rutile.api.runtime.RutileDynamicPackContents;
+import dev.metallurgists.rutile.api.runtime.data.recipe.custom.CustomRecipe;
 import dev.metallurgists.rutile.config.RutileConfig;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
@@ -139,6 +140,23 @@ public class RutileDynamicDataPack implements PackResources {
                                  HolderLookup.Provider provider) {
         JsonElement recipeJson = Recipe.CODEC.encodeStart(provider.createSerializationContext(JsonOps.INSTANCE), recipe)
                 .getOrThrow();
+        byte[] recipeBytes = recipeJson.toString().getBytes(StandardCharsets.UTF_8);
+        Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/data");
+        if (RutileConfig.client().dumpRecipes.get()) {
+            writeJson(recipeId, "recipes", parent, recipeBytes);
+        }
+        addToData(getRecipeLocation(recipeId), recipeBytes);
+        if (advancement != null) {
+            JsonElement advancementJson = Advancement.CODEC
+                    .encodeStart(provider.createSerializationContext(JsonOps.INSTANCE), advancement.value())
+                    .getOrThrow();
+            byte[] advancementBytes = advancementJson.toString().getBytes(StandardCharsets.UTF_8);
+            addToData(getAdvancementLocation(advancement.id()), advancementBytes);
+        }
+    }
+
+    public static void addRecipe(ResourceLocation recipeId, CustomRecipe<?> recipe, @Nullable AdvancementHolder advancement, HolderLookup.Provider provider) {
+        JsonElement recipeJson = recipe.serialize();
         byte[] recipeBytes = recipeJson.toString().getBytes(StandardCharsets.UTF_8);
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/data");
         if (RutileConfig.client().dumpRecipes.get()) {

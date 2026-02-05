@@ -106,7 +106,7 @@ public class ModelHelpers {
 
     public static void itemModel(Material material, TagPrefix tagPrefix) {
         MaterialAsset materialAsset = MaterialAssetManager.getInstance().getAsset(tagPrefix, material);
-        ResourceLocation path = ResourceLocation.fromNamespaceAndPath(material.getModId(), tagPrefix.idPattern().formatted(material.getName()));
+        ResourceLocation path = ResourceLocation.fromNamespaceAndPath(material.getModId(), tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material)));
         if (materialAsset != null) {
             toPack(RutileDynamicResourcePack::addItemModel, path, materialAsset.createJson());
         } else ModelHelpers.generatedItemModel(material, tagPrefix, path);
@@ -121,11 +121,11 @@ public class ModelHelpers {
 
     public static void blockModel(Material material, TagPrefix tagPrefix) {
         MaterialAsset materialAsset = MaterialAssetManager.getInstance().getAsset(tagPrefix, material);
-        ResourceLocation path = ResourceLocation.fromNamespaceAndPath(material.getModId(), tagPrefix.idPattern().formatted(material.getName()));
+        ResourceLocation path = ResourceLocation.fromNamespaceAndPath(material.getModId(), tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material)));
         if (materialAsset != null) {
             toPack(RutileDynamicResourcePack::addBlockModel, path, materialAsset.createJson());
-            toPack(RutileDynamicResourcePack::addBlockState, path, ModelHelpers.singleVariantBlockstate(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(material.getName())));
-            toPack(RutileDynamicResourcePack::addItemModel, path, ModelHelpers.simpleParentedModel(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(material.getName())));
+            toPack(RutileDynamicResourcePack::addBlockState, path, ModelHelpers.singleVariantBlockstate(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material))));
+            toPack(RutileDynamicResourcePack::addItemModel, path, ModelHelpers.simpleParentedModel(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material))));
         } else ModelHelpers.blockModel(material, tagPrefix, path);
     }
 
@@ -151,8 +151,8 @@ public class ModelHelpers {
         boolean texturePresent = isTexturePresent(material, tagPrefix, "block");
         String texture = textureOrNull("%s:block/materials/%s/"+flagName, material, texturePresent);
         toPack(RutileDynamicResourcePack::addBlockModel, path, ModelHelpers.simpleCubeAll(texture));
-        toPack(RutileDynamicResourcePack::addBlockState, path, ModelHelpers.singleVariantBlockstate(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(material.getName())));
-        toPack(RutileDynamicResourcePack::addItemModel, path, ModelHelpers.simpleParentedModel(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(material.getName())));
+        toPack(RutileDynamicResourcePack::addBlockState, path, ModelHelpers.singleVariantBlockstate(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material))));
+        toPack(RutileDynamicResourcePack::addItemModel, path, ModelHelpers.simpleParentedModel(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material))));
     }
 
     public static class BlockModel {
@@ -177,18 +177,18 @@ public class ModelHelpers {
     public static class BlockState {
 
         public static JsonElement singleVariant(Material material, TagPrefix tagPrefix) {
-            return ModelHelpers.singleVariantBlockstate(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(material.getName()));
+            return ModelHelpers.singleVariantBlockstate(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material)));
         }
 
         public static JsonElement axis(Material material, TagPrefix tagPrefix) {
-            return ModelHelpers.simpleAxisBlockstate(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(material.getName()));
+            return ModelHelpers.simpleAxisBlockstate(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material)));
         }
     }
 
     public static class ItemModel {
 
         public static JsonElement blockParent(Material material, TagPrefix tagPrefix) {
-            return ModelHelpers.simpleParentedModel(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(material.getName()));
+            return ModelHelpers.simpleParentedModel(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material)));
         }
     }
 

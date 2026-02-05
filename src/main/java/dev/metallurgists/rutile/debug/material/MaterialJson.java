@@ -7,7 +7,9 @@ import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.MaterialInfo;
+import dev.metallurgists.rutile.api.material.flags.IMaterialFlag;
 import dev.metallurgists.rutile.api.material.flags.MaterialFlags;
+import dev.metallurgists.rutile.api.material.flags.StandaloneFlag;
 import net.createmod.catnip.lang.LangBuilder;
 import net.minecraft.resources.ResourceLocation;
 
@@ -46,12 +48,14 @@ public class MaterialJson {
 
     public void writeFlags(JsonObject json) {
         MaterialFlags materialFlags = material.getFlags();
-        JsonArray jsonArray = new JsonArray();
+        JsonObject flags = new JsonObject();
         for (var c : materialFlags.getFlagKeys()) {
-            JsonObject flagDebug = material.getFlag(c).debugJson();
-            flagDebug.addProperty("id", c.getKey());
-            jsonArray.add(flagDebug);
+            IMaterialFlag flag = material.getFlag(c);
+            if (flag instanceof StandaloneFlag) {
+                flags.addProperty(c.getKey().toString(), true);
+            } else
+                flags.add(c.getKey().toString(), flag.debugJson());
         }
-        json.add("flags", jsonArray);
+        json.add("flags", flags);
     }
 }

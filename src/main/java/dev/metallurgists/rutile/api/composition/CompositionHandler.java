@@ -1,17 +1,12 @@
 package dev.metallurgists.rutile.api.composition;
 
 import dev.metallurgists.rutile.RutileClient;
-import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.data.server.manager.composition.FluidCompositionManager;
 import dev.metallurgists.rutile.api.data.server.manager.composition.ItemCompositionManager;
 import dev.metallurgists.rutile.api.data.server.manager.composition.MaterialCompositionManager;
 import dev.metallurgists.rutile.api.element.ElementStack;
 import dev.metallurgists.rutile.api.fluid.MaterialFluid;
-import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.MaterialHelper;
-import dev.metallurgists.rutile.api.material.stack.MaterialEntry;
-import dev.metallurgists.rutile.api.registry.RutileRegistries;
-import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.util.ColourUtil;
 import net.createmod.catnip.lang.LangBuilder;
@@ -20,10 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.EmptyFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.api.distmarker.Dist;
@@ -74,7 +66,7 @@ public class CompositionHandler {
     public static boolean materialComposition(List<Component> toolTip, ItemStack stack) {
         var materialEntry = MaterialHelper.getMaterialEntry(stack.getItem());
         if (!materialEntry.isEmpty()) {
-            Composition composition = MaterialCompositionManager.getInstance().getComposition(materialEntry.material);
+            Composition composition = MaterialCompositionManager.getInstance().getComposition(materialEntry.material());
             if (composition != null) {
                 LangBuilder compositionName = RutileClient.lang();
                 createTooltip(compositionName, composition);

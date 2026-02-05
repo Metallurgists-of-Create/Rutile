@@ -2,17 +2,15 @@ package dev.metallurgists.rutile.api.material;
 
 import com.mojang.datafixers.util.Pair;
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.fluid.storage.FluidStorageKey;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
 import dev.metallurgists.rutile.api.material.stack.ItemMaterialInfo;
 import dev.metallurgists.rutile.api.material.stack.MaterialEntry;
 import dev.metallurgists.rutile.api.material.stack.MaterialStack;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
-import dev.metallurgists.rutile.api.registry.flags.FluidFlag;
+import dev.metallurgists.rutile.api.registry.flags.registry.FluidFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.api.tag.TagUtil;
-import dev.metallurgists.rutile.registry.RutileMaterials;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
@@ -167,6 +165,7 @@ public class MaterialHelper {
     }
 
     public static List<ItemLike> getItems(MaterialEntry materialEntry) {
+        if (materialEntry.material().isNull()) return new ArrayList<>();
         return MATERIAL_ENTRY_ITEM_MAP.computeIfAbsent(materialEntry, entry -> {
             TagPrefix prefix = entry.tagPrefix();
             var items = new ArrayList<Supplier<? extends Item>>();

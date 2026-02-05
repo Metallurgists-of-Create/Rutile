@@ -48,7 +48,7 @@ public class RutileMaterialItems {
 
     private static void generateMaterialItem(TagPrefix tagPrefix, Material material, RutileRegistrate registrate) {
         MATERIAL_ITEMS_BUILDER.put(tagPrefix, material, registrate
-                .item(tagPrefix.idPattern().formatted(material.getName()),
+                .item(tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material)),
                         properties -> tagPrefix.getItemConstructor(material).create(properties, tagPrefix, material))
                 .setData(ProviderType.LANG, NonNullBiConsumer.noop())
                 .transform(unificationItem(tagPrefix, material))

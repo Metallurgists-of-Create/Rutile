@@ -5,6 +5,8 @@
   "materialflag.rutile.gem": "%s",
   "materialflag.rutile.dust": "%s Dust",
   "materialflag.rutile.liquid": "%s",
+  "materialflag.rutile.raw": "Raw %s",
+  "materialflag.rutile.raw_ore_block": "Block of Raw %s",
   "item.rutile.bucket": "%s Bucket",
 
   "rutile.fluid.empty": "Empty",

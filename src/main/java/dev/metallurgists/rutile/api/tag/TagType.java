@@ -26,14 +26,14 @@ public class TagType {
     public static TagType withDefaultFormatter(String tagPath, boolean isVanilla) {
         TagType type = new TagType(tagPath);
         type.formatter = Util
-                .memoize((prefix, mat) -> TagUtil.createItemTag(type.tagPath.formatted(mat.getName()), isVanilla));
+                .memoize((prefix, mat) -> TagUtil.createItemTag(type.tagPath.formatted(prefix.getMaterialName(mat)), isVanilla));
         return type;
     }
 
     public static TagType withPrefixFormatter(String tagPath) {
         TagType type = new TagType(tagPath);
         type.formatter = Util.memoize((prefix, mat) -> TagUtil.createItemTag(
-                type.tagPath.formatted(prefix.getLowerCaseName(), mat.getName())));
+                type.tagPath.formatted(prefix.getLowerCaseName(), prefix.getMaterialName(mat))));
         return type;
     }
 

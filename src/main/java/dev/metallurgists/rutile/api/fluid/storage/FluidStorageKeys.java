@@ -4,7 +4,7 @@ import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.fluid.FluidState;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
-import dev.metallurgists.rutile.api.registry.flags.FluidFlag;
+import dev.metallurgists.rutile.api.registry.flags.registry.FluidFlag;
 import dev.metallurgists.rutile.datagen.RutileTags;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +16,7 @@ public class FluidStorageKeys {
             FluidState.LIQUID, 0);
 
     public static final FluidStorageKey GAS = new FluidStorageKey(Rutile.id("gas"),
-            m -> postfixedRegisteredName("_gas", FluidStorageKeys.GAS, m),
+            m -> suffixedRegisteredName("_gas", FluidStorageKeys.GAS, m),
             m -> {
                 if (m.isElement()) {
                     FluidFlag flag = m.getFlag(FlagKey.FLUID);
@@ -40,8 +40,7 @@ public class FluidStorageKeys {
 
     private FluidStorageKeys() {}
 
-    private static @NotNull String prefixedRegisteredName(@NotNull String prefix, @NotNull FluidStorageKey key,
-                                                          @NotNull Material material) {
+    private static @NotNull String prefixedRegisteredName(@NotNull String prefix, @NotNull FluidStorageKey key, @NotNull Material material) {
         FluidFlag flag = material.getFlag(FlagKey.FLUID);
         if (flag != null && flag.getPrimaryKey() != key) {
             return prefix + material.getName();
@@ -49,11 +48,10 @@ public class FluidStorageKeys {
         return material.getName();
     }
 
-    private static @NotNull String postfixedRegisteredName(@NotNull String postfix, @NotNull FluidStorageKey key,
-                                                           @NotNull Material material) {
+    private static @NotNull String suffixedRegisteredName(@NotNull String suffix, @NotNull FluidStorageKey key, @NotNull Material material) {
         FluidFlag flag = material.getFlag(FlagKey.FLUID);
         if (flag != null && flag.getPrimaryKey() != key) {
-            return material.getName() + postfix;
+            return material.getName() + suffix;
         }
         return material.getName();
     }

@@ -1,10 +1,10 @@
-package dev.metallurgists.rutile.api.registry.flags;
+package dev.metallurgists.rutile.api.registry.flags.registry;
 
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
-import dev.metallurgists.rutile.api.material.flags.IItemFlag;
+import dev.metallurgists.rutile.api.material.flags.IMaterialFlag;
 import dev.metallurgists.rutile.api.material.flags.MaterialFlags;
 
-public class GemFlag implements IItemFlag {
+public class GemFlag implements IMaterialFlag {
     @Override
     public void verifyFlag(MaterialFlags flags) {
         if (flags.hasFlag(FlagKey.INGOT)) {

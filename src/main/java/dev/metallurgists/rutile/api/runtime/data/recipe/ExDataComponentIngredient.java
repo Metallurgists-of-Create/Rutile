@@ -1,0 +1,93 @@
+package dev.metallurgists.rutile.api.runtime.data.recipe;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.metallurgists.rutile.registry.RutileIngredientTypes;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentPredicate;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.HolderSetCodec;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
+import net.neoforged.neoforge.common.crafting.IngredientType;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class ExDataComponentIngredient extends DataComponentIngredient {
+    // spotless:off
+    public static final MapCodec<ExDataComponentIngredient> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
+            HolderSetCodec.create(Registries.ITEM, BuiltInRegistries.ITEM.holderByNameCodec(), false).fieldOf("items").forGetter(ExDataComponentIngredient::items),
+            DataComponentPredicate.CODEC.fieldOf("components").forGetter(ExDataComponentIngredient::components),
+            Codec.BOOL.optionalFieldOf("strict", false).forGetter(ExDataComponentIngredient::isStrict)
+    ).apply(builder, ExDataComponentIngredient::new));
+    // spotless:on
+
+    private final @NotNull List<ItemStack> stacks;
+
+    public ExDataComponentIngredient(HolderSet<Item> items, DataComponentPredicate components, boolean strict) {
+        super(items, components, strict);
+        this.stacks = items.stream()
+                .map(i -> new ItemStack(i, 1, components.asPatch()))
+                .collect(Collectors.toCollection(ArrayList::new));
+        items.addInvalidationListener(this.stacks::clear);
+    }
+
+    private List<ItemStack> regenerateStacksIfEmpty() {
+        if (this.stacks.isEmpty()) {
+            this.items().stream()
+                    .map(i -> new ItemStack(i, 1, components().asPatch()))
+                    .forEach(this.stacks::add);
+        }
+        return this.stacks;
+    }
+
+    @Override
+    public boolean test(@NotNull ItemStack stack) {
+        if (this.isStrict()) {
+            for (ItemStack stack2 : this.regenerateStacksIfEmpty()) {
+                if (ItemStack.isSameItemSameComponents(stack, stack2)) return true;
+            }
+            return false;
+        } else {
+            return this.items().contains(stack.getItemHolder()) && this.components().test(stack);
+        }
+    }
+
+    @Override
+    public @NotNull Stream<ItemStack> getItems() {
+        return this.regenerateStacksIfEmpty().stream();
+    }
+
+    @Override
+    public @NotNull IngredientType<?> getType() {
+        return RutileIngredientTypes.DATA_COMPONENT_INGREDIENT.get();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ExDataComponentIngredient)) return false;
+        return super.equals(obj);
+    }
+
+    public static @NotNull Ingredient of(boolean strict, DataComponentMap map, HolderSet<Item> items) {
+        return of(strict, DataComponentPredicate.allOf(map), items);
+    }
+
+    public static @NotNull Ingredient of(boolean strict, DataComponentPredicate predicate, TagKey<Item> tag) {
+        return of(strict, predicate, BuiltInRegistries.ITEM.getOrCreateTag(tag));
+    }
+
+    public static @NotNull Ingredient of(boolean strict, DataComponentPredicate predicate, HolderSet<Item> items) {
+        return new ExDataComponentIngredient(items, predicate, strict).toVanilla();
+    }
+}

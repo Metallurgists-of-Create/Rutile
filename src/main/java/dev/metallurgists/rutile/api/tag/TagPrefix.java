@@ -1,5 +1,6 @@
 package dev.metallurgists.rutile.api.tag;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Table;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -15,6 +16,7 @@ import dev.metallurgists.rutile.api.material.flags.UnitFlag;
 import dev.metallurgists.rutile.api.material.registry.MaterialBlock;
 import dev.metallurgists.rutile.api.material.registry.MaterialBlockItem;
 import dev.metallurgists.rutile.api.material.registry.MaterialItem;
+import dev.metallurgists.rutile.api.material.stack.MaterialStack;
 import dev.metallurgists.rutile.api.memorizer.Memoizer;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.registry.RutileMaterials;
@@ -23,6 +25,7 @@ import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.locale.Language;
@@ -44,6 +47,8 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
+
+import static dev.metallurgists.rutile.api.tag.TagPrefix.Conditions.hasFlag;
 
 @Accessors(chain = true, fluent = true)
 public class TagPrefix {
@@ -166,6 +171,7 @@ public class TagPrefix {
     @Setter
     private String idPattern;
 
+
     protected final List<TagType> tags = new ArrayList<>();
 
     @Setter
@@ -223,12 +229,17 @@ public class TagPrefix {
 
     private final Map<Material, BlockAssetProperties> specialBlockAssets = new HashMap<>();
 
+    private Map<Material, String> nameAlternatives = new HashMap<>();
+
     @Getter
     private final Object2FloatMap<Material> materialAmounts = new Object2FloatOpenHashMap<>();
 
     @Getter
     @Setter
     private int maxStackSize = 64;
+
+    @Getter
+    private final List<MaterialStack> secondaryMaterials = new ArrayList<>();
 
     @Getter
     protected final Set<TagKey<Block>> miningToolTag = new HashSet<>();
@@ -242,38 +253,19 @@ public class TagPrefix {
         RutileRegistries.register(RutileRegistries.TAG_PREFIXES, id, this);
     }
 
-    public TagPrefix(ResourceLocation id, TagPrefix base) {
-        this.id = id;
-        this.langAlias = base.langAlias;
-        this.idPattern = base.idPattern;
-        this.langValue = base.langValue;
-        this.tags.addAll(base.tags);
-        this.materialAmount = base.materialAmount;
-        this.unificationEnabled = base.unificationEnabled;
-        this.generateItem = base.generateItem;
-        this.itemConstructor = base.itemConstructor;
-        this.generateBlock = base.generateBlock;
-        this.blockConstructor = base.blockConstructor;
-        this.blockItemConstructor = base.blockItemConstructor;
-        this.blockProperties = base.blockProperties;
-        this.blockAssetProperties = base.blockAssetProperties;
-        this.generationCondition = base.generationCondition;
-        this.itemTable = base.itemTable;
-        this.tooltip = base.tooltip;
-        RutileRegistries.register(RutileRegistries.TAG_PREFIXES, id, this);
+    public static TagPrefix oreTagPrefix(ResourceLocation id, TagKey<Block> miningToolTag) {
+        return new TagPrefix(id)
+                .defaultTagPath("ores/%s")
+                .prefixOnlyTagPath("ores_in_ground/%s")
+                .unformattedTagPath("ores")
+                .miningToolTag(miningToolTag)
+                .unificationEnabled(true)
+                .generationCondition(hasFlag(FlagKey.ORE));
     }
 
-    public boolean hasOverridingChild(Material material) {
-        for (TagPrefix prefix : RutileRegistries.TAG_PREFIXES) {
-            if (!prefix.isIgnored(material)) {
-                if (prefix instanceof InheritedTagPrefix inherited) {
-                    if (inherited.parentId() == this.id) {
-                        return inherited.replaceParent();
-                    }
-                }
-            }
-        }
-        return false;
+    public void addSecondaryMaterial(MaterialStack secondaryMaterial) {
+        Preconditions.checkNotNull(secondaryMaterial, "secondaryMaterial");
+        secondaryMaterials.add(secondaryMaterial);
     }
 
     public TagPrefix defaultTagPath(String path) {
@@ -389,7 +381,7 @@ public class TagPrefix {
     }
 
     public boolean doGenerateItem(Material material) {
-        return generateItem && !hasOverridingChild(material) && !isIgnored(material) &&
+        return generateItem && !isIgnored(material) &&
                 (generationCondition == null || generationCondition.test(material, this)) ||
                 (hasItemTable() && this.itemTable.get() != null && getItemFromTable(material) != null);
     }
@@ -399,7 +391,7 @@ public class TagPrefix {
     }
 
     public boolean doGenerateBlock(Material material) {
-        return generateBlock && !hasOverridingChild(material) && !isIgnored(material) &&
+        return generateBlock && !isIgnored(material) &&
                 (generationCondition == null || generationCondition.test(material, this)) ||
                 hasItemTable() && this.itemTable.get() != null && getItemFromTable(material) != null;
     }
@@ -413,12 +405,11 @@ public class TagPrefix {
     }
 
     public MutableComponent getLocalizedName(Material material) {
-        return Component.translatable(getUnlocalizedName(material), material.getDisplayName());
+        return Component.translatable(getUnlocalizedName(material), getMaterialDisplayName(material));
     }
 
     public String getUnlocalizedName(Material material) {
-        String matSpecificKey = String.format("item.%s.%s", material.getModId(),
-                this.idPattern.formatted(material.getName()));
+        String matSpecificKey = String.format("item.%s.%s", material.getModId(), this.idPattern.formatted(getMaterialName(material)));
         if (Language.getInstance().has(matSpecificKey)) {
             return matSpecificKey;
         }
@@ -440,6 +431,17 @@ public class TagPrefix {
 
     public BlockAssetProperties getBlockAssetProperties(Material material) {
         return specialBlockAssets.getOrDefault(material, blockAssetProperties());
+    }
+
+    public String getMaterialName(Material material) {
+        return nameAlternatives.getOrDefault(material, material.getName());
+    }
+
+    public Component getMaterialDisplayName(Material material) {
+        if (nameAlternatives.containsKey(material)) {
+            return Component.translatable(Util.makeDescriptionId("material", material.getId().withSuffix("." + getName())));
+        }
+        return material.getDisplayName();
     }
 
     @SafeVarargs
@@ -487,6 +489,10 @@ public class TagPrefix {
 
     public void setBlockAssets(Material material, BlockAssetProperties assetProperties) {
         specialBlockAssets.put(material, assetProperties);
+    }
+
+    public void setMaterialName(Material material, String name) {
+        nameAlternatives.put(material, name);
     }
 
     public void setIgnoredBlock(Material material, Block... blocks) {

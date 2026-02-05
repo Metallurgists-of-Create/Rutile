@@ -1,4 +1,4 @@
-package dev.metallurgists.rutile.api.registry.flags;
+package dev.metallurgists.rutile.api.registry.flags.registry;
 
 import com.tterrag.registrate.AbstractRegistrate;
 import dev.metallurgists.rutile.api.fluid.FluidBuilder;
@@ -12,7 +12,6 @@ import dev.metallurgists.rutile.api.material.flags.MaterialFlags;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import mezz.jei.neoforge.platform.FluidHelper;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.ApiStatus;

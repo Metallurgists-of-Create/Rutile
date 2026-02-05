@@ -8,7 +8,6 @@ import dev.metallurgists.rutile.api.registry.RutileRegistry;
 import dev.metallurgists.rutile.api.runtime.RutilePackSource;
 import dev.metallurgists.rutile.api.runtime.assets.RutileDynamicResourcePack;
 import dev.metallurgists.rutile.api.runtime.data.RutileDynamicDataPack;
-import dev.metallurgists.rutile.datagen.RutileTags;
 import dev.metallurgists.rutile.debug.material.DebugElementPrinter;
 import dev.metallurgists.rutile.debug.material.DebugMaterialPrinter;
 import dev.metallurgists.rutile.debug.material.DebugTagPrefixPrinter;
@@ -53,6 +52,8 @@ public class CommonEvents {
         RutileElements.init();
         RutileMaterials.init();
         RutileTagPrefixes.init();
+
+        RutileIngredientTypes.ITEM_INGREDIENT_TYPES.register(modBus);
         didRunRegistration = true;
     }
 

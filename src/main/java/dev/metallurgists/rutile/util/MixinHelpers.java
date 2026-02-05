@@ -11,7 +11,7 @@ import dev.metallurgists.rutile.api.material.ItemMaterialData;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
-import dev.metallurgists.rutile.api.registry.flags.FluidFlag;
+import dev.metallurgists.rutile.api.registry.flags.registry.FluidFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.mixin.BlockBehaviourAccessor;
 import dev.metallurgists.rutile.registry.RutileMaterialBlocks;

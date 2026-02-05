@@ -1,11 +1,6 @@
 package dev.metallurgists.rutile.util;
 
 
-import dev.metallurgists.rutile.RutileClient;
-
-import java.awt.Color;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class ColourUtil {

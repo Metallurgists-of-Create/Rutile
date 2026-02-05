@@ -46,7 +46,7 @@ public class RutileMaterialBlocks {
 
     private static void registerMaterialBlock(TagPrefix tagPrefix, Material material, RutileRegistrate registrate) {
         MATERIAL_BLOCKS_BUILDER.put(tagPrefix, material, registrate
-                .block(tagPrefix.idPattern().formatted(material.getName()),
+                .block(tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material)),
                         properties -> tagPrefix.getBlockConstructor(material).create(properties, tagPrefix, material))
                 .initialProperties(() -> Blocks.IRON_BLOCK)
                 .properties(p -> tagPrefix.blockProperties().properties().apply(p).noLootTable())

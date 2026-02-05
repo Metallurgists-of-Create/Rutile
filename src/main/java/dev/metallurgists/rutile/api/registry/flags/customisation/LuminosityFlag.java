@@ -1,4 +1,4 @@
-package dev.metallurgists.rutile.api.registry.flags;
+package dev.metallurgists.rutile.api.registry.flags.customisation;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;

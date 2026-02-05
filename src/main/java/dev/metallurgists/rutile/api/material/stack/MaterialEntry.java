@@ -2,12 +2,10 @@ package dev.metallurgists.rutile.api.material.stack;
 
 import com.google.common.base.Preconditions;
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.registry.RutileMaterials;
-import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -17,12 +15,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 @Accessors(chain = true, fluent = true)
-public class MaterialEntry {
-    @NotNull @Getter
-    public final TagPrefix tagPrefix;
-    @NotNull @Getter
-    public final Material material;
-
+public record MaterialEntry(@NotNull TagPrefix tagPrefix, @NotNull Material material) {
     public MaterialEntry(TagPrefix tagPrefix, Material material) {
         this.tagPrefix = Preconditions.checkNotNull(tagPrefix, "MaterialEntry TagPrefix cannot be null!");
         this.material = Preconditions.checkNotNull(material, "MaterialEntry Material cannot be null!");

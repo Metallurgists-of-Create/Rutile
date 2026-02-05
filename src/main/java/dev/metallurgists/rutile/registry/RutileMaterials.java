@@ -4,8 +4,7 @@ import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
 import dev.metallurgists.rutile.api.material.registry.AxisMaterialBlock;
-import dev.metallurgists.rutile.api.registry.flags.BurnableFlag;
-import dev.metallurgists.rutile.api.registry.flags.HarvestTierFlag;
+import dev.metallurgists.rutile.api.registry.flags.customisation.HarvestTierFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.util.ModelHelpers;
 import net.minecraft.world.item.Items;
@@ -16,19 +15,13 @@ import static dev.metallurgists.rutile.registry.RutileTagPrefixes.Nugget;
 
 public class RutileMaterials {
 
-    public static Material Null = new Material.Builder(Rutile.id("null"))
-            .element("null")
-            .colour(0xffbf4cd2)
-            .flag(FlagKey.INGOT)
-            .fluid()
-            .flag(FlagKey.HARVEST_TIER)
-            .flag(FlagKey.BURNABLE, new BurnableFlag(60))
-            .build();
+    public static Material Null = new Material.Builder(Rutile.id("null")).element("null").colour(0xffbf4cd2).build();
 
     public static Material Iron = new Material.Builder(Rutile.id("iron"))
             .element("iron")
             .colour(0xff949496)
             .flag(FlagKey.INGOT)
+            .flag(FlagKey.ORE)
             .flag(FlagKey.HARVEST_TIER, new HarvestTierFlag(1))
             .build();
 
@@ -36,6 +29,7 @@ public class RutileMaterials {
             .element("copper")
             .colour(0xffdcb491)
             .flag(FlagKey.INGOT)
+            .flag(FlagKey.ORE)
             .flag(FlagKey.HARVEST_TIER, new HarvestTierFlag(1))
             .build();
 
@@ -43,6 +37,7 @@ public class RutileMaterials {
             .element("gold")
             .colour(0xffd1c186)
             .flag(FlagKey.INGOT)
+            .flag(FlagKey.ORE)
             .flag(FlagKey.HARVEST_TIER, new HarvestTierFlag(2))
             .build();
 
@@ -50,6 +45,7 @@ public class RutileMaterials {
             .element("carbon")
             .colour(0xffa1fbe8)
             .flag(FlagKey.GEM)
+            .flag(FlagKey.ORE)
             .flag(FlagKey.HARVEST_TIER, new HarvestTierFlag(2))
             .build();
 
@@ -57,6 +53,7 @@ public class RutileMaterials {
             .composition("3 beryllium", "2 aluminum", "6 silicon", "18 oxygen")
             .colour(0xff41f384)
             .flag(FlagKey.GEM)
+            .flag(FlagKey.ORE)
             .flag(FlagKey.HARVEST_TIER, new HarvestTierFlag(2))
             .build();
 
@@ -64,6 +61,7 @@ public class RutileMaterials {
             .composition("1 silicon", "2 oxygen")
             .colour(0xffd4caba)
             .flag(FlagKey.GEM)
+            .flag(FlagKey.ORE)
             .flag(FlagKey.HARVEST_TIER, new HarvestTierFlag(0))
             .build();
 
@@ -89,6 +87,18 @@ public class RutileMaterials {
         Nugget.setIgnored(RutileMaterials.Iron, Items.IRON_NUGGET);
         Nugget.setIgnored(RutileMaterials.Gold, Items.GOLD_NUGGET);
         Nugget.setIgnored(RutileMaterials.Copper);
+        RawOre.setIgnored(RutileMaterials.Iron, Items.RAW_IRON);
+        RawOre.setIgnored(RutileMaterials.Gold, Items.RAW_GOLD);
+        RawOre.setIgnored(RutileMaterials.Copper, Items.RAW_COPPER);
+        RawOre.setIgnored(RutileMaterials.Diamond);
+        RawOre.setIgnored(RutileMaterials.Emerald);
+        RawOre.setIgnored(RutileMaterials.Quartz);
+        Dust.setIgnored(RutileMaterials.Iron);
+        Dust.setIgnored(RutileMaterials.Copper);
+        Dust.setIgnored(RutileMaterials.Gold);
+        Dust.setIgnored(RutileMaterials.Diamond);
+        Dust.setIgnored(RutileMaterials.Emerald);
+        Dust.setIgnored(RutileMaterials.Quartz);
 
         Block.setIgnored(RutileMaterials.Iron, Blocks.IRON_BLOCK);
         Block.setIgnored(RutileMaterials.Gold, Blocks.GOLD_BLOCK);
@@ -99,11 +109,11 @@ public class RutileMaterials {
         Block.setIgnored(RutileMaterials.Amethyst, Blocks.AMETHYST_BLOCK);
         Block.modifyMaterialAmount(RutileMaterials.Quartz, TagPrefix.M * 4);
         Block.modifyMaterialAmount(RutileMaterials.Amethyst, TagPrefix.M * 4);
-
-        Block.setBlockConstructor(Null, AxisMaterialBlock::new);
-        Block.setBlockAssets(Null, TagPrefix.BlockAssetProperties.builder()
-                .blockState(ModelHelpers.BlockState::axis)
-                .model(ModelHelpers.BlockModel::pillar)
-                .build());
+        RawOreBlock.setIgnored(RutileMaterials.Iron, Blocks.RAW_IRON_BLOCK);
+        RawOreBlock.setIgnored(RutileMaterials.Gold, Blocks.RAW_GOLD_BLOCK);
+        RawOreBlock.setIgnored(RutileMaterials.Copper, Blocks.RAW_COPPER_BLOCK);
+        RawOreBlock.setIgnored(RutileMaterials.Diamond);
+        RawOreBlock.setIgnored(RutileMaterials.Emerald);
+        RawOreBlock.setIgnored(RutileMaterials.Quartz);
     }
 }
