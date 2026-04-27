@@ -1,20 +1,25 @@
 package dev.metallurgists.rutile.api.runtime.data.recipe;
 
+import com.mojang.datafixers.util.Pair;
 import com.tterrag.registrate.util.entry.ItemProviderEntry;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.ItemMaterialData;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.MaterialHelper;
+import dev.metallurgists.rutile.api.material.data.MaterialEntry;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
+import dev.metallurgists.rutile.api.material.module.dynamic.TagsModule;
+import dev.metallurgists.rutile.api.material.module.registry.RegistryModule;
 import dev.metallurgists.rutile.api.material.stack.ItemMaterialInfo;
-import dev.metallurgists.rutile.api.material.stack.MaterialEntry;
 import dev.metallurgists.rutile.api.material.stack.MaterialStack;
 import dev.metallurgists.rutile.api.runtime.data.recipe.builder.ShapedRecipeBuilder;
 import dev.metallurgists.rutile.api.runtime.data.recipe.builder.ShapelessRecipeBuilder;
 import dev.metallurgists.rutile.api.runtime.data.recipe.builder.SimpleCookingRecipeBuilder;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
+import dev.metallurgists.rutile.registry.RutileModules;
 import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2LongOpenHashMap;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -25,6 +30,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class VanillaRecipeHelper {
     public static void addSmeltingRecipe(RecipeOutput provider, @NotNull String regName, TagKey<Item> input,
@@ -264,9 +271,7 @@ public class VanillaRecipeHelper {
      * @param result              the output for the recipe
      * @param recipe              the contents of the recipe
      */
-    public static void addShapedRecipe(RecipeOutput provider, boolean setMaterialInfoData,
-                                       @NotNull ResourceLocation regName, @NotNull ItemStack result,
-                                       @NotNull Object... recipe) {
+    public static void addShapedRecipe(RecipeOutput provider, boolean setMaterialInfoData, @NotNull ResourceLocation regName, @NotNull ItemStack result, @NotNull Object... recipe) {
         var builder = new ShapedRecipeBuilder(regName).output(result);
         for (int i = 0; i < recipe.length; i++) {
             var o = recipe[i];
@@ -286,18 +291,20 @@ public class VanillaRecipeHelper {
                     case ICustomIngredient ingredient -> builder.define(sign, ingredient.toVanilla());
                     case ItemStack itemStack -> builder.define(sign, itemStack);
                     case TagKey<?> key when key.isFor(Registries.ITEM) -> builder.define(sign, (TagKey<Item>) key);
-                    case TagPrefix prefix -> {
-                        if (!prefix.getItemParentTags().isEmpty()) {
-                            builder.define(sign, prefix.getItemParentTags().getFirst());
+                    case MaterialEntry(Holder<RegistryModule.Key> keyHolder, Material material) -> {
+                        TagKey<Item> tag = MaterialHelper.getTag(keyHolder, material);
+                        if (tag != null) {
+                            builder.define(sign, tag);
+                        } else builder.define(sign, MaterialHelper.get(keyHolder, material));
+                    }
+                    case Pair<Material, Holder<RegistryModule.Key>> keyedMaterial -> {
+                        TagsModule module = keyedMaterial.getFirst().getModule(RutileModules.TAGS).orElse(null);
+                        if (module != null) {
+                            builder.define(sign, module.getItemParentTags(keyedMaterial.getSecond()).getFirst());
                         }
                     }
                     case ItemLike itemLike -> builder.define(sign, itemLike);
-                    case MaterialEntry(TagPrefix tagPrefix, Material material) -> {
-                        TagKey<Item> tag = MaterialHelper.getTag(tagPrefix, material);
-                        if (tag != null) {
-                            builder.define(sign, tag);
-                        } else builder.define(sign, MaterialHelper.get(tagPrefix, material));
-                    }
+
                     default -> {}
                 }
             }
@@ -344,10 +351,10 @@ public class VanillaRecipeHelper {
             } else if (content instanceof ItemLike itemLike) {
                 builder.requires(itemLike);
             } else if (content instanceof MaterialEntry entry) {
-                TagKey<Item> tag = MaterialHelper.getTag(entry.tagPrefix(), entry.material());
+                TagKey<Item> tag = MaterialHelper.getTag(entry.key(), entry.material());
                 if (tag != null) {
                     builder.requires(tag);
-                } else builder.requires(MaterialHelper.get(entry.tagPrefix(), entry.material()));
+                } else builder.requires(MaterialHelper.get(entry.key(), entry.material()));
             } else if (content instanceof ItemProviderEntry<?, ?> entry) {
                 builder.requires(entry.asStack());
             }
@@ -403,8 +410,8 @@ public class VanillaRecipeHelper {
                     continue; // todo can this be improved?
                 }
                 case ItemLike like -> itemLike = like;
-                case MaterialEntry(TagPrefix tagPrefix, Material material) -> {
-                    ItemStack stack = MaterialHelper.get(tagPrefix, material);
+                case MaterialEntry(Holder<RegistryModule.Key> keyHolder, Material material) -> {
+                    ItemStack stack = MaterialHelper.get(keyHolder, material);
                     if (stack == ItemStack.EMPTY) continue;
                     itemLike = stack.getItem();
                 }
@@ -430,10 +437,11 @@ public class VanillaRecipeHelper {
                 addMaterialStack(materialStacksExploded, inputCountMap.get(lastChar), outputCount, materialStack);
             }
 
-            // Gather any secondary materials if this item has an OrePrefix
-            TagPrefix prefix = MaterialHelper.getPrefix(itemLike);
-            if (!prefix.isEmpty() && !prefix.secondaryMaterials().isEmpty()) {
-                for (MaterialStack ms : prefix.secondaryMaterials()) {
+            // Gather any secondary materials if this item has the module
+            Holder<RegistryModule.Key> key = MaterialHelper.getKey(itemLike);
+            if (!materialStack.isEmpty() && !(materialStack.getMaterial().isNull())) {
+                var stacks = materialStack.getMaterial().getModule(RutileModules.SECONDARY_MATERIALS).map(module -> module.getSecondaryMaterials(key)).orElse(List.of());
+                for (MaterialStack ms : stacks) {
                     addMaterialStack(materialStacksExploded, inputCountMap.get(lastChar), outputCount, ms);
                 }
             }
@@ -442,8 +450,7 @@ public class VanillaRecipeHelper {
         return new ItemMaterialInfo(materialStacksExploded);
     }
 
-    private static void addMaterialStack(@NotNull Reference2LongOpenHashMap<Material> materialStacksExploded,
-                                         int inputCount, int outputCount, @NotNull MaterialStack ms) {
+    private static void addMaterialStack(@NotNull Reference2LongOpenHashMap<Material> materialStacksExploded, int inputCount, int outputCount, @NotNull MaterialStack ms) {
         materialStacksExploded.addTo(ms.getMaterial(), (ms.getAmount() * inputCount / outputCount));
     }
 }

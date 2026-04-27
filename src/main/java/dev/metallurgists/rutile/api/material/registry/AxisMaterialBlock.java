@@ -1,8 +1,9 @@
 package dev.metallurgists.rutile.api.material.registry;
 
 import dev.metallurgists.rutile.api.material.Material;
-import dev.metallurgists.rutile.api.tag.TagPrefix;
+import dev.metallurgists.rutile.api.material.module.registry.RegistryModule;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
@@ -14,13 +15,13 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 public class AxisMaterialBlock extends MaterialBlock {
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.AXIS;
 
-    public AxisMaterialBlock(Properties properties, TagPrefix tagPrefix, Material material, boolean registerModel) {
-        super(properties, tagPrefix, material, registerModel);
+    public AxisMaterialBlock(Properties properties, Holder<RegistryModule.Key> registerKey, Material material, boolean registerModel) {
+        super(properties, registerKey, material, registerModel);
         this.registerDefaultState(this.defaultBlockState().setValue(AXIS, Direction.Axis.Y));
     }
 
-    public AxisMaterialBlock(Properties properties, TagPrefix tagPrefix, Material material) {
-        this(properties, tagPrefix, material, true);
+    public AxisMaterialBlock(Properties properties, Holder<RegistryModule.Key> registerKey, Material material) {
+        this(properties, registerKey, material, true);
     }
 
     public BlockState rotate(BlockState state, Rotation rot) {

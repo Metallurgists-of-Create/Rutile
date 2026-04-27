@@ -27,3 +27,5 @@ replay_pid*
 /build/
 /.idea/
 /src/generated/resources/.cache/
+/material_sources/
+/src/main/java-old/

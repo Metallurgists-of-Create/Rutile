@@ -1,7 +1,7 @@
 package dev.metallurgists.rutile.api.material.stack;
 
 import dev.metallurgists.rutile.api.material.Material;
-import dev.metallurgists.rutile.api.tag.TagPrefix;
+import dev.metallurgists.rutile.api.material.module.UnitSizeModule;
 import it.unimi.dsi.fastutil.objects.Reference2LongMap;
 import it.unimi.dsi.fastutil.objects.Reference2LongOpenHashMap;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -57,7 +57,7 @@ public class ItemMaterialInfo {
 
         StringBuilder ret = new StringBuilder("[ ");
         for (var matStack : sortedMaterials) {
-            ret.append(matStack.getAmount() / (float) TagPrefix.M).append("x ")
+            ret.append(matStack.getAmount() / (float) UnitSizeModule.UNIT).append("x ")
                     .append(matStack.getMaterial().getId()).append(" ");
         }
         ret.append("]");

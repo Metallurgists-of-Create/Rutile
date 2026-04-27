@@ -7,8 +7,9 @@ import com.mojang.serialization.JsonOps;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.data.AbstractReloadManager;
 import dev.metallurgists.rutile.api.material.Material;
+import dev.metallurgists.rutile.api.material.module.registry.RegistryModule;
 import dev.metallurgists.rutile.api.material.registry.asset.MaterialAsset;
-import dev.metallurgists.rutile.api.tag.TagPrefix;
+import dev.metallurgists.rutile.registry.RutileRegisterKeys;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -59,16 +60,16 @@ public class MaterialAssetManager extends AbstractReloadManager {
         Rutile.LOGGER.info("Load Complete for {} material assets", getPrefixedKeys().size());
     }
 
-    public Pair<ResourceLocation, ResourceLocation> prefixAndMaterial(ResourceLocation resourceLocation) {
+    public Pair<RegistryModule.Key, ResourceLocation> prefixAndMaterial(ResourceLocation resourceLocation) {
         // FORMAT: rutile:rutile/material_assets/iron/rutile_ingot => rutile:iron | rutile:ingot
         String materialNamespace = resourceLocation.getNamespace();
         String[] pathElements = resourceLocation.getPath().replace(".json", "").split("/");
         String prefix = pathElements[pathElements.length - 1];
         String[] prefixParts = prefix.split("_", 2);
-        ResourceLocation prefixLoc = ResourceLocation.fromNamespaceAndPath(prefixParts[0], prefixParts[1]);
+        RegistryModule.Key key = RutileRegisterKeys.KEYS_REGISTRY.get(ResourceLocation.fromNamespaceAndPath(prefixParts[0], prefixParts[1]));
         String materialName = pathElements[pathElements.length - 2];
         ResourceLocation materialLoc = ResourceLocation.fromNamespaceAndPath(materialNamespace, materialName);
-        return new Pair<>(prefixLoc, materialLoc);
+        return new Pair<>(key, materialLoc);
     }
 
     public static MaterialAssetManager getInstance() {
@@ -79,16 +80,16 @@ public class MaterialAssetManager extends AbstractReloadManager {
         event.registerReloadListener(getInstance());
     }
 
-    public boolean hasAsset(TagPrefix tagPrefix, Material material) {
-        return getAsset(tagPrefix, material) != null;
+    public boolean hasAsset(RegistryModule.Key registerKey, Material material) {
+        return getAsset(registerKey, material) != null;
     }
 
-    public MaterialAsset getAsset(TagPrefix tagPrefix, Material material) {
-        PrefixedKey prefixedKey = new PrefixedKey(tagPrefix.id(), material.getId());
+    public MaterialAsset getAsset(RegistryModule.Key registerKey, Material material) {
+        PrefixedKey prefixedKey = new PrefixedKey(registerKey, material.getId());
         return this.assets.get(prefixedKey);
     }
 
-    public record PrefixedKey(ResourceLocation tagPrefix, ResourceLocation material) {
+    public record PrefixedKey(RegistryModule.Key registerKey, ResourceLocation material) {
 
     }
 }

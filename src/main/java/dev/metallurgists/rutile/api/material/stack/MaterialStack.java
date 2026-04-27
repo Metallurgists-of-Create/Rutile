@@ -5,11 +5,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.RutileClient;
-import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.data.ISerializable;
 import dev.metallurgists.rutile.api.material.Material;
+import dev.metallurgists.rutile.api.material.module.UnitSizeModule;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
-import dev.metallurgists.rutile.api.tag.TagPrefix;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
@@ -37,7 +36,7 @@ public class MaterialStack implements ISerializable {
     }
 
     public static MaterialStack of(ResourceLocation id) {
-        return new MaterialStack(id, TagPrefix.M);
+        return new MaterialStack(id, UnitSizeModule.UNIT);
     }
 
     public static MaterialStack of(ResourceLocation id, long amount) {
@@ -45,7 +44,7 @@ public class MaterialStack implements ISerializable {
     }
 
     public static MaterialStack of(Material material) {
-        return new MaterialStack(material.getId(), TagPrefix.M);
+        return new MaterialStack(material.getId(), UnitSizeModule.UNIT);
     }
 
     public static MaterialStack of(Material material, long amount) {

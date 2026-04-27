@@ -7,28 +7,24 @@ import dev.metallurgists.rutile.api.element.Element;
 import dev.metallurgists.rutile.api.element.ElementStack;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.MaterialHelper;
-import dev.metallurgists.rutile.api.material.stack.MaterialEntry;
-import dev.metallurgists.rutile.api.registry.RutileRegistries;
-import dev.metallurgists.rutile.api.tag.TagPrefix;
+import dev.metallurgists.rutile.api.material.data.MaterialEntry;
+import dev.metallurgists.rutile.api.material.module.registry.RegistryModule;
 import dev.metallurgists.rutile.compat.jei.RutileJeiConstants;
+import dev.metallurgists.rutile.registry.RutileRegisterKeys;
 import dev.metallurgists.rutile.util.GuiTexture;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.createmod.catnip.layout.LayoutHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -109,8 +105,8 @@ public interface ElementCompositionWrapper<T> {
 
         public List<ItemStack> getAllMaterialItems() {
             List<ItemStack> items = new ArrayList<>();
-            for (TagPrefix tagPrefix : RutileRegistries.TAG_PREFIXES) {
-                MaterialEntry materialEntry = new MaterialEntry(tagPrefix, getIngredient());
+            for (RegistryModule.Key key : RutileRegisterKeys.KEYS_REGISTRY) {
+                MaterialEntry materialEntry = new MaterialEntry(key.makeHolder(), getIngredient());
                 List<Item> entryItems = new ArrayList<>(MaterialHelper.getItems(materialEntry).stream().map(ItemLike::asItem).toList());
                 items.addAll(entryItems.stream().map(Item::getDefaultInstance).toList());
             }

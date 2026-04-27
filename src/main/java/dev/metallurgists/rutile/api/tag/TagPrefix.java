@@ -16,6 +16,7 @@ import dev.metallurgists.rutile.api.material.flags.UnitFlag;
 import dev.metallurgists.rutile.api.material.registry.MaterialBlock;
 import dev.metallurgists.rutile.api.material.registry.MaterialBlockItem;
 import dev.metallurgists.rutile.api.material.registry.MaterialItem;
+import dev.metallurgists.rutile.api.material.source.AbstractMaterialSource;
 import dev.metallurgists.rutile.api.material.stack.MaterialStack;
 import dev.metallurgists.rutile.api.memorizer.Memoizer;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
@@ -107,9 +108,7 @@ public class TagPrefix {
         }
     }
 
-    public record BlockAssetProperties(BiFunction<Material, TagPrefix, JsonElement> model,
-                                       BiFunction<Material, TagPrefix, JsonElement> blockState,
-                                       BiFunction<Material, TagPrefix, JsonElement> itemModel) {
+    public record BlockAssetProperties(BiFunction<Material, TagPrefix, JsonElement> model, BiFunction<Material, TagPrefix, JsonElement> blockState, BiFunction<Material, TagPrefix, JsonElement> itemModel) {
         static BiFunction<Material, TagPrefix, JsonElement> EMPTY_FUNC = (m, t) -> new JsonObject();
         public static BlockAssetProperties EMPTY = new BlockAssetProperties(EMPTY_FUNC,EMPTY_FUNC,EMPTY_FUNC);
 
@@ -547,18 +546,18 @@ public class TagPrefix {
     @FunctionalInterface
     public interface ItemConstructor {
 
-        Item create(Item.Properties properties, TagPrefix prefix, Material material);
+        <T, P extends AbstractMaterialSource<? extends T, ?>> Item create(Item.Properties properties, AbstractMaterialSource<T, P> source, Material material);
     }
 
     @FunctionalInterface
     public interface BlockConstructor {
 
-        Block create(Block.Properties properties, TagPrefix prefix, Material material);
+        Block create(Block.Properties properties, AbstractMaterialSource<? extends Block, ? extends AbstractMaterialSource<?, ?>> source, Material material);
     }
 
     @FunctionalInterface
     public interface BlockItemConstructor {
 
-        BlockItem create(Block block, Item.Properties properties, TagPrefix prefix, Material material);
+        BlockItem create(Block block, Item.Properties properties, AbstractMaterialSource<? extends Block, ? extends AbstractMaterialSource<?, ?>> source, Material material);
     }
 }

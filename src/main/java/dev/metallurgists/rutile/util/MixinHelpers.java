@@ -12,9 +12,7 @@ import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.registry.flags.registry.FluidFlag;
-import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.mixin.BlockBehaviourAccessor;
-import dev.metallurgists.rutile.registry.RutileMaterialBlocks;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
@@ -53,10 +51,9 @@ public class MixinHelpers {
         return CURRENT_BE_SAVE_LOAD_REGISTRIES.get();
     }
 
-    public static <T> void generateDynamicTags(Map<ResourceLocation, List<TagLoader.EntryWithSource>> tagMap,
-                                                 Registry<T> registry) {
+    public static <T> void generateDynamicTags(Map<ResourceLocation, List<TagLoader.EntryWithSource>> tagMap, Registry<T> registry) {
         if (registry == BuiltInRegistries.ITEM) {
-            ItemMaterialData.MATERIAL_ENTRY_ITEM_MAP.forEach((entry, itemLikes) -> {
+            dev.metallurgists.rutile.api.material.data.ItemMaterialData.MATERIAL_ENTRY_ITEM_MAP.forEach((entry, itemLikes) -> {
                 if (itemLikes.isEmpty()) return;
                 var material = entry.material();
                 var entries = itemLikes.stream()
@@ -64,7 +61,7 @@ public class MixinHelpers {
                         .map(MixinHelpers::makeItemEntry)
                         .collect(toArrayList());
 
-                var prefixTagKeys = entry.tagPrefix().getAllItemTags(material);
+                var prefixTagKeys = entry.source().getAllTags(material);
                 for (TagKey<Item> prefixTag : prefixTagKeys) {
                     tagMap.computeIfAbsent(prefixTag.location(), path -> new ArrayList<>()).addAll(entries);
                 }
@@ -73,7 +70,7 @@ public class MixinHelpers {
                 }
             });
         } else if (registry == BuiltInRegistries.BLOCK) {
-            ItemMaterialData.MATERIAL_ENTRY_BLOCK_MAP.forEach((entry, blocks) -> {
+            dev.metallurgists.rutile.api.material.data.ItemMaterialData.MATERIAL_ENTRY_BLOCK_MAP.forEach((entry, blocks) -> {
                 if (blocks.isEmpty()) return;
                 var material = entry.material();
 
@@ -164,13 +161,13 @@ public class MixinHelpers {
         Holder<Enchantment> fortune = access.registryOrThrow(Registries.ENCHANTMENT)
                 .getHolderOrThrow(Enchantments.FORTUNE);
 
-        RutileMaterialBlocks.MATERIAL_BLOCKS.rowMap().forEach((prefix, map) -> {
-            MixinHelpers.addMaterialBlockLootTables(lootTables, prefix, map, blockLoot, access);
+        RutileMaterialBlocks.MATERIAL_BLOCKS.rowMap().forEach((source, map) -> {
+            MixinHelpers.addMaterialBlockLootTables(lootTables, source, map, blockLoot, access);
         });
     }
 
     public static void addMaterialBlockLootTables(TriConsumer<ResourceLocation, LootTable, RegistryAccess.Frozen> lootTables,
-                                                  TagPrefix prefix,
+                                                  BlockSource source,
                                                   Map<Material, ? extends BlockEntry<? extends Block>> map,
                                                   VanillaBlockLoot blockLoot, RegistryAccess.Frozen access) {
         map.forEach((material, blockEntry) -> {

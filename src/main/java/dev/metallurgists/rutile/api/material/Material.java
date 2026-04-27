@@ -11,15 +11,20 @@ import dev.metallurgists.rutile.api.fluid.FluidState;
 import dev.metallurgists.rutile.api.fluid.storage.FluidStorageKey;
 import dev.metallurgists.rutile.api.fluid.storage.FluidStorageKeys;
 import dev.metallurgists.rutile.api.material.flags.*;
+import dev.metallurgists.rutile.api.material.module.MaterialModule;
+import dev.metallurgists.rutile.api.material.module.ModuleHolder;
+import dev.metallurgists.rutile.api.material.module.variable.VariableKey;
 import dev.metallurgists.rutile.api.registry.IDisplayedName;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.registry.flags.registry.FluidFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.api.tag.TagUtil;
 import dev.metallurgists.rutile.registry.RutileMaterials;
+import dev.metallurgists.rutile.registry.RutileVariableKeys;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.Util;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureElement;
@@ -33,6 +38,7 @@ import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Material implements IDisplayedName, FeatureElement {
@@ -44,6 +50,11 @@ public class Material implements IDisplayedName, FeatureElement {
     @NotNull
     @Getter
     private final MaterialInfo info;
+
+    @NotNull
+    private final Map<ModuleHolder<?>, MaterialModule<?>> modules = new HashMap<>();
+    @NotNull
+    private final Map<VariableKey<?>, Object> variables = new HashMap<>();
 
     private String descriptionId;
 
@@ -83,6 +94,49 @@ public class Material implements IDisplayedName, FeatureElement {
             this.descriptionId = Util.makeDescriptionId("material", getId());
         }
         return this.descriptionId;
+    }
+
+    public <T extends MaterialModule<T>> Optional<T> getModule(ModuleHolder<T> module) {
+        if (this.modules.containsKey(module)) {
+            return Optional.ofNullable((T) this.modules.get(module));
+        }
+        return Optional.empty();
+    }
+
+    public <T extends MaterialModule<T>> Material addModule(ModuleHolder<T> module, Function<T, T> action) {
+        if (this.modules.containsKey(module)) {
+            T oldModule = (T)this.modules.get(module);
+            this.modules.put(module, action.apply(oldModule));
+        } else this.modules.put(module, action.apply(module.get()));
+        return this;
+    }
+
+    public <T extends MaterialModule<T>> Material modifyModule(ModuleHolder<T> module, Function<T, T> action) {
+        if (this.modules.containsKey(module)) {
+            T oldModule = (T)this.modules.get(module);
+            this.modules.put(module, action.apply(oldModule));
+        }
+        return this;
+    }
+
+    public <T> Material addVariable(VariableKey<T> key, T value) {
+        this.variables.put(key, value);
+        return this;
+    }
+
+    public <T> Material addVariable(VariableKey<T> key, T value, Function<T, T> ifPresent) {
+        if (this.variables.containsKey(key) && this.variables.get(key).getClass().isAssignableFrom(key.clazz())) {
+            T oldValue = (T)this.variables.get(key);
+            this.variables.put(key, ifPresent.apply(oldValue));
+        } else this.variables.put(key, value);
+        return this;
+    }
+
+    public <T> T getVariable(VariableKey<T> key) {
+        if (this.variables.containsKey(key) && this.variables.get(key).getClass().isAssignableFrom(key.clazz())) {
+            return (T)this.variables.get(key);
+        }
+        return key.defaultValue();
     }
 
     public <T extends IMaterialFlag> void addFlag(FlagKey<T> key, T value) {
@@ -148,10 +202,7 @@ public class Material implements IDisplayedName, FeatureElement {
     }
 
     public int getBlockHarvestLevel() {
-        if (!hasFlag(FlagKey.HARVEST_TIER))
-            throw new IllegalArgumentException("Material " + info.resourceLocation +
-                    " does not have a harvest level! Is probably a Fluid");
-        int harvestLevel = getFlagValue(FlagKey.HARVEST_TIER);
+        int harvestLevel = getVariable(RutileVariableKeys.HARVEST_TIER);
         return harvestLevel > 0 ? harvestLevel - 1 : harvestLevel;
     }
 
@@ -258,7 +309,10 @@ public class Material implements IDisplayedName, FeatureElement {
 
         private Set<TagPrefix> ignoredTagPrefixes = null;
 
-        private List<SubComposition> subCompositions = new ArrayList<>();
+        @NotNull
+        private final Map<ModuleHolder<?>, MaterialModule<?>> modules = new HashMap<>();
+        @NotNull
+        private final Map<VariableKey<?>, Object> variables = new HashMap<>();
 
         private final List<TagKey<Item>> itemTags = new ArrayList<>();
 
@@ -311,45 +365,32 @@ public class Material implements IDisplayedName, FeatureElement {
             return this;
         }
 
-        public Builder element(String element) {
-            return composition("%s %s".formatted(1, element));
-        }
-
-        public Builder composition(String... components) {
-            List<ElementStack> elementStacks = new ArrayList<>();
-            for (String raw : components) {
-                String[] split = raw.split(" ", 2);
-                int amount = Integer.parseInt(split[0]) <= 0 ? 1 : Integer.parseInt(split[0]);
-                String element = split[1];
-                if (element.isEmpty()) throw new IllegalArgumentException("Element is invalid or empty");
-                ResourceLocation elementKey = Rutile.id(element);
-                ElementStack elementStack = new ElementStack(elementKey, amount);
-                elementStacks.add(elementStack);
+        public <T extends MaterialModule<T>> Builder addModule(ModuleHolder<T> module, MaterialModule.ModuleBuilder<T> builder) {
+            if (this.modules.containsKey(module)) {
+                throw new IllegalArgumentException("Module " + module.getId() + " already exists in Material " + info.resourceLocation.toString());
             }
-            SubComposition subComposition = new SubComposition(elementStacks, 1);
-            subCompositions.add(subComposition);
+            this.modules.put(module, builder.build());
             return this;
         }
 
-        public Builder components(Object... components) {
-            Preconditions.checkArgument(
-                    components.length % 2 == 0,
-                    "Material Components list malformed!");
-            for (int i = 0; i < components.length; i += 2) {
-                if (components[i] == null) {
-                    throw new IllegalArgumentException(
-                            "Material in Components List is null for Material " + this.info.resourceLocation);
-                }
-                Material material = components[i] instanceof CharSequence chars ? RutileRegistries.MATERIALS.get(Rutile.id(chars.toString())) :
-                        (Material) components[i];
-                int amount = (Integer) components[i + 1];
-                SubComposition.Builder subCompositionBuilder = SubComposition.builder();
-                for (var subComp : material.getComposition().compositions()) {
-                    subComp.getElements().forEach(subCompositionBuilder::element);
-                }
-                subCompositionBuilder.setAmount(amount);
-                subCompositions.add(subCompositionBuilder.build());
-            }
+        public <T extends MaterialModule<T>> Builder addModule(ModuleHolder<T> module, Function<T, T> action) {
+            if (this.modules.containsKey(module)) {
+                T oldModule = (T)this.modules.get(module);
+                this.modules.put(module, action.apply(oldModule));
+            } else this.modules.put(module, action.apply(module.get()));
+            return this;
+        }
+
+        public <T> Builder addVariable(VariableKey<T> key, T value) {
+            this.variables.put(key, value);
+            return this;
+        }
+
+        public <T> Builder addVariable(VariableKey<T> key, T value, Function<T, T> ifPresent) {
+            if (this.variables.containsKey(key) && this.variables.get(key).getClass().isAssignableFrom(key.clazz())) {
+                T oldValue = (T)this.variables.get(key);
+                this.variables.put(key, ifPresent.apply(oldValue));
+            } else this.variables.put(key, value);
             return this;
         }
 

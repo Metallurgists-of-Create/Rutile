@@ -51,7 +51,6 @@ public class CommonEvents {
         }
         RutileElements.init();
         RutileMaterials.init();
-        RutileTagPrefixes.init();
 
         RutileIngredientTypes.ITEM_INGREDIENT_TYPES.register(modBus);
         didRunRegistration = true;
@@ -68,13 +67,13 @@ public class CommonEvents {
 
     private static void registerMaterials(RegisterEvent event) {
         event.register(Registries.BLOCK, registry -> {
-            RutileMaterialBlocks.generateMaterialBlocks();
+
         });
         event.register(Registries.ITEM, registry -> {
-            RutileMaterialItems.generateMaterialItems();
+            // Items are registered along with blocks in the new system
         });
         event.register(Registries.FLUID, registry -> {
-            RutileMaterialFluids.generateMaterialFluids();
+
         });
     }
 

@@ -1,7 +1,8 @@
 package dev.metallurgists.rutile.api.material.registry;
 
 import dev.metallurgists.rutile.api.material.Material;
-import dev.metallurgists.rutile.api.tag.TagPrefix;
+import dev.metallurgists.rutile.api.material.module.registry.RegistryModule;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.BlockItem;
@@ -10,12 +11,12 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
 public class MaterialBlockItem extends BlockItem {
-    public final TagPrefix tagPrefix;
+    public final Holder<RegistryModule.Key> registerKey;
     public final Material material;
 
-    public MaterialBlockItem(Block block, Properties properties, TagPrefix tagPrefix, Material material) {
+    public MaterialBlockItem(Block block, Properties properties, Holder<RegistryModule.Key> registerKey, Material material) {
         super(block, properties);
-        this.tagPrefix = tagPrefix;
+        this.registerKey = registerKey;
         this.material = material;
     }
 

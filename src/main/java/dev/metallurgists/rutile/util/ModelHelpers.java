@@ -5,10 +5,10 @@ import com.google.gson.JsonObject;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.data.client.manager.MaterialAssetManager;
 import dev.metallurgists.rutile.api.material.Material;
-import dev.metallurgists.rutile.api.material.flags.FlagKey;
+import dev.metallurgists.rutile.api.material.module.registry.RegistryModule;
 import dev.metallurgists.rutile.api.material.registry.asset.MaterialAsset;
 import dev.metallurgists.rutile.api.runtime.assets.RutileDynamicResourcePack;
-import dev.metallurgists.rutile.api.tag.TagPrefix;
+import dev.metallurgists.rutile.registry.RutileModules;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -84,17 +84,17 @@ public class ModelHelpers {
     //These will never overlap. I know this because they're mine
     public static List<String> defaultFlagSources = List.of("rutile", "metallurgica");
 
-    public static String getFlagName(TagPrefix tagPrefix) {
-        return (defaultFlagSources.contains(tagPrefix.getModId()) ? "" : tagPrefix.getModId() + "_") + tagPrefix.getName().replace('/', '_');
+    public static String getResourceName(RegistryModule.Key registerKey) {
+        return (defaultFlagSources.contains(registerKey.loc().getNamespace()) ? "" : registerKey.loc().getNamespace() + "_") + registerKey.loc().getPath().replace('/', '_');
     }
 
-    public static boolean isTexturePresent(Material material, TagPrefix tagPrefix, String type) {
-        return isTexturePresent(material, tagPrefix, "", type);
+    public static boolean isTexturePresent(Material material, RegistryModule.Key registerKey, String type) {
+        return isTexturePresent(material, registerKey, "", type);
     }
 
-    public static boolean isTexturePresent(Material material, TagPrefix tagPrefix, String suffix, String type) {
+    public static boolean isTexturePresent(Material material, RegistryModule.Key registerKey, String suffix, String type) {
         ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
-        String flag = getFlagName(tagPrefix);
+        String flag = getResourceName(registerKey);
         var texture = resourceManager.getResource(ResourceLocation.fromNamespaceAndPath(material.getModId(), "textures/"+type+"/materials/" + material.getName() + "/" + flag + suffix + ".png"));
         return texture.isPresent();
     }
@@ -104,70 +104,73 @@ public class ModelHelpers {
         return pathFormat.formatted(materialLocation.getNamespace(), materialLocation.getPath());
     }
 
-    public static void itemModel(Material material, TagPrefix tagPrefix) {
-        MaterialAsset materialAsset = MaterialAssetManager.getInstance().getAsset(tagPrefix, material);
-        ResourceLocation path = ResourceLocation.fromNamespaceAndPath(material.getModId(), tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material)));
+    public static void itemModel(Material material, RegistryModule.Key registerKey) {
+        MaterialAsset materialAsset = MaterialAssetManager.getInstance().getAsset(registerKey, material);
+        ResourceLocation path = ResourceLocation.fromNamespaceAndPath(material.getModId(), registerKey.idPattern().formatted(registerKey.getMaterialName(material)));
         if (materialAsset != null) {
             toPack(RutileDynamicResourcePack::addItemModel, path, materialAsset.createJson());
-        } else ModelHelpers.generatedItemModel(material, tagPrefix, path);
+        } else ModelHelpers.generatedItemModel(material, registerKey, path);
     }
 
-    public static void generatedItemModel(Material material, TagPrefix tagPrefix, ResourceLocation path) {
-        String flagName = getFlagName(tagPrefix);
-        boolean texturePresent = isTexturePresent(material, tagPrefix, "item");
+    public static void generatedItemModel(Material material, RegistryModule.Key registerKey, ResourceLocation path) {
+        String flagName = getResourceName(registerKey);
+        boolean texturePresent = isTexturePresent(material, registerKey, "item");
         String texture = textureOrNull("%s:item/materials/%s/"+flagName, material, texturePresent);
         toPack(RutileDynamicResourcePack::addItemModel, path, ModelHelpers.simpleGeneratedModel("minecraft:item/generated", texture));
     }
 
-    public static void blockModel(Material material, TagPrefix tagPrefix) {
-        MaterialAsset materialAsset = MaterialAssetManager.getInstance().getAsset(tagPrefix, material);
-        ResourceLocation path = ResourceLocation.fromNamespaceAndPath(material.getModId(), tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material)));
+    public static void blockModel(Material material, RegistryModule.Key registerKey) {
+        MaterialAsset materialAsset = MaterialAssetManager.getInstance().getAsset(registerKey, material);
+        ResourceLocation path = ResourceLocation.fromNamespaceAndPath(material.getModId(), registerKey.idPattern().formatted(registerKey.getMaterialName(material)));
         if (materialAsset != null) {
             toPack(RutileDynamicResourcePack::addBlockModel, path, materialAsset.createJson());
-            toPack(RutileDynamicResourcePack::addBlockState, path, ModelHelpers.singleVariantBlockstate(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material))));
-            toPack(RutileDynamicResourcePack::addItemModel, path, ModelHelpers.simpleParentedModel(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material))));
-        } else ModelHelpers.blockModel(material, tagPrefix, path);
+            toPack(RutileDynamicResourcePack::addBlockState, path, ModelHelpers.singleVariantBlockstate(material.getModId() + ":block/" + registerKey.idPattern().formatted(registerKey.getMaterialName(material))));
+            toPack(RutileDynamicResourcePack::addItemModel, path, ModelHelpers.simpleParentedModel(material.getModId() + ":block/" + registerKey.idPattern().formatted(registerKey.getMaterialName(material))));
+        } else ModelHelpers.blockModel(material, registerKey, path);
     }
 
-    public static void blockModel(Material material, TagPrefix tagPrefix, ResourceLocation path) {
-        TagPrefix.BlockAssetProperties assetProps = tagPrefix.getBlockAssetProperties(material);
-        if (assetProps != null) {
-            if (assetProps.hasModel()) {
-                toPack(RutileDynamicResourcePack::addBlockModel, path, assetProps.model().apply(material, tagPrefix));
-            } else toPack(RutileDynamicResourcePack::addBlockModel, path, BlockModel.cube(material, tagPrefix));
-            if (assetProps.hasBlockState()) {
-                toPack(RutileDynamicResourcePack::addBlockState, path, assetProps.blockState().apply(material, tagPrefix));
-            } else toPack(RutileDynamicResourcePack::addBlockState, path, BlockState.singleVariant(material, tagPrefix));
-            if (assetProps.hasItemModel()) {
-                toPack(RutileDynamicResourcePack::addItemModel, path, assetProps.itemModel().apply(material, tagPrefix));
-            } else toPack(RutileDynamicResourcePack::addItemModel, path, ItemModel.blockParent(material, tagPrefix));
+    public static void blockModel(Material material, RegistryModule.Key registerKey, ResourceLocation path) {
+        var blockAssets = material.getModule(RutileModules.BLOCK_ASSETS);
+        if (blockAssets.isPresent()) {
+            var properties = blockAssets.get().getProperties(registerKey);
+            if (properties.isPresent()) {
+                if (properties.get().hasModel()) {
+                    toPack(RutileDynamicResourcePack::addBlockModel, path, properties.get().model().apply(material, registerKey));
+                } else toPack(RutileDynamicResourcePack::addBlockModel, path, BlockModel.cube(material, registerKey));
+                if (properties.get().hasBlockState()) {
+                    toPack(RutileDynamicResourcePack::addBlockState, path, properties.get().blockState().apply(material, registerKey));
+                } else toPack(RutileDynamicResourcePack::addBlockState, path, BlockState.singleVariant(material, registerKey));
+                if (properties.get().hasItemModel()) {
+                    toPack(RutileDynamicResourcePack::addItemModel, path, properties.get().itemModel().apply(material, registerKey));
+                } else toPack(RutileDynamicResourcePack::addItemModel, path, ItemModel.blockParent(material, registerKey));
+            }
         } else {
-            cubeAllBlockModel(material, tagPrefix, path);
+            cubeAllBlockModel(material, registerKey, path);
         }
     }
 
-    public static void cubeAllBlockModel(Material material, TagPrefix tagPrefix, ResourceLocation path) {
-        String flagName = getFlagName(tagPrefix);
-        boolean texturePresent = isTexturePresent(material, tagPrefix, "block");
+    public static void cubeAllBlockModel(Material material, RegistryModule.Key registerKey, ResourceLocation path) {
+        String flagName = getResourceName(registerKey);
+        boolean texturePresent = isTexturePresent(material, registerKey, "block");
         String texture = textureOrNull("%s:block/materials/%s/"+flagName, material, texturePresent);
         toPack(RutileDynamicResourcePack::addBlockModel, path, ModelHelpers.simpleCubeAll(texture));
-        toPack(RutileDynamicResourcePack::addBlockState, path, ModelHelpers.singleVariantBlockstate(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material))));
-        toPack(RutileDynamicResourcePack::addItemModel, path, ModelHelpers.simpleParentedModel(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material))));
+        toPack(RutileDynamicResourcePack::addBlockState, path, ModelHelpers.singleVariantBlockstate(material.getModId() + ":block/" + registerKey.idPattern().formatted(registerKey.getMaterialName(material))));
+        toPack(RutileDynamicResourcePack::addItemModel, path, ModelHelpers.simpleParentedModel(material.getModId() + ":block/" + registerKey.idPattern().formatted(registerKey.getMaterialName(material))));
     }
 
     public static class BlockModel {
 
-        public static JsonElement cube(Material material, TagPrefix tagPrefix) {
-            String flagName = getFlagName(tagPrefix);
-            boolean texturePresent = isTexturePresent(material, tagPrefix, "block");
+        public static JsonElement cube(Material material, RegistryModule.Key registerKey) {
+            String flagName = getResourceName(registerKey);
+            boolean texturePresent = isTexturePresent(material, registerKey, "block");
             String texture = textureOrNull("%s:block/materials/%s/"+flagName, material, texturePresent);
             return ModelHelpers.simpleCubeAll(texture);
         }
 
-        public static JsonElement pillar(Material material, TagPrefix tagPrefix) {
-            String flagName = getFlagName(tagPrefix);
-            boolean endPresent = isTexturePresent(material, tagPrefix, "_end", "block");
-            boolean sidePresent = isTexturePresent(material, tagPrefix, "_side", "block");
+        public static JsonElement pillar(Material material, RegistryModule.Key registerKey) {
+            String flagName = getResourceName(registerKey);
+            boolean endPresent = isTexturePresent(material, registerKey, "_end", "block");
+            boolean sidePresent = isTexturePresent(material, registerKey, "_side", "block");
             String endTexture = textureOrNull("%s:block/materials/%s/"+flagName+"_end", material, endPresent);
             String sideTexture = textureOrNull("%s:block/materials/%s/"+flagName+"_side", material, sidePresent);
             return ModelHelpers.simplePillar(endTexture, sideTexture);
@@ -176,19 +179,19 @@ public class ModelHelpers {
 
     public static class BlockState {
 
-        public static JsonElement singleVariant(Material material, TagPrefix tagPrefix) {
-            return ModelHelpers.singleVariantBlockstate(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material)));
+        public static JsonElement singleVariant(Material material, RegistryModule.Key registerKey) {
+            return ModelHelpers.singleVariantBlockstate(material.getModId() + ":block/" + registerKey.idPattern().formatted(registerKey.getMaterialName(material)));
         }
 
-        public static JsonElement axis(Material material, TagPrefix tagPrefix) {
-            return ModelHelpers.simpleAxisBlockstate(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material)));
+        public static JsonElement axis(Material material, RegistryModule.Key registerKey) {
+            return ModelHelpers.simpleAxisBlockstate(material.getModId() + ":block/" + registerKey.idPattern().formatted(registerKey.getMaterialName(material)));
         }
     }
 
     public static class ItemModel {
 
-        public static JsonElement blockParent(Material material, TagPrefix tagPrefix) {
-            return ModelHelpers.simpleParentedModel(material.getModId() + ":block/" + tagPrefix.idPattern().formatted(tagPrefix.getMaterialName(material)));
+        public static JsonElement blockParent(Material material, RegistryModule.Key registerKey) {
+            return ModelHelpers.simpleParentedModel(material.getModId() + ":block/" + registerKey.idPattern().formatted(registerKey.getMaterialName(material)));
         }
     }
 

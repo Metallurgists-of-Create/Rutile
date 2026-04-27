@@ -2,27 +2,28 @@ package dev.metallurgists.rutile.api.material.registry;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.Material;
-import dev.metallurgists.rutile.api.tag.TagPrefix;
+import dev.metallurgists.rutile.api.material.module.registry.RegistryModule;
 import dev.metallurgists.rutile.client.MaterialBlockRenderer;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.block.Block;
 
 public class MaterialBlock extends Block {
-    public final TagPrefix tagPrefix;
+    public final Holder<RegistryModule.Key> registerKey;
     public final Material material;
 
-    public MaterialBlock(Properties properties, TagPrefix tagPrefix, Material material, boolean registerModel) {
+    public MaterialBlock(Properties properties, Holder<RegistryModule.Key> registerKey, Material material, boolean registerModel) {
         super(properties);
         this.material = material;
-        this.tagPrefix = tagPrefix;
+        this.registerKey = registerKey;
         if (registerModel && Rutile.isClientSide()) {
-            MaterialBlockRenderer.create(this, material, tagPrefix);
+            MaterialBlockRenderer.create(this, material, registerKey.value());
         }
     }
 
-    public MaterialBlock(Properties properties, TagPrefix tagPrefix, Material material) {
-        this(properties, tagPrefix, material, true);
+    public MaterialBlock(Properties properties, Holder<RegistryModule.Key> registerKey, Material material) {
+        this(properties, registerKey, material, true);
     }
 
     // This should only be enabled if the material is
@@ -33,11 +34,11 @@ public class MaterialBlock extends Block {
 
     @Override
     public String getDescriptionId() {
-        return tagPrefix.getUnlocalizedName(material);
+        return registerKey.value().getUnlocalizedName(material);
     }
 
     @Override
     public MutableComponent getName() {
-        return tagPrefix.getLocalizedName(material);
+        return registerKey.value().getLocalizedName(material);
     }
 }

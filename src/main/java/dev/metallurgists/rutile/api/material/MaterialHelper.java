@@ -3,15 +3,20 @@ package dev.metallurgists.rutile.api.material;
 import com.mojang.datafixers.util.Pair;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.fluid.storage.FluidStorageKey;
+import dev.metallurgists.rutile.api.material.data.MaterialEntry;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
+import dev.metallurgists.rutile.api.material.module.UnitSizeModule;
+import dev.metallurgists.rutile.api.material.module.registry.RegistryModule;
 import dev.metallurgists.rutile.api.material.stack.ItemMaterialInfo;
-import dev.metallurgists.rutile.api.material.stack.MaterialEntry;
 import dev.metallurgists.rutile.api.material.stack.MaterialStack;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.registry.flags.registry.FluidFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.api.tag.TagUtil;
+import dev.metallurgists.rutile.registry.RutileModules;
+import dev.metallurgists.rutile.registry.RutileRegisterKeys;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -64,6 +69,11 @@ public class MaterialHelper {
         return null;
     }
 
+    public static long getAmount(MaterialEntry entry) {
+        Material entryMaterial = entry.material();
+        return entryMaterial.getModule(RutileModules.UNIT_SIZE).map(module -> module.getSize(entry.key())).orElse(UnitSizeModule.UNIT);
+    }
+
     public static MaterialStack getMaterialStack(ItemStack itemStack) {
         if (itemStack.isEmpty()) return MaterialStack.EMPTY;
         return getMaterialStack(itemStack.getItem());
@@ -71,13 +81,13 @@ public class MaterialHelper {
 
     public static MaterialStack getMaterialStack(@NotNull MaterialEntry entry) {
         Material entryMaterial = entry.material();
-        return new MaterialStack(entryMaterial.getId(), entry.tagPrefix().getMaterialAmount(entryMaterial));
+        return new MaterialStack(entryMaterial.getId(), getAmount(entry));
     }
 
     public static MaterialStack getMaterialStack(ItemLike itemLike) {
         var entry = getMaterialEntry(itemLike);
         if (!entry.isEmpty()) {
-            return new MaterialStack(entry.material().getId(), entry.tagPrefix().getMaterialAmount(entry.material()));
+            return new MaterialStack(entry.material().getId(), getAmount(entry));
         }
         ItemMaterialInfo info = ITEM_MATERIAL_INFO.get(itemLike.asItem());
         if (info == null) return MaterialStack.EMPTY;
@@ -109,10 +119,10 @@ public class MaterialHelper {
         return FLUID_MATERIAL.get(fluid);
     }
 
-    public static TagPrefix getPrefix(ItemLike itemLike) {
+    public static Holder<RegistryModule.Key> getKey(ItemLike itemLike) {
         MaterialEntry entry = getMaterialEntry(itemLike);
-        if (!entry.isEmpty()) return entry.tagPrefix();
-        return TagPrefix.NULL_PREFIX;
+        if (!entry.isEmpty()) return entry.key();
+        return RutileRegisterKeys.Null;
     }
 
     public static MaterialEntry getMaterialEntry(ItemLike itemLike) {
@@ -149,14 +159,14 @@ public class MaterialHelper {
             // If the map is empty, resolve all possible tags to their values in an attempt to save time on later
             // lookups.
             Set<TagKey<Item>> allItemTags = BuiltInRegistries.ITEM.getTagNames().collect(Collectors.toSet());
-            for (TagPrefix prefix : RutileRegistries.TAG_PREFIXES) {
+            for (RegistryModule.Key key : RutileRegisterKeys.KEYS_REGISTRY) {
                 for (Material material : RutileRegistries.MATERIALS) {
                     prefix.getItemTags(material).stream()
                             .filter(allItemTags::contains)
                             .forEach(tagKey -> {
                                 // remove the tag so that the next iteration is faster.
                                 allItemTags.remove(tagKey);
-                                TAG_MATERIAL_ENTRY.put(tagKey, new MaterialEntry(prefix, material));
+                                TAG_MATERIAL_ENTRY.put(tagKey, new MaterialEntry(key.makeHolder(), material));
                             });
                 }
             }
@@ -167,9 +177,9 @@ public class MaterialHelper {
     public static List<ItemLike> getItems(MaterialEntry materialEntry) {
         if (materialEntry.material().isNull()) return new ArrayList<>();
         return MATERIAL_ENTRY_ITEM_MAP.computeIfAbsent(materialEntry, entry -> {
-            TagPrefix prefix = entry.tagPrefix();
+            var key = entry.key();
             var items = new ArrayList<Supplier<? extends Item>>();
-            for (TagKey<Item> tag : prefix.getItemTags(entry.material())) {
+            for (TagKey<Item> tag : materialEntry.material().getModule(RutileModules.TAGS).map(module -> module.getItemTags(key, entry.material())).orElse(List.of())) {
                 for (Holder<Item> itemHolder : BuiltInRegistries.ITEM.getTagOrEmpty(tag)) {
                     items.add(itemHolder::value);
                 }
@@ -207,6 +217,7 @@ public class MaterialHelper {
                     blocks.add(itemHolder::value);
                 }
             }
+            DataComponents.MAX_STACK_SIZE
             if (blocks.isEmpty() && prefix.hasItemTable() && prefix.doGenerateBlock(entry.material())) {
                 var blockSupplier = ItemMaterialData.convertToBlock(prefix.getItemFromTable(entry.material()));
                 if (blockSupplier != null) {

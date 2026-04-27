@@ -4,6 +4,8 @@ import com.mojang.logging.LogUtils;
 import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.events.CommonEvents;
+import dev.metallurgists.rutile.registry.RutileModules;
+import dev.metallurgists.rutile.registry.RutileRegisterKeys;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -36,6 +38,8 @@ public class Rutile {
         INSTANCE = this;
 
         RutileConfig.register(modLoadingContext);
+        RutileRegisterKeys.KEYS.register(modEventBus);
+        RutileModules.MODULES.register(modEventBus);
         CommonEvents.init(INSTANCE.modEventBus);
 
         PluginRegistry.getInstance().loadPlugins();

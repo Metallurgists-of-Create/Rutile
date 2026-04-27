@@ -2,8 +2,6 @@ package dev.metallurgists.rutile.client;
 
 import com.google.gson.JsonObject;
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.RutileApi;
-import dev.metallurgists.rutile.api.data.client.manager.MaterialAssetManager;
 import dev.metallurgists.rutile.api.fluid.MaterialFluid;
 import dev.metallurgists.rutile.api.fluid.storage.FluidStorage;
 import dev.metallurgists.rutile.api.fluid.storage.FluidStorageKey;
@@ -12,15 +10,12 @@ import dev.metallurgists.rutile.api.material.flags.FlagKey;
 import dev.metallurgists.rutile.api.material.flags.IMaterialFlag;
 import dev.metallurgists.rutile.api.material.flags.IPartialHolder;
 import dev.metallurgists.rutile.api.material.flags.ISpecialAssetGen;
-import dev.metallurgists.rutile.api.material.registry.asset.MaterialAsset;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.runtime.assets.RutileDynamicResourcePack;
-import dev.metallurgists.rutile.api.tag.TagPrefix;
 import dev.metallurgists.rutile.util.MixinHelpers;
 import dev.metallurgists.rutile.util.ModelHelpers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.material.Fluid;
 
@@ -57,14 +52,8 @@ public class RutileModels {
     }
 
     private static void generateObjectAssets(Material material) {
-        for (TagPrefix tagPrefix : RutileRegistries.TAG_PREFIXES) {
-            if (tagPrefix.doGenerateItem(material)) {
-                ModelHelpers.itemModel(material, tagPrefix);
-            }
-            if (tagPrefix.doGenerateBlock(material)) {
-                ModelHelpers.blockModel(material, tagPrefix);
-            }
-        }
+        RutileRegistries.ITEM_SOURCES.forEach(src -> ModelHelpers.itemModel(material, src));
+        RutileRegistries.BLOCK_SOURCES.forEach(src -> ModelHelpers.blockModel(material, src));
     }
 
     public static void generateFluidModels(Material material) {

@@ -3,6 +3,8 @@ package dev.metallurgists.rutile.registry;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.flags.FlagKey;
+import dev.metallurgists.rutile.api.material.module.CompositionModule;
+import dev.metallurgists.rutile.api.material.module.UnitSizeModule;
 import dev.metallurgists.rutile.api.material.registry.AxisMaterialBlock;
 import dev.metallurgists.rutile.api.registry.flags.customisation.HarvestTierFlag;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
@@ -10,66 +12,69 @@ import dev.metallurgists.rutile.util.ModelHelpers;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
-import static dev.metallurgists.rutile.registry.RutileTagPrefixes.*;
-import static dev.metallurgists.rutile.registry.RutileTagPrefixes.Nugget;
+import static dev.metallurgists.rutile.registry.RutileBlockSources.*;
+import static dev.metallurgists.rutile.registry.RutileItemSources.*;
 
 public class RutileMaterials {
 
-    public static Material Null = new Material.Builder(Rutile.id("null")).element("null").colour(0xffbf4cd2).build();
+    public static Material Null = new Material.Builder(Rutile.id("null"))
+            .addModule(RutileModules.COMPOSITION, CompositionModule.INSTANCE.builder().element("null"))
+            .addVariable(RutileVariableKeys.COLOUR, 0xffbf4cd2)
+            .build();
 
     public static Material Iron = new Material.Builder(Rutile.id("iron"))
-            .element("iron")
-            .colour(0xff949496)
+            .addModule(RutileModules.COMPOSITION, CompositionModule.INSTANCE.builder().element("iron"))
+            .addVariable(RutileVariableKeys.COLOUR, 0xff949496)
+            .addVariable(RutileVariableKeys.HARVEST_TIER, 1)
             .flag(FlagKey.INGOT)
             .flag(FlagKey.ORE)
-            .flag(FlagKey.HARVEST_TIER, new HarvestTierFlag(1))
             .build();
 
     public static Material Copper = new Material.Builder(Rutile.id("copper"))
-            .element("copper")
-            .colour(0xffdcb491)
+            .addModule(RutileModules.COMPOSITION, CompositionModule.INSTANCE.builder().element("copper"))
+            .addVariable(RutileVariableKeys.COLOUR, 0xffdcb491)
+            .addVariable(RutileVariableKeys.HARVEST_TIER, 1)
             .flag(FlagKey.INGOT)
             .flag(FlagKey.ORE)
-            .flag(FlagKey.HARVEST_TIER, new HarvestTierFlag(1))
             .build();
 
     public static Material Gold = new Material.Builder(Rutile.id("gold"))
-            .element("gold")
-            .colour(0xffd1c186)
+            .addModule(RutileModules.COMPOSITION, CompositionModule.INSTANCE.builder().element("gold"))
+            .addVariable(RutileVariableKeys.COLOUR, 0xffd1c186)
+            .addVariable(RutileVariableKeys.HARVEST_TIER, 2)
             .flag(FlagKey.INGOT)
             .flag(FlagKey.ORE)
-            .flag(FlagKey.HARVEST_TIER, new HarvestTierFlag(2))
             .build();
 
     public static Material Diamond = new Material.Builder(Rutile.id("diamond"))
-            .element("carbon")
-            .colour(0xffa1fbe8)
+            .addModule(RutileModules.COMPOSITION, CompositionModule.INSTANCE.builder().element("carbon"))
+            .addVariable(RutileVariableKeys.COLOUR, 0xffa1fbe8)
+            .addVariable(RutileVariableKeys.HARVEST_TIER, 2)
             .flag(FlagKey.GEM)
             .flag(FlagKey.ORE)
-            .flag(FlagKey.HARVEST_TIER, new HarvestTierFlag(2))
             .build();
 
     public static Material Emerald = new Material.Builder(Rutile.id("emerald"))
-            .composition("3 beryllium", "2 aluminum", "6 silicon", "18 oxygen")
-            .colour(0xff41f384)
+            .addModule(RutileModules.COMPOSITION, CompositionModule.INSTANCE.builder().composition("3 beryllium", "2 aluminum", "6 silicon", "18 oxygen"))
+            .addVariable(RutileVariableKeys.COLOUR, 0xff41f384)
+            .addVariable(RutileVariableKeys.HARVEST_TIER, 2)
             .flag(FlagKey.GEM)
             .flag(FlagKey.ORE)
-            .flag(FlagKey.HARVEST_TIER, new HarvestTierFlag(2))
             .build();
 
     public static Material Quartz = new Material.Builder(Rutile.id("quartz"))
-            .composition("1 silicon", "2 oxygen")
-            .colour(0xffd4caba)
+            .addModule(RutileModules.COMPOSITION, CompositionModule.INSTANCE.builder().composition("1 silicon", "2 oxygen"))
+            .addVariable(RutileVariableKeys.COLOUR, 0xffd4caba)
+            .addVariable(RutileVariableKeys.HARVEST_TIER, 0)
             .flag(FlagKey.GEM)
             .flag(FlagKey.ORE)
-            .flag(FlagKey.HARVEST_TIER, new HarvestTierFlag(0))
             .build();
 
     public static Material Amethyst = new Material.Builder(Rutile.id("amethyst"))
-            .composition("1 silicon", "2 oxygen", "1 iron")
-            .colour(0xffcfa0f3)
+            .addModule(RutileModules.COMPOSITION, CompositionModule.INSTANCE.builder().composition("1 silicon", "2 oxygen", "1 iron"))
+            .addVariable(RutileVariableKeys.COLOUR, 0xffcfa0f3)
+            .addVariable(RutileVariableKeys.HARVEST_TIER, 0)
             .flag(FlagKey.GEM)
-            .flag(FlagKey.HARVEST_TIER, new HarvestTierFlag(0))
             .build();
 
     public static void init() {
@@ -77,43 +82,37 @@ public class RutileMaterials {
     }
 
     public static void configurePrefixes() {
-        Ingot.setIgnored(RutileMaterials.Iron, Items.IRON_INGOT);
-        Ingot.setIgnored(RutileMaterials.Gold, Items.GOLD_INGOT);
-        Ingot.setIgnored(RutileMaterials.Copper, Items.COPPER_INGOT);
-        Gem.setIgnored(RutileMaterials.Diamond, Items.DIAMOND);
-        Gem.setIgnored(RutileMaterials.Emerald, Items.EMERALD);
-        Gem.setIgnored(RutileMaterials.Quartz, Items.QUARTZ);
-        Gem.setIgnored(RutileMaterials.Amethyst, Items.AMETHYST_SHARD);
-        Nugget.setIgnored(RutileMaterials.Iron, Items.IRON_NUGGET);
-        Nugget.setIgnored(RutileMaterials.Gold, Items.GOLD_NUGGET);
-        Nugget.setIgnored(RutileMaterials.Copper);
-        RawOre.setIgnored(RutileMaterials.Iron, Items.RAW_IRON);
-        RawOre.setIgnored(RutileMaterials.Gold, Items.RAW_GOLD);
-        RawOre.setIgnored(RutileMaterials.Copper, Items.RAW_COPPER);
-        RawOre.setIgnored(RutileMaterials.Diamond);
-        RawOre.setIgnored(RutileMaterials.Emerald);
-        RawOre.setIgnored(RutileMaterials.Quartz);
-        Dust.setIgnored(RutileMaterials.Iron);
-        Dust.setIgnored(RutileMaterials.Copper);
-        Dust.setIgnored(RutileMaterials.Gold);
-        Dust.setIgnored(RutileMaterials.Diamond);
-        Dust.setIgnored(RutileMaterials.Emerald);
-        Dust.setIgnored(RutileMaterials.Quartz);
-
-        Block.setIgnored(RutileMaterials.Iron, Blocks.IRON_BLOCK);
-        Block.setIgnored(RutileMaterials.Gold, Blocks.GOLD_BLOCK);
-        Block.setIgnored(RutileMaterials.Copper, Blocks.COPPER_BLOCK);
-        Block.setIgnored(RutileMaterials.Diamond, Blocks.DIAMOND_BLOCK);
-        Block.setIgnored(RutileMaterials.Emerald, Blocks.EMERALD_BLOCK);
-        Block.setIgnored(RutileMaterials.Quartz, Blocks.QUARTZ_BLOCK);
-        Block.setIgnored(RutileMaterials.Amethyst, Blocks.AMETHYST_BLOCK);
-        Block.modifyMaterialAmount(RutileMaterials.Quartz, TagPrefix.M * 4);
-        Block.modifyMaterialAmount(RutileMaterials.Amethyst, TagPrefix.M * 4);
-        RawOreBlock.setIgnored(RutileMaterials.Iron, Blocks.RAW_IRON_BLOCK);
-        RawOreBlock.setIgnored(RutileMaterials.Gold, Blocks.RAW_GOLD_BLOCK);
-        RawOreBlock.setIgnored(RutileMaterials.Copper, Blocks.RAW_COPPER_BLOCK);
-        RawOreBlock.setIgnored(RutileMaterials.Diamond);
-        RawOreBlock.setIgnored(RutileMaterials.Emerald);
-        RawOreBlock.setIgnored(RutileMaterials.Quartz);
+        Iron.addModule(RutileModules.ITEM_REDIRECT, (module) -> module
+                .redirect(RutileRegisterKeys.Ingot, () -> Items.IRON_INGOT)
+                .redirect(RutileRegisterKeys.Nugget, () -> Items.IRON_NUGGET)
+                .redirect(RutileRegisterKeys.RawOre, () -> Items.RAW_IRON)
+                .redirect(RutileRegisterKeys.StorageBlock, () -> Items.IRON_BLOCK)
+                .redirect(RutileRegisterKeys.RawOreBlock, () -> Items.RAW_IRON_BLOCK));
+        Gold.addModule(RutileModules.ITEM_REDIRECT, (module) -> module
+                .redirect(RutileRegisterKeys.Ingot, () -> Items.GOLD_INGOT)
+                .redirect(RutileRegisterKeys.Nugget, () -> Items.GOLD_NUGGET)
+                .redirect(RutileRegisterKeys.RawOre, () -> Items.RAW_GOLD)
+                .redirect(RutileRegisterKeys.StorageBlock, () -> Items.GOLD_BLOCK)
+                .redirect(RutileRegisterKeys.RawOreBlock, () -> Items.RAW_GOLD_BLOCK));
+        Copper.addModule(RutileModules.ITEM_REDIRECT, (module) -> module
+                .redirect(RutileRegisterKeys.Ingot, () -> Items.COPPER_INGOT)
+                .redirect(RutileRegisterKeys.RawOre, () -> Items.RAW_COPPER)
+                .redirect(RutileRegisterKeys.StorageBlock, () -> Items.COPPER_BLOCK)
+                .redirect(RutileRegisterKeys.RawOreBlock, () -> Items.RAW_COPPER_BLOCK))
+                .addModule(RutileModules.IGNORE, (module) -> module.ignore(RutileRegisterKeys.Nugget));
+        Diamond.addModule(RutileModules.ITEM_REDIRECT, (module) -> module
+                .redirect(RutileRegisterKeys.Gem, () -> Items.DIAMOND)
+                .redirect(RutileRegisterKeys.StorageBlock, () -> Items.DIAMOND_BLOCK));
+        Emerald.addModule(RutileModules.ITEM_REDIRECT, (module) -> module
+                .redirect(RutileRegisterKeys.Gem, () -> Items.EMERALD)
+                .redirect(RutileRegisterKeys.StorageBlock, () -> Items.EMERALD_BLOCK));
+        Quartz.addModule(RutileModules.ITEM_REDIRECT, (module) -> module
+                .redirect(RutileRegisterKeys.Gem, () -> Items.QUARTZ)
+                .redirect(RutileRegisterKeys.StorageBlock, () -> Items.QUARTZ_BLOCK))
+                .addModule(RutileModules.UNIT_SIZE, (module) -> module.setSize(RutileRegisterKeys.StorageBlock, UnitSizeModule.UNIT * 4));
+        Amethyst.addModule(RutileModules.ITEM_REDIRECT, (module) -> module
+                .redirect(RutileRegisterKeys.Gem, () -> Items.AMETHYST_SHARD)
+                .redirect(RutileRegisterKeys.StorageBlock, () -> Items.AMETHYST_BLOCK))
+                .addModule(RutileModules.UNIT_SIZE, (module) -> module.setSize(RutileRegisterKeys.StorageBlock, UnitSizeModule.UNIT * 4));
     }
 }

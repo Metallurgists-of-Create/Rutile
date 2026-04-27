@@ -197,6 +197,15 @@ public class RutileDynamicDataPack implements PackResources {
         addToData(getCompositionLocation(compositionId), compositionJson.toString().getBytes(StandardCharsets.UTF_8));
     }
 
+    public static void addData(JsonObject json, ResourceLocation dataLocation, String dataType) {
+        byte[] bytes = json.toString().getBytes(StandardCharsets.UTF_8);
+        Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/data");
+        if (RutileConfig.client().dumpRecipes.get()) {
+            writeJson(dataLocation, dataType, parent, bytes);
+        }
+        addToData(dataLocation.withPath(path -> dataType + "/" + path + ".json"), json.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
     public static ResourceLocation getRecipeLocation(ResourceLocation recipeId) {
         return recipeId.withPath(path -> "recipe/" + path + ".json");
     }

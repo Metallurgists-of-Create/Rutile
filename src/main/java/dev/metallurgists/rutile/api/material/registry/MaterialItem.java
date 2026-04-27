@@ -2,8 +2,11 @@ package dev.metallurgists.rutile.api.material.registry;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.material.Material;
-import dev.metallurgists.rutile.api.material.flags.FlagKey;
-import dev.metallurgists.rutile.api.tag.TagPrefix;
+import dev.metallurgists.rutile.api.material.module.UnitSizeModule;
+import dev.metallurgists.rutile.api.material.module.registry.RegistryModule;
+import dev.metallurgists.rutile.registry.RutileModules;
+import dev.metallurgists.rutile.registry.RutileVariableKeys;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -18,12 +21,12 @@ import java.util.List;
 
 public class MaterialItem extends Item {
 
-    public final TagPrefix tagPrefix;
+    public final Holder<RegistryModule.Key> registerKey;
     public final Material material;
 
-    public MaterialItem(Properties properties, TagPrefix tagPrefix, Material material) {
+    public MaterialItem(Properties properties, Holder<RegistryModule.Key> registerKey, Material material) {
         super(properties);
-        this.tagPrefix = tagPrefix;
+        this.registerKey = registerKey;
         this.material = material;
         if (Rutile.isClientSide()) {
             //TagPrefixItemRenderer.create(this, tagPrefix.materialIconType(), material.getMaterialIconSet());
@@ -42,27 +45,29 @@ public class MaterialItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents,
-                                TooltipFlag isAdvanced) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
         super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
-        if (this.tagPrefix.tooltip() != null) {
-            this.tagPrefix.tooltip().accept(material, tooltipComponents);
-        }
+        var tooltipModule = material.getModule(RutileModules.TOOLTIP);
+        tooltipModule.ifPresent(tooltip -> {
+            if (tooltip.tooltip() != null) {
+                tooltip.tooltip().accept(material, tooltipComponents);
+            }
+        });
     }
 
     @Override
     public String getDescriptionId() {
-        return tagPrefix.getUnlocalizedName(material);
+        return registerKey.value().getUnlocalizedName(material);
     }
 
     @Override
     public String getDescriptionId(ItemStack stack) {
-        return tagPrefix.getUnlocalizedName(material);
+        return registerKey.value().getUnlocalizedName(material);
     }
 
     @Override
     public Component getDescription() {
-        return tagPrefix.getLocalizedName(material);
+        return registerKey.value().getLocalizedName(material);
     }
 
     @Override
@@ -77,8 +82,10 @@ public class MaterialItem extends Item {
     }
 
     public int getItemBurnTime() {
-        if (material.hasFlag(FlagKey.BURNABLE))
-            return (int) (material.getFlagValue(FlagKey.BURNABLE) * tagPrefix.getMaterialAmount(material) / TagPrefix.M);
+        int burnTime = material.getVariable(RutileVariableKeys.BURN_TIME);
+        long size = material.getModule(RutileModules.UNIT_SIZE).map(module -> module.getSize(this.registerKey)).orElse(UnitSizeModule.UNIT);
+        if (burnTime != 0)
+            return (int) (burnTime * size / UnitSizeModule.UNIT);
         return 0;
     }
 }

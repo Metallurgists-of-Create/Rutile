@@ -5,6 +5,7 @@ import com.google.common.collect.Table;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.element.Element;
 import dev.metallurgists.rutile.api.material.Material;
+import dev.metallurgists.rutile.api.material.module.MaterialModule;
 import dev.metallurgists.rutile.api.tag.TagPrefix;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.MappedRegistry;
@@ -33,10 +34,12 @@ public class RutileRegistries {
     public static final ResourceKey<Registry<Element>> ELEMENT_REGISTRY = makeKey(Rutile.id("element"));
     public static final ResourceKey<Registry<TagPrefix>> TAG_PREFIX_REGISTRY = makeKey(Rutile.id("tag_prefix"));
     public static final ResourceKey<Registry<Material>> MATERIAL_REGISTRY = makeKey(Rutile.id("material"));
+    public static final ResourceKey<Registry<MaterialModule>> MODULE_REGISTRY = makeKey(Rutile.id("material_module"));
 
     public static final Registry<Element> ELEMENTS = makeRegistry(ELEMENT_REGISTRY);
     public static final RutileRegistry<Material> MATERIALS = makeRutileRegistry(MATERIAL_REGISTRY, MaterialRegistry::new);
     public static final Registry<TagPrefix> TAG_PREFIXES = makeRegistry(TAG_PREFIX_REGISTRY);
+    public static final Registry<MaterialModule> MODULES = makeRegistry(MODULE_REGISTRY);
 
     public static <T> ResourceKey<Registry<T>> makeKey(ResourceLocation registryId) {
         return ResourceKey.createRegistryKey(registryId);
