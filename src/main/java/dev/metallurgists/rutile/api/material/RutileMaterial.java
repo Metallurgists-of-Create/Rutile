@@ -13,7 +13,6 @@ public class RutileMaterial {
     }
 
     public static void modifyData(String name, Function<MaterialData, MaterialData> consumer) {
-        MaterialData data = getOrCreate(name);
-        materials.put(name, consumer.apply(data));
+        materials.put(name, consumer.apply(getOrCreate(name)));
     }
 }
