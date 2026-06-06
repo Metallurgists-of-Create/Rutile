@@ -1,9 +1,7 @@
 package dev.metallurgists.rutile.mixin;
 
-import dev.metallurgists.rutile.api.runtime.data.RuntimeCompositions;
 import dev.metallurgists.rutile.api.runtime.data.RutileDynamicDataPack;
 import dev.metallurgists.rutile.api.runtime.data.recipe.RutileRecipes;
-import dev.metallurgists.rutile.util.MixinHelpers;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.commands.Commands;
@@ -53,7 +51,5 @@ public abstract class ReloadableServerResourcesMixin {
                 RutileDynamicDataPack.addRecipe(id, recipe, advancement, frozen);
             }
         });
-        RuntimeCompositions.compositionAddition(RutileDynamicDataPack::addComposition);
-        MixinHelpers.generateDynamicLoot(RutileDynamicDataPack::addLootTable, frozen);
     }
 }

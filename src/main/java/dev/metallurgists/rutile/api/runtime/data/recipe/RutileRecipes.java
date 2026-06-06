@@ -1,9 +1,6 @@
 package dev.metallurgists.rutile.api.runtime.data.recipe;
 
-import dev.metallurgists.rutile.api.RutileApi;
-import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.plugin.PluginRegistry;
-import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
@@ -33,10 +30,6 @@ public class RutileRecipes {
                 }
             }
         };
-
-        for (Material material : RutileRegistries.MATERIALS) {
-            PluginRegistry.getInstance().forEach((pl, cf) -> cf.getRuntimeMaterialRecipes().run(consumer, material));
-        }
         PluginRegistry.getInstance().forEach((pl, cf) -> cf.getRuntimeRecipes().run(consumer));
     }
 

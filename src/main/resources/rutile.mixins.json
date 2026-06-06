@@ -10,13 +10,10 @@
     "RecipeManagerEarlyMixin",
     "RecipeManagerLateMixin",
     "ReloadableServerResourcesMixin",
-    "TagLoaderMixin",
-    "TagManagerMixin",
     "jei.FluidHelperMixin",
     "registrate.AbstractRegistrateAccessor"
   ],
   "client": [
-    "ModelManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1,

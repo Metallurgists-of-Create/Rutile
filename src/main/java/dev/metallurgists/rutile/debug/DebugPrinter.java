@@ -35,7 +35,7 @@ public interface DebugPrinter {
     Comparator<String> KEY_COMPARATOR = Comparator.comparingInt(FIXED_ORDER_FIELDS).thenComparing((p_236077_) -> p_236077_);
 
     @ApiStatus.Internal
-    default void writeJson(ResourceLocation id, @Nullable String subDir, Path parent, JsonElement json) {
+    static void writeJson(ResourceLocation id, @Nullable String subDir, Path parent, JsonElement json) {
         try {
             Path file;
             if (subDir != null) {

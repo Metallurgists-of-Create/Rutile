@@ -4,12 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.element.Element;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.debug.DebugPrinter;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +27,7 @@ public class DebugElementPrinter implements DebugPrinter {
             });
         }
         ElementJson elementJson = new ElementJson(groupedElements);
-        new DebugMaterialPrinter().writeJson(Rutile.id("elements"), "", parent, elementJson.json());
+        DebugPrinter.writeJson(Rutile.id("elements"), "", parent, elementJson.json());
     }
 
     static class ElementJson {
