@@ -5,12 +5,7 @@ import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.composition.SubComposition;
 import dev.metallurgists.rutile.api.element.Element;
 import dev.metallurgists.rutile.api.element.ElementStack;
-import dev.metallurgists.rutile.api.material.Material;
-import dev.metallurgists.rutile.api.material.MaterialHelper;
-import dev.metallurgists.rutile.api.material.data.MaterialEntry;
-import dev.metallurgists.rutile.api.material.module.registry.RegistryModule;
 import dev.metallurgists.rutile.compat.jei.RutileJeiConstants;
-import dev.metallurgists.rutile.registry.RutileRegisterKeys;
 import dev.metallurgists.rutile.util.GuiTexture;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -24,7 +19,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -88,48 +82,6 @@ public interface ElementCompositionWrapper<T> {
                 positions.add(new ItemFluidLayoutEntry(null, fluid, layout.getX(), layout.getY()));
                 layout.next();
             }
-            return positions;
-        }
-    }
-
-    record Materials(Material material, Composition composition) implements ElementCompositionWrapper<Material> {
-        @Override
-        public Composition getComposition() {
-            return composition;
-        }
-
-        @Override
-        public Material getIngredient() {
-            return material;
-        }
-
-        public List<ItemStack> getAllMaterialItems() {
-            List<ItemStack> items = new ArrayList<>();
-            for (RegistryModule.Key key : RutileRegisterKeys.KEYS_REGISTRY) {
-                MaterialEntry materialEntry = new MaterialEntry(key.makeHolder(), getIngredient());
-                List<Item> entryItems = new ArrayList<>(MaterialHelper.getItems(materialEntry).stream().map(ItemLike::asItem).toList());
-                items.addAll(entryItems.stream().map(Item::getDefaultInstance).toList());
-            }
-            return items;
-        }
-
-        @Override
-        public void setRecipe(IRecipeLayoutBuilder builder, IFocusGroup focuses) {
-            layoutMaterialOutput(getAllMaterialItems()).forEach(layoutEntry -> {
-                IRecipeSlotBuilder slotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, (177 / 2) + layoutEntry.posX() + 1, 1).setBackground(getBackground(), -1, -1);
-                if (!layoutEntry.items.isEmpty()) {
-                    addListedOutput(layoutEntry.items, slotBuilder);
-                }
-            });
-            addElements(getComposition(), builder);
-        }
-
-        private List<MaterialLayoutEntry> layoutMaterialOutput(List<ItemStack> items) {
-            int size = 1;
-            List<MaterialLayoutEntry> positions = new ArrayList<>(size);
-            LayoutHelper layout = LayoutHelper.centeredHorizontal(size, 1, 18, 18, 0);
-            positions.add(new MaterialLayoutEntry(items, layout.getX(), layout.getY()));
-            layout.next();
             return positions;
         }
     }

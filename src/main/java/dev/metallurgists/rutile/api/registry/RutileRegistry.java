@@ -52,13 +52,9 @@ public abstract class RutileRegistry<T> extends MappedRegistry<T> implements IRu
     public abstract T getByKey(ResourceLocation id);
 
     @Override
-    public Holder.@NotNull Reference<T> register(int id,
-                                                        @NotNull ResourceKey<T> key, @NotNull T value,
-                                                        @NotNull RegistrationInfo registrationInfo) {
+    public Holder.@NotNull Reference<T> register(int id, @NotNull ResourceKey<T> key, @NotNull T value, @NotNull RegistrationInfo registrationInfo) {
         if (isRegistryClosed) {
-            throw new IllegalStateException(
-                    "Objects cannot be registered in the PostRutileRegistryEvent (or after)! Must be added in the RegisterEvent. Skipping object %s..."
-                            .formatted(key.location()));
+            throw new IllegalStateException("Objects cannot be registered! Must be added in the RegisterEvent. Skipping object %s...".formatted(key.location()));
         }
         usedNamespaces.add(key.location().getNamespace());
         return super.register(id, key, value, registrationInfo);

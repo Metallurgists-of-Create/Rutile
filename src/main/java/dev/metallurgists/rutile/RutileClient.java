@@ -3,7 +3,6 @@ package dev.metallurgists.rutile;
 
 import com.google.common.base.CaseFormat;
 import dev.metallurgists.rutile.api.composition.CompositionHandler;
-import dev.metallurgists.rutile.api.data.client.manager.MaterialAssetManager;
 import net.createmod.catnip.lang.LangBuilder;
 import net.createmod.catnip.lang.LangNumberFormat;
 import net.neoforged.api.distmarker.Dist;
@@ -96,7 +95,7 @@ public class RutileClient {
 
         @SubscribeEvent
         static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
-            MaterialAssetManager.register(event);
+
         }
     }
 }

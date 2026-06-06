@@ -1,14 +1,15 @@
 package dev.metallurgists.rutile.registry;
 
 import dev.metallurgists.rutile.Rutile;
+import dev.metallurgists.rutile.api.element.DeferredElements;
 import dev.metallurgists.rutile.api.element.Element;
-import dev.metallurgists.rutile.api.registry.IRutileRegistry;
-import dev.metallurgists.rutile.api.registry.RutileRegistries;
+import dev.metallurgists.rutile.api.element.ElementLike;
+import dev.metallurgists.rutile.util.RegistryHelper;
 import net.minecraft.world.flag.FeatureFlag;
 
 public class RutileElements {
 
-    public static final Element NULL = create("null", "?", 0xffbf4cd2),
+    public static final ElementLike NULL = create("null", "?", 0xffbf4cd2),
             H  =  create("hydrogen", "H", 0xff9175dc),
             He =  create("helium", "He", 0xfffcc6f7),
             Li =  create("lithium", "Li", 0xff989890),
@@ -130,15 +131,15 @@ public class RutileElements {
 
     public static void init() {}
 
-    public static Element create(String name, String symbol, int colour) {
+    public static ElementLike create(String name, String symbol, int colour) {
         Element element = new Element(symbol, colour, Rutile.id(name));
-        RutileRegistries.register(RutileRegistries.ELEMENTS, element.getId(), element);
-        return element;
+        DeferredElements HELPER = RegistryHelper.createElements(element.getModId());
+        return HELPER.register(element.getName(), () -> element);
     }
 
-    public static Element create(String name, String symbol, int colour, FeatureFlag... requiredFeatures) {
+    public static ElementLike create(String name, String symbol, int colour, FeatureFlag... requiredFeatures) {
         Element element = new Element(symbol, colour, Rutile.id(name), requiredFeatures);
-        RutileRegistries.register(RutileRegistries.ELEMENTS, element.getId(), element);
-        return element;
+        DeferredElements HELPER = RegistryHelper.createElements(element.getModId());
+        return HELPER.register(element.getName(), () -> element);
     }
 }

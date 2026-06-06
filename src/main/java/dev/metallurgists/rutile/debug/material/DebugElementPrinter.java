@@ -5,8 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.element.Element;
-import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.debug.DebugPrinter;
+import dev.metallurgists.rutile.registry.RutileRegistries;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class DebugElementPrinter implements DebugPrinter {
     public static void print() {
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug");
         Map<String, List<Element>> groupedElements = new HashMap<>();
-        for (Element element : RutileRegistries.ELEMENTS) {
+        for (Element element : RutileRegistries.ELEMENTS_REGISTRY) {
             groupedElements.compute(element.getModId(), (k, l) -> {
                 if (l == null) l = new ArrayList<>();
                 l.add(element);

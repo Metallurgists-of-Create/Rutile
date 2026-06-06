@@ -10,7 +10,7 @@ import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 
-public class Element implements IDisplayedName, FeatureElement {
+public class Element implements IDisplayedName, FeatureElement, ElementLike {
     private String descriptionId;
     /**
      * -- GETTER --
@@ -74,16 +74,13 @@ public class Element implements IDisplayedName, FeatureElement {
         return this.descriptionId;
     }
 
-    public ElementStack asStack() {
-        return ElementStack.of(this);
-    }
-
-    public ElementStack asStack(int amount) {
-        return ElementStack.of(this, amount);
-    }
-
     @Override
     public FeatureFlagSet requiredFeatures() {
         return this.requiredFeatures;
+    }
+
+    @Override
+    public Element asElement() {
+        return this;
     }
 }

@@ -1,19 +1,16 @@
 package dev.metallurgists.rutile.compat.jei;
 
-import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.data.server.manager.composition.ItemCompositionManager;
-import dev.metallurgists.rutile.api.data.server.manager.composition.MaterialCompositionManager;
 import dev.metallurgists.rutile.api.element.Element;
 import dev.metallurgists.rutile.api.element.ElementStack;
-import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.compat.jei.category.ElementCompositionWrapper;
+import dev.metallurgists.rutile.registry.RutileRegistries;
 import dev.metallurgists.rutile.util.GuiTexture;
 import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.world.flag.FeatureFlagSet;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
 
@@ -46,7 +43,7 @@ public class RutileJeiConstants {
             throw new NullPointerException("minecraft.level must be set before JEI fetches ingredients");
         }
 
-        for (Element element : RutileRegistries.ELEMENTS) {
+        for (Element element : RutileRegistries.ELEMENTS_REGISTRY) {
             if (element.isEnabled(features)) {
                 elementList.add(element.asStack());
             }
@@ -60,10 +57,6 @@ public class RutileJeiConstants {
         final List<ElementCompositionWrapper> compositionList = new ArrayList<>();
         for (var info : ItemCompositionManager.getInstance().getCompositions().entrySet()) {
             var recipe = new ElementCompositionWrapper.Items(info.getKey(), info.getValue());
-            compositionList.add(recipe);
-        }
-        for (var info : MaterialCompositionManager.getInstance().getCompositions().entrySet()) {
-            var recipe = new ElementCompositionWrapper.Materials(info.getKey(), info.getValue());
             compositionList.add(recipe);
         }
         return compositionList;

@@ -3,10 +3,8 @@ package dev.metallurgists.rutile.api.composition;
 import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.api.data.server.manager.composition.FluidCompositionManager;
 import dev.metallurgists.rutile.api.data.server.manager.composition.ItemCompositionManager;
-import dev.metallurgists.rutile.api.data.server.manager.composition.MaterialCompositionManager;
 import dev.metallurgists.rutile.api.element.ElementStack;
 import dev.metallurgists.rutile.api.fluid.MaterialFluid;
-import dev.metallurgists.rutile.api.material.MaterialHelper;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.util.ColourUtil;
 import net.createmod.catnip.lang.LangBuilder;
@@ -39,41 +37,12 @@ public class CompositionHandler {
     public static void appendFluidTooltips(FluidStack fluidStack, Consumer<Component> tooltips) {
         Fluid fluid = fluidStack.getFluid();
         boolean hasSpecificComposition = fluidComposition(tooltips, fluidStack);
-        if (!hasSpecificComposition) {
-            var material = MaterialHelper.getMaterial(fluid);
-            if (material != null) {
-                var composition = material.getComposition();
-                if (composition != null) {
-                    LangBuilder compositionName = RutileClient.lang();
-                    createTooltip(compositionName, composition);
-                    if (!compositionName.string().isEmpty()) {
-                        MutableComponent component = RutileClient.lang().space().space().space()
-                                .add(compositionName)
-                                .component();
-                        if (!RutileConfig.client().elementColorForTooltip.get()) {
-                            component = component.withStyle(style -> style.withColor(RutileConfig.client().tooltipColor.get()));
-                        }
-                        tooltips.accept(component);
-                    }
-                }
-            }
-        }
         if (fluid instanceof MaterialFluid attributedFluid) {
             attributedFluid.getAttributes().forEach(a -> a.appendFluidTooltips(tooltips));
         }
     }
 
     public static boolean materialComposition(List<Component> toolTip, ItemStack stack) {
-        var materialEntry = MaterialHelper.getMaterialEntry(stack.getItem());
-        if (!materialEntry.isEmpty()) {
-            Composition composition = MaterialCompositionManager.getInstance().getComposition(materialEntry.material());
-            if (composition != null) {
-                LangBuilder compositionName = RutileClient.lang();
-                createTooltip(compositionName, composition);
-                add(toolTip, compositionName);
-                return true;
-            }
-        }
         if (stack.getItem() instanceof BucketItem bucket) {
             var fluid = bucket.content;
             if (!(fluid instanceof EmptyFluid)) {

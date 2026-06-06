@@ -2,7 +2,6 @@ package dev.metallurgists.rutile.api.plugin;
 
 import com.tterrag.registrate.AbstractRegistrate;
 import dev.metallurgists.rutile.RutileRegistrate;
-import dev.metallurgists.rutile.api.runtime.data.recipe.handler.IRutileMaterialRecipeHandler;
 import dev.metallurgists.rutile.api.runtime.data.recipe.handler.IRutileRecipeHandler;
 import dev.metallurgists.rutile.api.runtime.data.recipe.handler.IRutileRecipeRemover;
 import lombok.Getter;
@@ -24,20 +23,6 @@ public class PluginConfig {
     @Getter
     @Setter
     private IRutileRecipeHandler runtimeRecipes;
-    /**
-     * -- SETTER --
-     *  Sets the runtime material recipe handler for this plugin
-     *
-     *
-     * -- GETTER --
-     *  The runtime material recipe handler for this plugin
-     *
-     @param runtimeMaterialRecipes the runtime material recipe handler
-      * @return the runtime material recipe handler
-     */
-    @Getter
-    @Setter
-    private IRutileMaterialRecipeHandler runtimeMaterialRecipes;
     /**
      * -- SETTER --
      *  Sets the runtime recipe remover for this plugin
@@ -70,7 +55,6 @@ public class PluginConfig {
     public PluginConfig() {
         this.modid = "";
         this.runtimeRecipes = new IRutileRecipeHandler.Empty();
-        this.runtimeMaterialRecipes = new IRutileMaterialRecipeHandler.Empty();
         this.runtimeRecipeRemover = new IRutileRecipeRemover.Empty();
         this.registrate = RutileRegistrate.create(modid);
     }
