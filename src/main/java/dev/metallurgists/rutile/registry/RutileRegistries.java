@@ -3,6 +3,7 @@ package dev.metallurgists.rutile.registry;
 import com.mojang.serialization.Lifecycle;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.element.Element;
+import dev.metallurgists.rutile.api.material.module.MaterialModule;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -14,8 +15,10 @@ import net.neoforged.neoforge.registries.RegistryBuilder;
 @EventBusSubscriber
 public class RutileRegistries {
     public static final ResourceKey<Registry<Element>> ELEMENTS = createRegistryKey("element");
+    public static final ResourceKey<Registry<MaterialModule<?>>> MODULES = createRegistryKey("modules");
 
     public static final Registry<Element> ELEMENTS_REGISTRY = makeSyncedRegistry(ELEMENTS);
+    public static final Registry<MaterialModule<?>> MODULES_REGISTRY = makeSyncedRegistry(MODULES);
 
     private static <T> ResourceKey<Registry<T>> createRegistryKey(String name) {
         return ResourceKey.createRegistryKey(Rutile.id(name));
@@ -44,5 +47,6 @@ public class RutileRegistries {
     @SubscribeEvent
     public static void newRegistry(NewRegistryEvent event) {
         event.register(ELEMENTS_REGISTRY);
+        event.register(MODULES_REGISTRY);
     }
 }

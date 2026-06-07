@@ -3,6 +3,7 @@ package dev.metallurgists.rutile.util;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.element.DeferredElements;
 import dev.metallurgists.rutile.api.element.Element;
+import dev.metallurgists.rutile.api.material.module.DeferredModules;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -28,6 +29,10 @@ public class RegistryHelper {
 
     public static DeferredElements createElements(String modid) {
         return registerToBus(DeferredElements.create(modid));
+    }
+
+    public static DeferredModules createModules(String modid) {
+        return registerToBus(DeferredModules.create(modid));
     }
 
     private static <DR extends DeferredRegister<T>, T> DR registerToBus(DR deferredRegister) {

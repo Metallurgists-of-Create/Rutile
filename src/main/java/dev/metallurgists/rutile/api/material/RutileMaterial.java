@@ -9,6 +9,6 @@ public class RutileMaterial {
     private final Map<String, MaterialData> materials = new HashMap<>();
 
     public MaterialData getOrCreate(String name) {
-        return materials.computeIfAbsent(name, (id) -> new MaterialData());
+        return materials.computeIfAbsent(name, MaterialData::new);
     }
 }
