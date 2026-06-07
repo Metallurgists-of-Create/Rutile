@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.metallurgists.rutile.api.data.ISerializable;
+import dev.metallurgists.rutile.api.element.ElementLike;
 import dev.metallurgists.rutile.api.element.ElementStack;
 import lombok.Getter;
 import lombok.Setter;
@@ -79,6 +80,17 @@ public class SubComposition implements ISerializable {
             elements.add(element);
             return this;
         }
+
+        public Builder element(ElementLike element) {
+            elements.add(element.asStack());
+            return this;
+        }
+
+        public Builder element(ElementLike element, int amount) {
+            elements.add(element.asStack(amount));
+            return this;
+        }
+
         public Builder element(ElementStack... elements) {
             this.elements.addAll(Arrays.stream(elements).toList());
             return this;

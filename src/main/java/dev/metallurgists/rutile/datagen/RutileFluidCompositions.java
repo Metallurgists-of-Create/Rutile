@@ -16,6 +16,6 @@ public class RutileFluidCompositions extends AbstractFluidCompositionProvider {
 
     @Override
     public void generate(HolderLookup.Provider registries, ExistingFileHelper fileHelper) {
-        //addData(Fluids.WATER, Composition.builder().compositions(List.of(SubComposition.builder().element(H.asStack(2), O.asStack()).build())).build());
+        //modify(Fluids.WATER, Composition.builder().compositions(List.of(SubComposition.builder().element(H.asStack(2), O.asStack()).build())).build());
     }
 }

@@ -2,17 +2,13 @@ package dev.metallurgists.rutile.api.material;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 public class RutileMaterial {
+    public static final RutileMaterial INSTANCE = new RutileMaterial();
 
-    private static final Map<String, MaterialData> materials = new HashMap<>();
+    private final Map<String, MaterialData> materials = new HashMap<>();
 
-    public static MaterialData getOrCreate(String name) {
+    public MaterialData getOrCreate(String name) {
         return materials.computeIfAbsent(name, (id) -> new MaterialData());
-    }
-
-    public static void modifyData(String name, Function<MaterialData, MaterialData> consumer) {
-        materials.put(name, consumer.apply(getOrCreate(name)));
     }
 }

@@ -3,26 +3,25 @@ package dev.metallurgists.rutile.api.composition;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.metallurgists.rutile.RutileClient;
+import dev.metallurgists.rutile.api.element.ElementLike;
 import dev.metallurgists.rutile.api.element.ElementStack;
-import dev.metallurgists.rutile.config.RutileConfig;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.createmod.catnip.lang.LangBuilder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Builder
 @Accessors(chain = true, fluent = true)
 public class Composition {
     @Getter
     public List<SubComposition> compositions;
+
+    public static final Composition EMPTY = Composition.builder().build();
 
     public static final Codec<Composition> CODEC = RecordCodecBuilder.create(inst -> inst.group(
             SubComposition.CODEC.listOf().fieldOf("compositions").forGetter(Composition::compositions)
@@ -35,6 +34,10 @@ public class Composition {
     public Composition add(SubComposition subComposition) {
         this.compositions.add(subComposition);
         return this;
+    }
+
+    public boolean isEmpty() {
+        return this == EMPTY;
     }
 
     public boolean shouldHaveBrackets() {
@@ -61,5 +64,54 @@ public class Composition {
             sb.append(subComp.string());
         }
         return sb.toString();
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private final List<SubComposition> subCompositions = new ArrayList<>();
+
+        private SubComposition.Builder currentComposition;
+
+        public Builder() {
+            this.currentComposition = SubComposition.builder();
+        }
+
+        public Builder element(ElementStack element) {
+            this.currentComposition.element(element);
+            return this;
+        }
+
+        public Builder element(ElementLike element) {
+            this.currentComposition.element(element);
+            return this;
+        }
+
+        public Builder element(ElementLike element, int amount) {
+            this.currentComposition.element(element, amount);
+            return this;
+        }
+
+        public Builder element(ElementStack... elements) {
+            this.currentComposition.element(elements);
+            return this;
+        }
+
+        public Builder setAmount(int amount) {
+            this.currentComposition.setAmount(amount);
+            return this;
+        }
+
+        public Builder next() {
+            this.subCompositions.add(currentComposition.build());
+            this.currentComposition = SubComposition.builder();
+            return this;
+        }
+
+        public Composition build() {
+            return new Composition(subCompositions);
+        }
     }
 }

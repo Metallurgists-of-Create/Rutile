@@ -1,10 +1,13 @@
 package dev.metallurgists.rutile;
 
+import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.composition.RutileCompositions;
 import dev.metallurgists.rutile.api.data.server.manager.composition.FluidCompositionManager;
 import dev.metallurgists.rutile.api.data.server.manager.composition.ItemCompositionManager;
+import dev.metallurgists.rutile.api.material.RutileMaterial;
 import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
 import dev.metallurgists.rutile.api.plugin.PluginConfig;
+import dev.metallurgists.rutile.registry.RutileElements;
 
 public class RutileCorePlugin implements IRutilePlugin {
     @Override
@@ -17,5 +20,36 @@ public class RutileCorePlugin implements IRutilePlugin {
     public void collectCompositionManagers(RutileCompositions handler) {
         handler.addManager(ItemCompositionManager.getInstance());
         handler.addManager(FluidCompositionManager.getInstance());
+    }
+
+    @Override
+    public void modifyMaterials(RutileMaterial materials) {
+        materials.getOrCreate("iron").modify(data -> data.setComposition(Composition.builder()
+                .element(RutileElements.Fe)
+                .build()));
+        materials.getOrCreate("copper").modify(data -> data.setComposition(Composition.builder()
+                .element(RutileElements.Cu)
+                .build()));
+        materials.getOrCreate("gold").modify(data -> data.setComposition(Composition.builder()
+                .element(RutileElements.Au)
+                .build()));
+        materials.getOrCreate("diamond").modify(data -> data.setComposition(Composition.builder()
+                .element(RutileElements.C)
+                .build()));
+        materials.getOrCreate("emerald").modify(data -> data.setComposition(Composition.builder()
+                .element(RutileElements.Be, 3)
+                .element(RutileElements.Al, 2)
+                .element(RutileElements.Si, 6)
+                .element(RutileElements.O, 18)
+                .build()));
+        materials.getOrCreate("quartz").modify(data -> data.setComposition(Composition.builder()
+                .element(RutileElements.Si)
+                .element(RutileElements.O, 2)
+                .build()));
+        materials.getOrCreate("amethyst").modify(data -> data.setComposition(Composition.builder()
+                .element(RutileElements.Si)
+                .element(RutileElements.O, 2)
+                .element(RutileElements.Fe)
+                .build()));
     }
 }
