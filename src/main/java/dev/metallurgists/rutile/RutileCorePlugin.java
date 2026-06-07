@@ -26,30 +26,30 @@ public class RutileCorePlugin implements IRutilePlugin {
     public void modifyMaterials(RutileMaterial materials) {
         materials.getOrCreate("iron").modify(data -> data.setComposition(Composition.builder()
                 .element(RutileElements.Fe)
-                .build()));
+                .end()));
         materials.getOrCreate("copper").modify(data -> data.setComposition(Composition.builder()
                 .element(RutileElements.Cu)
-                .build()));
+                .end()));
         materials.getOrCreate("gold").modify(data -> data.setComposition(Composition.builder()
                 .element(RutileElements.Au)
-                .build()));
+                .end()));
         materials.getOrCreate("diamond").modify(data -> data.setComposition(Composition.builder()
                 .element(RutileElements.C)
-                .build()));
+                .end()));
         materials.getOrCreate("emerald").modify(data -> data.setComposition(Composition.builder()
                 .element(RutileElements.Be, 3)
                 .element(RutileElements.Al, 2)
                 .element(RutileElements.Si, 6)
                 .element(RutileElements.O, 18)
-                .build()));
+                .end()));
         materials.getOrCreate("quartz").modify(data -> data.setComposition(Composition.builder()
                 .element(RutileElements.Si)
                 .element(RutileElements.O, 2)
-                .build()));
+                .end()));
         materials.getOrCreate("amethyst").modify(data -> data.setComposition(Composition.builder()
                 .element(RutileElements.Si)
                 .element(RutileElements.O, 2)
                 .element(RutileElements.Fe)
-                .build()));
+                .end()));
     }
 }

@@ -21,7 +21,7 @@ public class Composition {
     @Getter
     public List<SubComposition> compositions;
 
-    public static final Composition EMPTY = Composition.builder().build();
+    public static final Composition EMPTY = new Composition(List.of());
 
     public static final Codec<Composition> CODEC = RecordCodecBuilder.create(inst -> inst.group(
             SubComposition.CODEC.listOf().fieldOf("compositions").forGetter(Composition::compositions)
@@ -110,7 +110,8 @@ public class Composition {
             return this;
         }
 
-        public Composition build() {
+        public Composition end() {
+            this.subCompositions.add(currentComposition.build());
             return new Composition(subCompositions);
         }
     }
