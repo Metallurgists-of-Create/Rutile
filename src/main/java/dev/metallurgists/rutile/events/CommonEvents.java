@@ -33,6 +33,7 @@ public class CommonEvents {
         }
         RutileElements.init();
         RutileModules.init();
+        RutileVariableKeys.init();
 
         RutileIngredientTypes.ITEM_INGREDIENT_TYPES.register(modBus);
         didRunRegistration = true;
