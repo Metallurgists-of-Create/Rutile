@@ -106,11 +106,21 @@ public class RutileRegistrate extends AbstractRegistrate<RutileRegistrate> {
         return this;
     }
 
-    public <T, I extends T, S, R extends AbstractBuilder<T, I, RutileRegistrate, R>> RegistryEntry<T, I> part(
+    /*
+    * Generic part registration, DO NOT USE WILLY NILLY
+    * @param part The type of part
+    * @param data The relevant material data
+    * @param func The function for registering stuff on a lower level
+    * @param dataProviders Providers for any additional data
+    */
+    @SafeVarargs
+    public final <T, I extends T, S, R extends AbstractBuilder<T, I, RutileRegistrate, R>> RegistryEntry<T, I> part(
             Part<T> part,
             MaterialData data,
-            NonNullBiFunction<String, NonNullFunction<S, T>, R> func, ProviderType<? extends RegistrateProvider>... dataProviders) {
+            NonNullBiFunction<String, NonNullFunction<S, T>, R> func,
+            ProviderType<? extends RegistrateProvider>... dataProviders) {
         String name = part.idPattern(data).formatted(data.getName());
+        // Creates the relevant builder
         AbstractBuilder<T, I, RutileRegistrate, ?> builder = func.apply(name, (S properties) -> part.constructor().create(properties, part.getKey(), data));
         for (ProviderType<? extends RegistrateProvider> provider : dataProviders) {
             builder.setData(provider, NonNullBiConsumer.noop());
@@ -118,14 +128,24 @@ public class RutileRegistrate extends AbstractRegistrate<RutileRegistrate> {
         return builder.register();
     }
 
+    /*
+     * Part item registration
+     * @param part The type of part
+     * @param data The relevant material data
+     */
     public <I extends Item> RegistryEntry<Item, I> part(ItemPart part, MaterialData data) {
-        NonNullBiFunction<String, NonNullFunction<Item.Properties, Item>, ItemBuilder> func = this::item;
+        NonNullBiFunction<String, NonNullFunction<Item.Properties, Item>, ItemBuilder> func = this::item; // clarifies which function to use, DO NOT TOUCH THE TICKING TIME BOMB
         return part(part, data, func, ProviderType.LANG, ProviderType.ITEM_MODEL);
     }
 
+    /*
+     * Part block & item registration
+     * @param part The type of part
+     * @param data The relevant material data
+     */
     public <I extends Block> RegistryEntry<Block, I> part(BlockPart part, MaterialData data) {
         NonNullBiFunction<String, NonNullFunction<BlockBehaviour.Properties, Block>, BlockBuilder> func = this::block;
-        return part(part, data, func);
+        return part(part, data, func, ProviderType.LANG, ProviderType.ITEM_MODEL);
     }
 
 }
