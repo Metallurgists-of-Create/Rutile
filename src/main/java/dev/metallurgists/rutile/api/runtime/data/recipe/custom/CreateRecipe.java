@@ -7,6 +7,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.metallurgists.rutile.Rutile;
+import lombok.Getter;
 import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentPatch;
@@ -161,7 +162,6 @@ public abstract class CreateRecipe extends CustomRecipe<RecipeInput> {
         return this;
     }
 
-
     public JsonObject serializeExtra(JsonObject jsonObject) {
         return jsonObject;
     }
@@ -211,174 +211,95 @@ public abstract class CreateRecipe extends CustomRecipe<RecipeInput> {
 
     }
 
-    public static class Crushing extends CreateRecipe {
+    private static class SimpleCreateRecipe extends CreateRecipe {
 
-        @Override
-        protected ResourceLocation getId() {
-            return Rutile.id("create:crushing");
+        @Getter
+        private ResourceLocation id;
+        @Getter
+        private int maxInputCount;
+        @Getter
+        private int maxOutputCount;
+        @Getter
+        private int maxFluidOutputCount = 0;
+        @Getter
+        private int maxFluidInputCount = 0;
+        private boolean heat = false;
+        private boolean duration = false;
+
+        //copy constructor
+        public SimpleCreateRecipe(SimpleCreateRecipe recipe) {
+            id = recipe.id;
+            maxInputCount = recipe.maxInputCount;
+            maxOutputCount = recipe.maxOutputCount;
+            maxFluidOutputCount = recipe.maxFluidOutputCount;
+            maxFluidInputCount = recipe.maxFluidInputCount;
+            heat = recipe.heat;
+            duration = recipe.duration;
         }
 
-        @Override
-        protected int getMaxInputCount() {
-            return 1;
+        public SimpleCreateRecipe(String id, int maxInput, int maxOutput) {
+            this.id = Rutile.getResource("create:" + id);
+            this.maxInputCount = maxInput;
+            this.maxOutputCount = maxOutput;
         }
 
-        @Override
-        protected int getMaxOutputCount() {
-            return 7;
+        public SimpleCreateRecipe(String id, int maxInput, int maxOutput, boolean requiresHeat, boolean specificDuration) {
+            this(id, maxInput, maxOutput);
+            heat = requiresHeat;
+            duration = specificDuration;
         }
 
-        @Override
-        protected boolean canSpecifyDuration() {
-            return true;
-        }
-    }
-
-    public static class Cutting extends CreateRecipe {
-        @Override
-        protected ResourceLocation getId() {
-            return Rutile.id("create:cutting");
+        public SimpleCreateRecipe(String id, int maxInput, int maxOutput, int fluidMaxInput, int fluidMaxOutput) {
+            this(id, maxInput, maxOutput);
+            maxFluidOutputCount = fluidMaxOutput;
+            maxFluidInputCount = fluidMaxInput;
         }
 
-        @Override
-        protected int getMaxInputCount() {
-            return 1;
-        }
-
-        @Override
-        protected int getMaxOutputCount() {
-            return 4;
-        }
-
-        @Override
-        protected boolean canSpecifyDuration() {
-            return true;
-        }
-    }
-
-    public static class Milling extends Crushing {
-        @Override
-        protected ResourceLocation getId() {
-            return Rutile.id("create:milling");
-        }
-
-        @Override
-        protected int getMaxOutputCount() {
-            return 4;
-        }
-    }
-
-    public abstract static class Basin extends CreateRecipe {
-        @Override
-        protected int getMaxInputCount() {
-            return 64;
-        }
-        @Override
-        protected int getMaxOutputCount() {
-            return 4;
-        }
-
-        @Override
-        protected int getMaxFluidInputCount() {
-            return 2;
-        }
-
-        @Override
-        protected int getMaxFluidOutputCount() {
-            return 2;
+        public SimpleCreateRecipe(String id, int maxInput, int maxOutput, boolean requiresHeat, boolean specificDuration, int fluidMaxInput, int fluidMaxOutput) {
+            this(id, maxInput, maxOutput, fluidMaxInput, fluidMaxOutput);
+            heat = requiresHeat;
+            duration = specificDuration;
         }
 
         @Override
         protected boolean canRequireHeat() {
-            return true;
+            return heat;
         }
 
         @Override
         protected boolean canSpecifyDuration() {
-            return true;
+            return duration;
         }
     }
 
-    public static class Mixing extends Basin {
-        @Override
-        protected ResourceLocation getId() {
-            return Rutile.id("create:mixing");
-        }
-    }
+    public static CreateRecipe CRUSHING = new SimpleCreateRecipe("crushing", 1, 7, false, true);
 
-    public static class Compacting extends Basin {
-        @Override
-        protected ResourceLocation getId() {
-            return Rutile.id("create:compacting");
-        }
-    }
+    public static CreateRecipe CUTTING = new SimpleCreateRecipe("cutting", 1, 4, false, true);
 
-    public static class Pressing extends CreateRecipe {
-        @Override
-        protected ResourceLocation getId() {
-            return Rutile.id("create:pressing");
-        }
+    public static CreateRecipe MILLING = new SimpleCreateRecipe("milling", 1, 4, false, true);
 
-        @Override
-        protected int getMaxInputCount() {
-            return 1;
-        }
+    public static CreateRecipe MIXING = new SimpleCreateRecipe("mixing", 64, 4, true, true, 2, 2);
 
-        @Override
-        protected int getMaxOutputCount() {
-            return 2;
-        }
-    }
+    public static CreateRecipe COMPACTING = new SimpleCreateRecipe("compacting", 64, 4, true, true, 2, 2);
 
-    public static class Sandpaper extends CreateRecipe {
-        @Override
-        protected ResourceLocation getId() {
-            return Rutile.id("create:sandpaper_polishing");
-        }
+    public static CreateRecipe PRESSING = new SimpleCreateRecipe("pressing", 1, 2);
 
-        @Override
-        protected int getMaxInputCount() {
-            return 1;
-        }
+    public static CreateRecipe SANDPAPER = new SimpleCreateRecipe("sandpaper_polishing", 1, 1);
 
-        @Override
-        protected int getMaxOutputCount() {
-            return 1;
-        }
-    }
+    public static CreateRecipe SPLASHING = new SimpleCreateRecipe("splashing", 1, 12);
 
-    public abstract static class Fan extends CreateRecipe {
-        @Override
-        protected int getMaxInputCount() {
-            return 1;
-        }
+    public static CreateRecipe HAUNTING = new SimpleCreateRecipe("haunting", 1, 12);
 
-        @Override
-        protected int getMaxOutputCount() {
-            return 12;
-        }
-    }
+    public static CreateRecipe FILLING = new SimpleCreateRecipe("filling", 1, 1, 1, 0);
 
-    public static class Splashing extends Fan {
-        @Override
-        protected ResourceLocation getId() {
-            return Rutile.id("create:splashing");
-        }
-    }
-
-    public static class Haunting extends Fan {
-        @Override
-        protected ResourceLocation getId() {
-            return Rutile.id("create:haunting");
-        }
-    }
+    public static CreateRecipe EMPTYING = new SimpleCreateRecipe("emptying", 1, 1, 0, 1);
 
     public static class ItemApplication extends CreateRecipe {
         private boolean keepHeldItem;
 
         @Override
         protected ResourceLocation getId() {
-            return Rutile.id("create:item_application");
+            return Rutile.getResource("create:item_application");
         }
 
         @Override
@@ -406,47 +327,7 @@ public abstract class CreateRecipe extends CustomRecipe<RecipeInput> {
     public static class Deploying extends ItemApplication {
         @Override
         protected ResourceLocation getId() {
-            return Rutile.id("create:deploying");
-        }
-    }
-
-    public static class Filling extends CreateRecipe {
-        @Override
-        protected ResourceLocation getId() {
-            return Rutile.id("create:filling");
-        }
-
-        @Override
-        protected int getMaxInputCount() {
-            return 1;
-        }
-        @Override
-        protected int getMaxOutputCount() {
-            return 1;
-        }
-        @Override
-        protected int getMaxFluidInputCount() {
-            return 1;
-        }
-    }
-
-    public static class Emptying extends CreateRecipe {
-        @Override
-        protected ResourceLocation getId() {
-            return Rutile.id("create:emptying");
-        }
-
-        @Override
-        protected int getMaxInputCount() {
-            return 1;
-        }
-        @Override
-        protected int getMaxOutputCount() {
-            return 1;
-        }
-        @Override
-        protected int getMaxFluidOutputCount() {
-            return 1;
+            return Rutile.getResource("create:deploying");
         }
     }
 }
