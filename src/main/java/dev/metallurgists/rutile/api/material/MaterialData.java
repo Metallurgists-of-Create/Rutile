@@ -4,6 +4,7 @@ import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.material.module.MaterialModule;
 import dev.metallurgists.rutile.api.material.module.ModuleHolder;
+import dev.metallurgists.rutile.api.material.variable.VariableKey;
 import dev.metallurgists.rutile.api.registry.IDisplayedName;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +32,8 @@ public class MaterialData implements FeatureElement, IDisplayedName {
 
     @NotNull
     private final Map<ModuleHolder<?>, MaterialModule<?>> modules = new HashMap<>();
+    @NotNull
+    private final Map<VariableKey<?>, Object> variables = new HashMap<>();
 
     @Getter
     private final String name;
@@ -72,6 +75,26 @@ public class MaterialData implements FeatureElement, IDisplayedName {
             this.modules.put(module, action.apply(oldModule));
         }
         return this;
+    }
+
+    public <T> MaterialData addVariable(VariableKey<T> key, T value) {
+        this.variables.put(key, value);
+        return this;
+    }
+
+    public <T> MaterialData addVariable(VariableKey<T> key, T value, Function<T, T> ifPresent) {
+        if (this.variables.containsKey(key) && this.variables.get(key).getClass().isAssignableFrom(key.clazz())) {
+            T oldValue = (T)this.variables.get(key);
+            this.variables.put(key, ifPresent.apply(oldValue));
+        } else this.variables.put(key, value);
+        return this;
+    }
+
+    public <T> T getVariable(VariableKey<T> key) {
+        if (this.variables.containsKey(key) && this.variables.get(key).getClass().isAssignableFrom(key.clazz())) {
+            return (T)this.variables.get(key);
+        }
+        return key.defaultValue();
     }
 
     @Override
