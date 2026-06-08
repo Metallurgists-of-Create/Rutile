@@ -21,7 +21,7 @@ public class RutileRegistries {
     public static final Registry<MaterialModule<?>> MODULES_REGISTRY = makeSyncedRegistry(MODULES);
 
     private static <T> ResourceKey<Registry<T>> createRegistryKey(String name) {
-        return ResourceKey.createRegistryKey(Rutile.id(name));
+        return ResourceKey.createRegistryKey(Rutile.getResource(name));
     }
     /**
      * Creates a {@link Registry} that get synchronised to clients.

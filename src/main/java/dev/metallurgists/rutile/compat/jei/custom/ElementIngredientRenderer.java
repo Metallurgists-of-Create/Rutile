@@ -86,7 +86,7 @@ public class ElementIngredientRenderer implements IIngredientRenderer<ElementSta
     public Optional<TextureAtlasSprite> getStillFluidSprite() {
         return Optional.ofNullable(Minecraft.getInstance()
                         .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
-                        .apply(Rutile.id("fluid/liquid")))
+                        .apply(Rutile.getResource("fluid/liquid")))
                 .filter(s -> s.atlasLocation() != MissingTextureAtlasSprite.getLocation());
     }
 

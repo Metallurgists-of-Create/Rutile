@@ -27,7 +27,7 @@ public class DebugElementPrinter implements DebugPrinter {
             });
         }
         ElementJson elementJson = new ElementJson(groupedElements);
-        DebugPrinter.writeJson(Rutile.id("elements"), "", parent, elementJson.json());
+        DebugPrinter.writeJson(Rutile.getResource("elements"), "", parent, elementJson.json());
     }
 
     static class ElementJson {

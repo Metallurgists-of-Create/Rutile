@@ -1,14 +1,7 @@
 package dev.metallurgists.rutile.api;
 
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.data.server.manager.composition.ItemCompositionManager;
-import dev.metallurgists.rutile.api.data.server.manager.composition.MaterialCompositionManager;
-import dev.metallurgists.rutile.api.element.Element;
-import dev.metallurgists.rutile.api.material.Material;
-import dev.metallurgists.rutile.api.registry.IRutileRegistry;
-import dev.metallurgists.rutile.api.tag.TagPrefix;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import lombok.Getter;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;

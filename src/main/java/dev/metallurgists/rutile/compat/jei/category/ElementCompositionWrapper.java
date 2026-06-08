@@ -135,7 +135,7 @@ public interface ElementCompositionWrapper<T> {
         return (view, tooltip) -> {
             if (percentage != 1) {
                 var percentageStr = percentage < 0.01 ? "<1" : (int) (percentage * 100);
-                tooltip.add(RutileClient.lang().text(percentageStr + "%").component()
+                tooltip.add(RutileClient.getLang().text(percentageStr + "%").component()
                         .withStyle(ChatFormatting.GOLD));
             }
 

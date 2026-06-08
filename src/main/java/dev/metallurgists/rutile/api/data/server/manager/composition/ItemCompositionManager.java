@@ -1,14 +1,11 @@
 package dev.metallurgists.rutile.api.data.server.manager.composition;
 
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.RutileApi;
 import dev.metallurgists.rutile.api.composition.Composition;
-import dev.metallurgists.rutile.api.composition.RutileCompositions;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +19,7 @@ public class ItemCompositionManager extends AbstractCompositionManager<Item> {
     public List<Item> composed = new ArrayList<>();
 
     public ItemCompositionManager() {
-        super(Rutile.id("item"), Registries.ITEM);
+        super(Rutile.getResource("item"), Registries.ITEM);
     }
 
     public static ItemCompositionManager getInstance() {

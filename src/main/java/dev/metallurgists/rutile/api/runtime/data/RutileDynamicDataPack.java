@@ -142,7 +142,7 @@ public class RutileDynamicDataPack implements PackResources {
                 .getOrThrow();
         byte[] recipeBytes = recipeJson.toString().getBytes(StandardCharsets.UTF_8);
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/data");
-        if (RutileConfig.client().dumpRecipes.get()) {
+        if (RutileConfig.getClient().dumpRecipes.get()) {
             writeJson(recipeId, "recipes", parent, recipeBytes);
         }
         addToData(getRecipeLocation(recipeId), recipeBytes);
@@ -159,7 +159,7 @@ public class RutileDynamicDataPack implements PackResources {
         JsonElement recipeJson = recipe.serialize();
         byte[] recipeBytes = recipeJson.toString().getBytes(StandardCharsets.UTF_8);
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/data");
-        if (RutileConfig.client().dumpRecipes.get()) {
+        if (RutileConfig.getClient().dumpRecipes.get()) {
             writeJson(recipeId, "recipes", parent, recipeBytes);
         }
         addToData(getRecipeLocation(recipeId), recipeBytes);
@@ -177,7 +177,7 @@ public class RutileDynamicDataPack implements PackResources {
                 .encodeStart(provider.createSerializationContext(JsonOps.INSTANCE), table).getOrThrow();
         byte[] lootTableBytes = lootTableJson.toString().getBytes(StandardCharsets.UTF_8);
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/data");
-        if (RutileConfig.client().dumpRecipes.get()) {
+        if (RutileConfig.getClient().dumpRecipes.get()) {
             writeJson(lootTableId, "loot_table", parent, lootTableBytes);
         }
         if (CONTENTS.getResource(lootTableId) != null) {
@@ -191,7 +191,7 @@ public class RutileDynamicDataPack implements PackResources {
         byte[] compositionBytes = compositionJson.toString().getBytes(StandardCharsets.UTF_8);
         ResourceLocation compositionId = composition.getId();
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/data");
-        if (RutileConfig.client().dumpCompositions.get()) {
+        if (RutileConfig.getClient().dumpCompositions.get()) {
             writeJson(compositionId, "compositions", parent, compositionBytes);
         }
         addToData(getCompositionLocation(compositionId), compositionJson.toString().getBytes(StandardCharsets.UTF_8));
@@ -200,7 +200,7 @@ public class RutileDynamicDataPack implements PackResources {
     public static void addData(JsonObject json, ResourceLocation dataLocation, String dataType) {
         byte[] bytes = json.toString().getBytes(StandardCharsets.UTF_8);
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/data");
-        if (RutileConfig.client().dumpRecipes.get()) {
+        if (RutileConfig.getClient().dumpRecipes.get()) {
             writeJson(dataLocation, dataType, parent, bytes);
         }
         addToData(dataLocation.withPath(path -> dataType + "/" + path + ".json"), json.toString().getBytes(StandardCharsets.UTF_8));

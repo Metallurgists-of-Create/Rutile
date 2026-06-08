@@ -19,7 +19,7 @@ public class TagUtil {
     }
 
     public static <T> TagKey<T> createModTag(ResourceKey<? extends Registry<T>> registryKey, String path) {
-        return TagKey.create(registryKey, Rutile.id(path));
+        return TagKey.create(registryKey, Rutile.getResource(path));
     }
 
     public static TagKey<Block> createBlockTag(String path) {

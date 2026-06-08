@@ -13,7 +13,7 @@ public class RutileCorePlugin implements IRutilePlugin {
     @Override
     public void configure(PluginConfig config) {
         config.setModId(Rutile.ID);
-        config.setRegistrate(Rutile.registrate());
+        config.setRegistrate(Rutile.getRegistrate());
     }
 
     @Override

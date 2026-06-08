@@ -51,7 +51,7 @@ public class Composition {
         StringBuilder sb = new StringBuilder();
         for (SubComposition subComposition : compositions()) {
             if (subComposition == null) continue;
-            LangBuilder subComp = RutileClient.lang();
+            LangBuilder subComp = RutileClient.getLang();
             int subCompAmount = compositions().size();
             boolean encaseInBrackets = subCompAmount > 1;
             if (encaseInBrackets) subComp.add(Component.literal("("));

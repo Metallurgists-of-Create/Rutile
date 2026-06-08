@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -103,7 +102,7 @@ public class ElementIngredientHelper implements IIngredientHelper<ElementStack> 
     public Optional<TextureAtlasSprite> getStillFluidSprite() {
         return Optional.ofNullable(Minecraft.getInstance()
                         .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
-                        .apply(Rutile.id("fluid/thin_fluid_still")))
+                        .apply(Rutile.getResource("fluid/thin_fluid_still")))
                 .filter(s -> s.atlasLocation() != MissingTextureAtlasSprite.getLocation());
     }
 }

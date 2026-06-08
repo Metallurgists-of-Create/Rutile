@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class RutileClientFluidTypeExtensions implements IClientFluidTypeExtensions {
 
-    public static final ResourceLocation FLUID_SCREEN_OVERLAY = Rutile.id("textures/misc/fluid_screen_overlay.png");
+    public static final ResourceLocation FLUID_SCREEN_OVERLAY = Rutile.getResource("textures/misc/fluid_screen_overlay.png");
 
     public RutileClientFluidTypeExtensions(@Nullable ResourceLocation stillTexture,
                                        @Nullable ResourceLocation flowingTexture,

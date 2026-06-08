@@ -7,6 +7,7 @@ import dev.metallurgists.rutile.api.element.ElementStack;
 import dev.metallurgists.rutile.api.fluid.MaterialFluid;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.util.ColourUtil;
+import dev.metallurgists.rutile.util.StringFormatUtil;
 import net.createmod.catnip.lang.LangBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
@@ -55,7 +56,7 @@ public class CompositionHandler {
     public static boolean itemComposition(List<Component> toolTip, ItemStack stack) {
         Composition composition = ItemCompositionManager.getInstance().getComposition(stack.getItem());
         if (composition != null) {
-            LangBuilder compositionName = RutileClient.lang();
+            LangBuilder compositionName = RutileClient.getLang();
             createTooltip(compositionName, composition);
             add(toolTip, compositionName);
             return true;
@@ -66,7 +67,7 @@ public class CompositionHandler {
     public static boolean fluidComposition(Consumer<Component> toolTip, FluidStack stack) {
         Composition composition = FluidCompositionManager.getInstance().getComposition(stack.getFluid());
         if (composition != null) {
-            LangBuilder compositionName = RutileClient.lang();
+            LangBuilder compositionName = RutileClient.getLang();
             createTooltip(compositionName, composition);
             add(toolTip, compositionName);
             return true;
@@ -76,11 +77,11 @@ public class CompositionHandler {
 
     private static void add(List<Component> toolTip, LangBuilder composition) {
         if (!composition.string().isEmpty()) {
-            MutableComponent component = RutileClient.lang().space().space().space()
+            MutableComponent component = RutileClient.getLang().space().space().space()
                     .add(composition)
                     .component();
-            if (!RutileConfig.client().elementColorForTooltip.get()) {
-                component = component.withStyle(style -> style.withColor(RutileConfig.client().tooltipColor.get()));
+            if (!RutileConfig.getClient().elementColorForTooltip.get()) {
+                component = component.withStyle(style -> style.withColor(RutileConfig.getClient().tooltipColor.get()));
             }
             if (toolTip.size() < 2)
                 toolTip.add(component);
@@ -91,11 +92,11 @@ public class CompositionHandler {
 
     private static void add(Consumer<Component> toolTip, LangBuilder composition) {
         if (!composition.string().isEmpty()) {
-            MutableComponent component = RutileClient.lang().space().space().space()
+            MutableComponent component = RutileClient.getLang().space().space().space()
                     .add(composition)
                     .component();
-            if (!RutileConfig.client().elementColorForTooltip.get()) {
-                component = component.withStyle(style -> style.withColor(RutileConfig.client().tooltipColor.get()));
+            if (!RutileConfig.getClient().elementColorForTooltip.get()) {
+                component = component.withStyle(style -> style.withColor(RutileConfig.getClient().tooltipColor.get()));
             }
             toolTip.accept(component);
         }
@@ -104,26 +105,26 @@ public class CompositionHandler {
     public static void createTooltip(LangBuilder compositionName, Composition composition) {
         for (SubComposition subComposition : composition.compositions()) {
             if (subComposition == null) continue;
-            LangBuilder subComp = RutileClient.lang();
+            LangBuilder subComp = RutileClient.getLang();
             int subCompAmount = composition.compositions().size();
             boolean encaseInBrackets = subCompAmount > 1;
             int outerColour = ColourUtil.blendAll(subComposition.getElements().stream().map(ElementStack::getColor).toList());
             var outerStyle = Style.EMPTY.withColor(outerColour);
-            if (!RutileConfig.client().elementColorForTooltip.get()) {
-                outerStyle = Style.EMPTY.withColor(RutileConfig.client().tooltipColor.get());
+            if (!RutileConfig.getClient().elementColorForTooltip.get()) {
+                outerStyle = Style.EMPTY.withColor(RutileConfig.getClient().tooltipColor.get());
             }
             if (encaseInBrackets) subComp.add(Component.literal("(").setStyle(outerStyle));
             for (int j = 0; j < subComposition.getElements().size(); j++) {
                 if (subComposition.getElements().get(j) == null) continue;
                 ElementStack elementStack = subComposition.getElements().get(j);
                 MutableComponent elementComp = Component.literal(elementStack.getDisplay());
-                if (RutileConfig.client().elementColorForTooltip.get()) {
+                if (RutileConfig.getClient().elementColorForTooltip.get()) {
                     elementComp = elementComp.setStyle(Style.EMPTY.withColor(elementStack.getColor()));
                 }
                 subComp.add(elementComp);
             }
             if (encaseInBrackets) subComp.add(Component.literal(")").setStyle(outerStyle));
-            if (subComposition.getAmount() > 1) subComp.add(Component.literal(RutileClient.toSmallDownNumbers(String.valueOf(subComposition.getAmount()))).setStyle(outerStyle));
+            if (subComposition.getAmount() > 1) subComp.add(Component.literal(StringFormatUtil.toSmallDownNumbers(String.valueOf(subComposition.getAmount()))).setStyle(outerStyle));
             compositionName.add(subComp);
         }
     }

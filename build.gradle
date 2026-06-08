@@ -132,6 +132,9 @@ dependencies {
 
     jarJar(implementation("net.createmod.ponder:Ponder-NeoForge-$minecraft_version:$ponder_version"))
 
+    compileOnly("org.projectlombok:lombok:1.18.46")
+    annotationProcessor("org.projectlombok:lombok:1.18.46")
+
     compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-$minecraft_version:$flywheel_version")
     runtimeOnly(jarJar("dev.engine-room.flywheel:flywheel-neoforge-$minecraft_version:$flywheel_version") {
         version {

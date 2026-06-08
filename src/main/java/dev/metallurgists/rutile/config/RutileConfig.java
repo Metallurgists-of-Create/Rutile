@@ -1,6 +1,7 @@
 package dev.metallurgists.rutile.config;
 
-import dev.metallurgists.rutile.config.client.RClient;
+import dev.metallurgists.rutile.config.client.RutileClientConfig;
+import lombok.Getter;
 import net.createmod.catnip.config.ConfigBase;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
@@ -18,11 +19,8 @@ import java.util.function.Supplier;
 public class RutileConfig {
     private static final Map<ModConfig.Type, ConfigBase> CONFIGS = new EnumMap<>(ModConfig.Type.class);
 
-    private static RClient client;
-
-    public static RClient client() {
-        return client;
-    }
+    @Getter
+    private static RutileClientConfig client;
 
     public static ConfigBase byType(ModConfig.Type type) {
         return CONFIGS.get(type);
@@ -42,7 +40,7 @@ public class RutileConfig {
 
     public static void register(ModLoadingContext context) {
 
-        client = register(RClient::new, ModConfig.Type.CLIENT);
+        client = register(RutileClientConfig::new, ModConfig.Type.CLIENT);
 
         for (Map.Entry<ModConfig.Type, ConfigBase> pair : CONFIGS.entrySet()) {
             context.getActiveContainer().registerConfig(pair.getKey(), pair.getValue().specification);

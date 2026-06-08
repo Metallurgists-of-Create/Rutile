@@ -132,13 +132,13 @@ public class RutileElements {
     public static void init() {}
 
     public static ElementLike create(String name, String symbol, int colour) {
-        Element element = new Element(symbol, colour, Rutile.id(name));
+        Element element = new Element(symbol, colour, Rutile.getResource(name));
         DeferredElements HELPER = RegistryHelper.createElements(element.getModId());
         return HELPER.register(element.getName(), () -> element);
     }
 
     public static ElementLike create(String name, String symbol, int colour, FeatureFlag... requiredFeatures) {
-        Element element = new Element(symbol, colour, Rutile.id(name), requiredFeatures);
+        Element element = new Element(symbol, colour, Rutile.getResource(name), requiredFeatures);
         DeferredElements HELPER = RegistryHelper.createElements(element.getModId());
         return HELPER.register(element.getName(), () -> element);
     }

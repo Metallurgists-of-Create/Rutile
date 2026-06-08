@@ -2,7 +2,7 @@ package dev.metallurgists.rutile.config.client;
 
 import net.createmod.catnip.config.ConfigBase;
 
-public class RClient extends ConfigBase {
+public class RutileClientConfig extends ConfigBase {
 
     public final ConfigBool dumpRecipes = this.b(false,"dump_recipes", "Dump Runtime Generated Recipes to the local files");
     public final ConfigBool dumpCompositions = this.b(false,"dump_compositions", "Dump Runtime Generated Compositions to the local files");

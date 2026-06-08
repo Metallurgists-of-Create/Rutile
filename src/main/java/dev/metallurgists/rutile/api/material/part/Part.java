@@ -6,6 +6,7 @@ import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.RutileRegistrate;
 import dev.metallurgists.rutile.api.material.MaterialData;
 import dev.metallurgists.rutile.registry.RutileModules;
+import dev.metallurgists.rutile.util.StringFormatUtil;
 import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
@@ -24,15 +25,15 @@ public abstract class Part<T> {
     public abstract PartKey<T> getKey();
 
     public String asLangKey(MaterialData data) {
-        return Util.makeDescriptionId("material", Rutile.id(data.getName()).withSuffix("." + getKey().getName()));
+        return Util.makeDescriptionId("material", Rutile.getResource(data.getName()).withSuffix("." + getKey().getName()));
     }
 
     public String getLowerCaseName() {
-        return RutileClient.toLowerCaseUnder(getKey().getName());
+        return StringFormatUtil.toLowerCaseUnder(getKey().getName());
     }
 
     public String getUnlocalizedName() {
-        return Rutile.id(getKey().getName()).toLanguageKey("module");
+        return Rutile.getResource(getKey().getName()).toLanguageKey("module");
     }
 
     public MutableComponent getLocalizedName(MaterialData data) {

@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.api.data.ISerializable;
 import dev.metallurgists.rutile.registry.RutileRegistries;
+import dev.metallurgists.rutile.util.StringFormatUtil;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
@@ -60,7 +61,7 @@ public class ElementStack implements ISerializable {
         StringBuilder display = new StringBuilder(getElement().getSymbol());
         if (amount > 1)
             display.append(amount);
-        return RutileClient.toSmallDownNumbers(display.toString());
+        return StringFormatUtil.toSmallDownNumbers(display.toString());
     }
 
     static {

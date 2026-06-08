@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 
 @JeiPlugin
 public class RutileJei implements IModPlugin {
-    private static final ResourceLocation ID = Rutile.id("jei_plugin");
+    private static final ResourceLocation ID = Rutile.getResource("jei_plugin");
 
     @Override
     public ResourceLocation getPluginUid() {

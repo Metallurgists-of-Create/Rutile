@@ -2,12 +2,10 @@ package dev.metallurgists.rutile.api.data.server.manager.composition;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.Composition;
-import dev.metallurgists.rutile.api.composition.RutileCompositions;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +19,7 @@ public class FluidCompositionManager extends AbstractCompositionManager<Fluid> {
     public List<Fluid> composed = new ArrayList<>();
 
     public FluidCompositionManager() {
-        super(Rutile.id("fluid"), Registries.FLUID);
+        super(Rutile.getResource("fluid"), Registries.FLUID);
     }
 
     public static FluidCompositionManager getInstance() {

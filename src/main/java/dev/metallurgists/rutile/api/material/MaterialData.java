@@ -4,8 +4,6 @@ import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.material.module.MaterialModule;
 import dev.metallurgists.rutile.api.material.module.ModuleHolder;
-import dev.metallurgists.rutile.api.material.part.Part;
-import dev.metallurgists.rutile.api.material.part.PartKey;
 import dev.metallurgists.rutile.api.registry.IDisplayedName;
 import lombok.Getter;
 import lombok.Setter;
@@ -79,7 +77,7 @@ public class MaterialData implements FeatureElement, IDisplayedName {
     @Override
     public String getOrCreateDescriptionId() {
         if (this.descriptionId == null) {
-            this.descriptionId = Util.makeDescriptionId("material", Rutile.id(getName()));
+            this.descriptionId = Util.makeDescriptionId("material", Rutile.getResource(getName()));
         }
         return this.descriptionId;
     }

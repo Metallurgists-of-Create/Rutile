@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.events.CommonEvents;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -13,7 +14,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
@@ -26,6 +26,7 @@ public class Rutile {
     public static final String DISPLAY_NAME = "Rutile";
     public static final Logger LOGGER = LogUtils.getLogger();
 
+    @Getter
     public static final RutileRegistrate registrate = RutileRegistrate.create(ID);
 
     private final IEventBus modEventBus;
@@ -54,13 +55,12 @@ public class Rutile {
     }
 
 
-    public static ResourceLocation id(String path) {
+    public static ResourceLocation getResource(String path) {
         if (path.contains(":")) {
             return ResourceLocation.parse(path);
         }
         return ResourceLocation.fromNamespaceAndPath(ID, path);
     }
-
 
     public static IEventBus getEventBus() {
         return INSTANCE.modEventBus;
@@ -76,10 +76,6 @@ public class Rutile {
 
     public static boolean isClientSide() {
         return FMLEnvironment.dist.isClient();
-    }
-
-    public static @NotNull RutileRegistrate registrate() {
-        return registrate;
     }
 
     public static boolean isDev() {

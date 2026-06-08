@@ -80,7 +80,7 @@ public class RutileDynamicResourcePack implements PackResources {
         ResourceLocation l = getBlockModelLocation(loc);
         byte[] modelBytes = obj.toString().getBytes(StandardCharsets.UTF_8);
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/assets");
-        if (RutileConfig.client().dumpAssets.get()) {
+        if (RutileConfig.getClient().dumpAssets.get()) {
             RutileDynamicDataPack.writeJson(l, null, parent, modelBytes);
         }
         CONTENTS.addToData(l, modelBytes);
@@ -94,7 +94,7 @@ public class RutileDynamicResourcePack implements PackResources {
         ResourceLocation l = getItemModelLocation(loc);
         byte[] modelBytes = obj.toString().getBytes(StandardCharsets.UTF_8);
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/assets");
-        if (RutileConfig.client().dumpAssets.get()) {
+        if (RutileConfig.getClient().dumpAssets.get()) {
             RutileDynamicDataPack.writeJson(l, null, parent, modelBytes);
         }
         CONTENTS.addToData(l, modelBytes);
@@ -108,7 +108,7 @@ public class RutileDynamicResourcePack implements PackResources {
         ResourceLocation l = getBlockStateLocation(loc);
         byte[] stateBytes = stateJson.toString().getBytes(StandardCharsets.UTF_8);
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/assets");
-        if (RutileConfig.client().dumpAssets.get()) {
+        if (RutileConfig.getClient().dumpAssets.get()) {
             RutileDynamicDataPack.writeJson(l, null, parent, stateBytes);
         }
         CONTENTS.addToData(l, stateBytes);
@@ -122,7 +122,7 @@ public class RutileDynamicResourcePack implements PackResources {
         ResourceLocation l = getBlockModelLocation(loc);
         byte[] partialBytes = partialJson.toString().getBytes(StandardCharsets.UTF_8);
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug/assets");
-        if (RutileConfig.client().dumpAssets.get()) {
+        if (RutileConfig.getClient().dumpAssets.get()) {
             RutileDynamicDataPack.writeJson(l, null, parent, partialBytes);
         }
         CONTENTS.addToData(l, partialBytes);
