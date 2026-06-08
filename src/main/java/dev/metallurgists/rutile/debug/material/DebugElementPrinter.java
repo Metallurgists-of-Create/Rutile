@@ -5,8 +5,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.element.Element;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.debug.DebugPrinter;
-import dev.metallurgists.rutile.registry.RutileRegistries;
+import dev.metallurgists.rutile.util.ColourUtil;
+import net.createmod.catnip.theme.Color;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ public class DebugElementPrinter implements DebugPrinter {
     public static void print() {
         Path parent = Rutile.getGameDir().resolve("rutile/dumped/debug");
         Map<String, List<Element>> groupedElements = new HashMap<>();
-        for (Element element : RutileRegistries.ELEMENTS_REGISTRY) {
+        for (Element element : RutileRegistries.ELEMENTS) {
             groupedElements.compute(element.getModId(), (k, l) -> {
                 if (l == null) l = new ArrayList<>();
                 l.add(element);
@@ -43,7 +45,7 @@ public class DebugElementPrinter implements DebugPrinter {
             for (Map.Entry<String, List<Element>> entry : elements.entrySet()) {
                 JsonArray jsonArray = new JsonArray();
                 for (Element element : entry.getValue()) {
-                    jsonArray.add(element.getName() + " [" + element.getSymbol() + "]");
+                    jsonArray.add(element.getName() + " [" + element.getSymbol() + "]~[" + String.format("#%06x", element.getColor() & 0x00FFFFFF) + "]");
                 }
                 jsonObject.add(entry.getKey(), jsonArray);
             }

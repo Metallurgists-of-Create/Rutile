@@ -3,8 +3,8 @@ package dev.metallurgists.rutile.compat.jei;
 import dev.metallurgists.rutile.api.data.server.manager.composition.ItemCompositionManager;
 import dev.metallurgists.rutile.api.element.Element;
 import dev.metallurgists.rutile.api.element.ElementStack;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.compat.jei.category.ElementCompositionWrapper;
-import dev.metallurgists.rutile.registry.RutileRegistries;
 import dev.metallurgists.rutile.util.GuiTexture;
 import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.client.Minecraft;
@@ -43,7 +43,7 @@ public class RutileJeiConstants {
             throw new NullPointerException("minecraft.level must be set before JEI fetches ingredients");
         }
 
-        for (Element element : RutileRegistries.ELEMENTS_REGISTRY) {
+        for (Element element : RutileRegistries.ELEMENTS) {
             if (element.isEnabled(features)) {
                 elementList.add(element.asStack());
             }

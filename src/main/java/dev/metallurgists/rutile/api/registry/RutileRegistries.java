@@ -4,6 +4,8 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.element.Element;
+import dev.metallurgists.rutile.api.material.MaterialData;
+import dev.metallurgists.rutile.api.material.module.MaterialModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
@@ -28,9 +30,13 @@ public class RutileRegistries {
     private static final LinkedHashMap<ResourceLocation, Registry<?>> LOAD_ORDER = new LinkedHashMap<>();
     private static final Map<ResourceLocation, RutileRegistry<?>> RUTILE_REGISTRIES = new HashMap<>();
 
-    //public static final ResourceKey<Registry<Element>> ELEMENT_REGISTRY = makeKey(Rutile.id("element"));
+    public static final ResourceKey<Registry<Element>> ELEMENT_REGISTRY = makeKey(Rutile.getResource("elements"));
+    //public static final ResourceKey<Registry<MaterialData>> MATERIAL_REGISTRY = makeKey(Rutile.getResource("materials"));
+    public static final ResourceKey<Registry<MaterialModule<?>>> MODULE_REGISTRY = makeKey(Rutile.getResource("modules"));
 
-    //public static final Registry<Element> ELEMENTS = makeRegistry(ELEMENT_REGISTRY);
+    public static final Registry<Element> ELEMENTS = makeRegistry(ELEMENT_REGISTRY);
+    //public static final RutileRegistry<MaterialData> MATERIALS = makeRutileRegistry(MATERIAL_REGISTRY, MaterialRegistry::new);
+    public static final Registry<MaterialModule<?>> MODULES = makeRegistry(MODULE_REGISTRY);
 
     public static <T> ResourceKey<Registry<T>> makeKey(ResourceLocation registryId) {
         return ResourceKey.createRegistryKey(registryId);
@@ -62,11 +68,20 @@ public class RutileRegistries {
     private static final Table<Registry<?>, ResourceLocation, Object> TO_REGISTER = HashBasedTable.create();
     private static boolean isFrozen = true;
 
-    public static <V, T extends V> T register(Registry<V> registry, ResourceLocation name, T value) {
+    public static <V, T extends V> T register(Registry<V> registry, String name, T value) {
         if (!isFrozen) {
-            Registry.register(registry, name, value);
+            Registry.register(registry, Rutile.getResource(name), value);
         } else {
-            TO_REGISTER.put(registry, name, value);
+            TO_REGISTER.put(registry, Rutile.getResource(name), value);
+        }
+        return value;
+    }
+
+    public static <V, T extends V> T register(Registry<V> registry, ResourceLocation id, T value) {
+        if (!isFrozen) {
+            Registry.register(registry, id, value);
+        } else {
+            TO_REGISTER.put(registry, id, value);
         }
         return value;
     }

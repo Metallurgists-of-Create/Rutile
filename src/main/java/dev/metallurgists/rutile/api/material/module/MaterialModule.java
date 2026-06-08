@@ -2,7 +2,7 @@ package dev.metallurgists.rutile.api.material.module;
 
 public interface MaterialModule<T extends MaterialModule<T>> {
 
-    ModuleHolder<T> getType();
+    T getType();
 
     ModuleBuilder<T> builder();
 

@@ -3,9 +3,8 @@ package dev.metallurgists.rutile.api.element;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.api.data.ISerializable;
-import dev.metallurgists.rutile.registry.RutileRegistries;
+import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.util.StringFormatUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,7 +44,7 @@ public class ElementStack implements ISerializable {
     }
 
     public Element getElement() {
-        return RutileRegistries.ELEMENTS_REGISTRY.get(id);
+        return RutileRegistries.ELEMENTS.get(id);
     }
 
     public int getColor() {

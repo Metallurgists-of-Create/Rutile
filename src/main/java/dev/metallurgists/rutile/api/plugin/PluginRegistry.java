@@ -2,6 +2,7 @@ package dev.metallurgists.rutile.api.plugin;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.RutileCorePlugin;
+import dev.metallurgists.rutile.api.material.RutileMaterial;
 import net.neoforged.fml.ModList;
 
 import java.util.LinkedHashMap;
@@ -39,6 +40,10 @@ public class PluginRegistry {
         this.forEach(IRutilePlugin::configure);
 
         Rutile.LOGGER.info("Loaded {} plugins", this.plugins.size());
+    }
+
+    public void initMaterials(RutileMaterial materials) {
+        forEach((plugin, config) -> plugin.initMaterials(materials));
     }
 
     public void forEach(BiConsumer<IRutilePlugin, PluginConfig> action) {

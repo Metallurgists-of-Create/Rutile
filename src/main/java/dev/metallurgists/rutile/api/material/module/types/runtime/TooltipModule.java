@@ -2,7 +2,6 @@ package dev.metallurgists.rutile.api.material.module.types.runtime;
 
 import dev.metallurgists.rutile.api.material.MaterialData;
 import dev.metallurgists.rutile.api.material.module.MaterialModule;
-import dev.metallurgists.rutile.api.material.module.ModuleHolder;
 import dev.metallurgists.rutile.registry.RutileModules;
 import net.minecraft.network.chat.Component;
 
@@ -13,7 +12,7 @@ public record TooltipModule(BiConsumer<MaterialData, List<Component>> tooltip) i
     public static final TooltipModule INSTANCE = new TooltipModule(null);
 
     @Override
-    public ModuleHolder<TooltipModule> getType() {
+    public TooltipModule getType() {
         return RutileModules.TOOLTIP;
     }
 

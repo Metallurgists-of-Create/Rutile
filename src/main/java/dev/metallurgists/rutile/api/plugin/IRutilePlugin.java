@@ -15,5 +15,5 @@ public interface IRutilePlugin {
      */
     default void collectCompositionManagers(RutileCompositions handler) { }
 
-    default void modifyMaterials(RutileMaterial materials) { }
+    default void initMaterials(RutileMaterial materials) { }
 }

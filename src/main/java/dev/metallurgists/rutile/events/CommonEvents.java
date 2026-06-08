@@ -1,10 +1,16 @@
 package dev.metallurgists.rutile.events;
 
 import dev.metallurgists.rutile.Rutile;
+import dev.metallurgists.rutile.api.material.RutileMaterial;
+import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import dev.metallurgists.rutile.api.registry.RutileRegistries;
 import dev.metallurgists.rutile.api.registry.RutileRegistry;
 import dev.metallurgists.rutile.debug.material.DebugElementPrinter;
-import dev.metallurgists.rutile.registry.*;
+import dev.metallurgists.rutile.debug.material.DebugMaterialPrinter;
+import dev.metallurgists.rutile.registry.RutileElements;
+import dev.metallurgists.rutile.registry.RutileIngredientTypes;
+import dev.metallurgists.rutile.registry.RutileModules;
+import dev.metallurgists.rutile.registry.RutileVariableKeys;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -18,6 +24,8 @@ public class CommonEvents {
     public static void init(final IEventBus modBus) {
         CommonEvents.modBus = modBus;
         modBus.register(CommonEvents.class);
+
+        RutileVariableKeys.init();
 
         RutileRegistries.init(modBus);
         Rutile.getRegistrate().registerEventListeners(modBus);
@@ -33,7 +41,6 @@ public class CommonEvents {
         }
         RutileElements.init();
         RutileModules.init();
-        RutileVariableKeys.init();
 
         RutileIngredientTypes.ITEM_INGREDIENT_TYPES.register(modBus);
         didRunRegistration = true;
@@ -44,6 +51,7 @@ public class CommonEvents {
     public static void loadComplete(FMLLoadCompleteEvent event) {
         if (Rutile.isDev()) {
             DebugElementPrinter.print();
+            DebugMaterialPrinter.print();
         }
         RutileRegistries.getRutileRegistries().forEach(RutileRegistry::onLoadComplete);
     }

@@ -23,7 +23,7 @@ public class RutileCorePlugin implements IRutilePlugin {
     }
 
     @Override
-    public void modifyMaterials(RutileMaterial materials) {
+    public void initMaterials(RutileMaterial materials) {
         materials.getOrCreate("iron").modify(data -> data.setComposition(Composition.builder()
                 .element(RutileElements.Fe)
                 .end()));
