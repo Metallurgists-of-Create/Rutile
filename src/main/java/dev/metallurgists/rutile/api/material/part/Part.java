@@ -1,10 +1,13 @@
 package dev.metallurgists.rutile.api.material.part;
 
 import com.tterrag.registrate.util.entry.RegistryEntry;
+import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.RutileRegistrate;
 import dev.metallurgists.rutile.api.material.MaterialData;
+import dev.metallurgists.rutile.api.material.part.constructor.Constructor;
+import dev.metallurgists.rutile.api.material.part.constructor.ItemConstructor;
 import dev.metallurgists.rutile.registry.RutileModules;
 import dev.metallurgists.rutile.util.StringFormatUtil;
 import net.minecraft.Util;
@@ -16,9 +19,9 @@ import net.minecraft.resources.ResourceKey;
 
 public abstract class Part<T> {
 
-    public abstract String idPattern(MaterialData data);
+    public abstract <S> Constructor<T, S> constructor();
 
-    public abstract <I extends T> RegistryEntry<T, I> register(MaterialData data, RutileRegistrate registrate);
+    public abstract String idPattern(MaterialData data);
 
     public abstract ResourceKey<Registry<T>> registryResourceKey();
 

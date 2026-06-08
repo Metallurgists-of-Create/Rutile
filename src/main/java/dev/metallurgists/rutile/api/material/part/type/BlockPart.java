@@ -7,8 +7,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 
-public abstract class ItemPart extends Part<Item> {
+public abstract class BlockPart extends Part<Block> {
 
     @Override
     public ItemConstructor constructor() {
@@ -16,7 +17,7 @@ public abstract class ItemPart extends Part<Item> {
     }
 
     @Override
-    public ResourceKey<Registry<Item>> registryResourceKey() {
-        return Registries.ITEM;
+    public ResourceKey<Registry<Block>> registryResourceKey() {
+        return Registries.BLOCK;
     }
 }

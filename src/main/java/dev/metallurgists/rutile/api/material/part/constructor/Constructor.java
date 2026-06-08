@@ -5,5 +5,7 @@ import dev.metallurgists.rutile.api.material.part.PartKey;
 import net.minecraft.world.item.Item;
 
 @FunctionalInterface
-public interface ItemConstructor extends Constructor<Item, Item.Properties> {
+public interface Constructor<T, I> {
+    T create(I properties, PartKey<T> partKey, MaterialData data);
 }
+

@@ -27,7 +27,7 @@ public class Rutile {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     @Getter
-    public static final RutileRegistrate registrate = RutileRegistrate.create(ID);
+    private static final RutileRegistrate registrate = RutileRegistrate.create(ID);
 
     private final IEventBus modEventBus;
 

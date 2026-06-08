@@ -20,7 +20,7 @@ public class CommonEvents {
         modBus.register(CommonEvents.class);
 
         RutileRegistries.init(modBus);
-        Rutile.registrate.registerEventListeners(modBus);
+        Rutile.getRegistrate().registerEventListeners(modBus);
     }
 
     // Only register everything once.
