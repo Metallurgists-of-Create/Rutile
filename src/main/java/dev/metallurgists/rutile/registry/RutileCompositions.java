@@ -1,9 +1,7 @@
-package dev.metallurgists.rutile.api.composition;
+package dev.metallurgists.rutile.registry;
 
 import dev.metallurgists.rutile.api.data.server.manager.composition.AbstractCompositionManager;
-import dev.metallurgists.rutile.api.plugin.PluginRegistry;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
+import dev.metallurgists.rutile.api.registry.PluginRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 

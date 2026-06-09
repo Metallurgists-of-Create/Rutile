@@ -1,6 +1,6 @@
 package dev.metallurgists.rutile.api.runtime.data.recipe;
 
-import dev.metallurgists.rutile.api.plugin.PluginRegistry;
+import dev.metallurgists.rutile.api.registry.PluginRegistry;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;

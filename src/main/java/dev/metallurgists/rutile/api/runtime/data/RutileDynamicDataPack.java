@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.FinishedComposition;
-import dev.metallurgists.rutile.api.plugin.PluginRegistry;
+import dev.metallurgists.rutile.api.registry.PluginRegistry;
 import dev.metallurgists.rutile.api.runtime.RutileDynamicPackContents;
 import dev.metallurgists.rutile.api.runtime.data.recipe.custom.CustomRecipe;
 import dev.metallurgists.rutile.config.RutileConfig;

@@ -1,4 +1,4 @@
-package dev.metallurgists.rutile.api.material.part.constructor;
+package dev.metallurgists.rutile.api.part.constructor;
 
 import net.minecraft.world.item.Item;
 

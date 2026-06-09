@@ -1,25 +1,18 @@
 package dev.metallurgists.rutile;
 
 import com.tterrag.registrate.AbstractRegistrate;
-import com.tterrag.registrate.builders.AbstractBuilder;
-import com.tterrag.registrate.builders.BlockBuilder;
-import com.tterrag.registrate.builders.ItemBuilder;
-import com.tterrag.registrate.providers.ProviderType;
-import com.tterrag.registrate.providers.RegistrateProvider;
 import com.tterrag.registrate.util.OneTimeEventReceiver;
 import com.tterrag.registrate.util.entry.RegistryEntry;
-import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
-import com.tterrag.registrate.util.nullness.NonNullBiFunction;
 import com.tterrag.registrate.util.nullness.NonNullFunction;
-import dev.metallurgists.rutile.api.material.MaterialData;
-import dev.metallurgists.rutile.api.material.part.Part;
-import dev.metallurgists.rutile.api.material.part.type.BlockPart;
-import dev.metallurgists.rutile.api.material.part.type.ItemPart;
+import dev.metallurgists.rutile.api.composition.Composition;
+import dev.metallurgists.rutile.api.material.Material;
+import dev.metallurgists.rutile.api.material.MaterialEntry;
 import dev.metallurgists.rutile.mixin.registrate.AbstractRegistrateAccessor;
+import dev.metallurgists.rutile.registry.RutileRegistries;
+import dev.metallurgists.rutile.registry.material.DummyMaterialBuilder;
+import dev.metallurgists.rutile.registry.material.IMaterialBuilder;
+import dev.metallurgists.rutile.registry.material.MaterialBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -33,6 +26,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+
+import static dev.metallurgists.rutile.registry.material.RutileMaterials.IRON;
+import static dev.metallurgists.rutile.registry.material.RutileMaterials.IRON1;
 
 public class RutileRegistrate extends AbstractRegistrate<RutileRegistrate> {
 
@@ -106,46 +102,14 @@ public class RutileRegistrate extends AbstractRegistrate<RutileRegistrate> {
         return this;
     }
 
-    /*
-    * Generic part registration, DO NOT USE WILLY NILLY
-    * @param part The type of part
-    * @param data The relevant material data
-    * @param func The function for registering stuff on a lower level
-    * @param dataProviders Providers for any additional data
-    */
-    @SafeVarargs
-    public final <T, I extends T, S, R extends AbstractBuilder<T, I, RutileRegistrate, R>> RegistryEntry<T, I> part(
-            Part<T> part,
-            MaterialData data,
-            NonNullBiFunction<String, NonNullFunction<S, T>, R> func,
-            ProviderType<? extends RegistrateProvider>... dataProviders) {
-        String name = part.idPattern(data).formatted(data.getName());
-        // Creates the relevant builder
-        AbstractBuilder<T, I, RutileRegistrate, ?> builder = func.apply(name, (S properties) -> part.constructor().create(properties, part.getKey(), data));
-        for (ProviderType<? extends RegistrateProvider> provider : dataProviders) {
-            builder.setData(provider, NonNullBiConsumer.noop());
+    public IMaterialBuilder<?> material(String id, NonNullFunction<Composition.Builder, Composition.Builder> composition) {
+        Optional<RegistryEntry<Material, Material>> entry = this.getOptional(id, RutileRegistries.MATERIALS);
+        if(entry.isPresent()) {
+            return new DummyMaterialBuilder(MaterialEntry.cast(entry.get()));
+        } else {
+            return entry(id, callback -> new MaterialBuilder<>(this, this, id, callback, composition.apply(Composition.builder()).end()));
         }
-        return builder.register();
     }
 
-    /*
-     * Part item registration
-     * @param part The type of part
-     * @param data The relevant material data
-     */
-    public <I extends Item> RegistryEntry<Item, I> part(ItemPart part, MaterialData data) {
-        NonNullBiFunction<String, NonNullFunction<Item.Properties, Item>, ItemBuilder> func = this::item; // clarifies which function to use, DO NOT TOUCH THE TICKING TIME BOMB
-        return part(part, data, func, ProviderType.LANG, ProviderType.ITEM_MODEL);
-    }
-
-    /*
-     * Part block & item registration
-     * @param part The type of part
-     * @param data The relevant material data
-     */
-    public <I extends Block> RegistryEntry<Block, I> part(BlockPart part, MaterialData data) {
-        NonNullBiFunction<String, NonNullFunction<BlockBehaviour.Properties, Block>, BlockBuilder> func = this::block;
-        return part(part, data, func, ProviderType.LANG, ProviderType.ITEM_MODEL);
-    }
 
 }

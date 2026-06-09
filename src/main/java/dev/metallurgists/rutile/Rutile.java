@@ -1,7 +1,7 @@
 package dev.metallurgists.rutile;
 
 import com.mojang.logging.LogUtils;
-import dev.metallurgists.rutile.api.plugin.PluginRegistry;
+import dev.metallurgists.rutile.api.registry.PluginRegistry;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.events.CommonEvents;
 import lombok.Getter;
@@ -10,15 +10,20 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
 
+import static dev.metallurgists.rutile.registry.material.RutileMaterials.*;
 
+@EventBusSubscriber
 @Mod(Rutile.ID)
 public class Rutile {
     private static Rutile INSTANCE;
@@ -49,11 +54,15 @@ public class Rutile {
         RutileClient.init();
     }
 
+//    @SubscribeEvent
+//    public static void onCommonSetup(FMLCommonSetupEvent event) {
+//    }
+
     @SubscribeEvent
-    public void onCommonSetup(FMLCommonSetupEvent event) {
-
+    public static void onLoadComplete(ServerStoppedEvent event) {
+        LOGGER.info(IRON1.toString());
+        LOGGER.info(IRON11.toString());
     }
-
 
     public static ResourceLocation getResource(String path) {
         if (path.contains(":")) {

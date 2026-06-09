@@ -1,5 +1,6 @@
-package dev.metallurgists.rutile.api.material.module;
+package dev.metallurgists.rutile.registry.deferred;
 
+import dev.metallurgists.rutile.api.material.module.MaterialModule;
 import dev.metallurgists.rutile.registry.RutileRegistries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;

@@ -1,8 +1,8 @@
 package dev.metallurgists.rutile.api.material.module.types.runtime;
 
 import dev.metallurgists.rutile.api.material.module.MaterialModule;
-import dev.metallurgists.rutile.api.material.module.ModuleHolder;
-import dev.metallurgists.rutile.api.material.part.PartKey;
+import dev.metallurgists.rutile.registry.deferred.ModuleHolder;
+import dev.metallurgists.rutile.api.part.PartKey;
 import dev.metallurgists.rutile.registry.RutileModules;
 
 import java.util.HashMap;

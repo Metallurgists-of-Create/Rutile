@@ -1,8 +1,8 @@
 package dev.metallurgists.rutile.util;
 
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.element.DeferredElements;
-import dev.metallurgists.rutile.api.material.module.DeferredModules;
+import dev.metallurgists.rutile.registry.deferred.DeferredElements;
+import dev.metallurgists.rutile.registry.deferred.DeferredModules;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.registries.DeferredRegister;

@@ -1,7 +1,10 @@
-package dev.metallurgists.rutile.api.plugin;
+package dev.metallurgists.rutile.api.registry;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.RutileCorePlugin;
+import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
+import dev.metallurgists.rutile.api.plugin.PluginConfig;
+import dev.metallurgists.rutile.api.plugin.RutilePlugin;
 import net.neoforged.fml.ModList;
 
 import java.util.LinkedHashMap;

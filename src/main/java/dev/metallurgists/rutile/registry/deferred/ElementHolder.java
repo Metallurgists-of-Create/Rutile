@@ -1,5 +1,7 @@
-package dev.metallurgists.rutile.api.element;
+package dev.metallurgists.rutile.registry.deferred;
 
+import dev.metallurgists.rutile.api.element.Element;
+import dev.metallurgists.rutile.api.element.ElementLike;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.registries.DeferredHolder;
 

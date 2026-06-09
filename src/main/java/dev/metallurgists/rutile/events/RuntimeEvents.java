@@ -1,6 +1,6 @@
 package dev.metallurgists.rutile.events;
 
-import dev.metallurgists.rutile.api.composition.RutileCompositions;
+import dev.metallurgists.rutile.registry.RutileCompositions;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;

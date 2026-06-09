@@ -1,9 +1,9 @@
 package dev.metallurgists.rutile.registry;
 
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.material.module.DeferredModules;
+import dev.metallurgists.rutile.registry.deferred.DeferredModules;
 import dev.metallurgists.rutile.api.material.module.MaterialModule;
-import dev.metallurgists.rutile.api.material.module.ModuleHolder;
+import dev.metallurgists.rutile.registry.deferred.ModuleHolder;
 import dev.metallurgists.rutile.api.material.module.types.registry.NameAlternativeModule;
 import dev.metallurgists.rutile.api.material.module.types.runtime.TooltipModule;
 import dev.metallurgists.rutile.api.material.module.types.runtime.UnitSizeModule;

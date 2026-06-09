@@ -28,10 +28,6 @@ public class RutileRegistries {
     private static final LinkedHashMap<ResourceLocation, Registry<?>> LOAD_ORDER = new LinkedHashMap<>();
     private static final Map<ResourceLocation, RutileRegistry<?>> RUTILE_REGISTRIES = new HashMap<>();
 
-    //public static final ResourceKey<Registry<Element>> ELEMENT_REGISTRY = makeKey(Rutile.id("element"));
-
-    //public static final Registry<Element> ELEMENTS = makeRegistry(ELEMENT_REGISTRY);
-
     public static <T> ResourceKey<Registry<T>> makeKey(ResourceLocation registryId) {
         return ResourceKey.createRegistryKey(registryId);
     }

@@ -1,8 +1,8 @@
 package dev.metallurgists.rutile.api.material.objects;
 
-import dev.metallurgists.rutile.api.material.MaterialData;
+import dev.metallurgists.rutile.api.material.Material;
 import dev.metallurgists.rutile.api.material.module.types.runtime.UnitSizeModule;
-import dev.metallurgists.rutile.api.material.part.PartKey;
+import dev.metallurgists.rutile.api.part.PartKey;
 import dev.metallurgists.rutile.registry.RutileModules;
 import dev.metallurgists.rutile.registry.RutileVariableKeys;
 import net.minecraft.network.chat.Component;
@@ -16,9 +16,9 @@ import javax.annotation.Nullable;
 public class MaterialItem extends Item {
 
     public final PartKey<Item> partKey;
-    public final MaterialData data;
+    public final Material data;
 
-    public MaterialItem(Properties properties, PartKey<Item> partKey, MaterialData data) {
+    public MaterialItem(Properties properties, PartKey<Item> partKey, Material data) {
         super(properties);
         this.partKey = partKey;
         this.data = data;
@@ -55,8 +55,8 @@ public class MaterialItem extends Item {
     }
 
     public int getItemBurnTime() {
-        int burnTime = data.getVariable(RutileVariableKeys.BURN_TIME);
-        long size = data.getModule(RutileModules.UNIT_SIZE).map(module -> module.getSize(this.partKey)).orElse(UnitSizeModule.UNIT);
+        int burnTime = data.getProperties().getVariable(RutileVariableKeys.BURN_TIME);
+        long size = data.getProperties().getModule(RutileModules.UNIT_SIZE).map(module -> module.getSize(this.partKey)).orElse(UnitSizeModule.UNIT);
         if (burnTime != 0)
             return (int) (burnTime * size / UnitSizeModule.UNIT);
         return 0;

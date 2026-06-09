@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.plugin.PluginRegistry;
+import dev.metallurgists.rutile.api.registry.PluginRegistry;
 import dev.metallurgists.rutile.api.runtime.RutileDynamicPackContents;
 import dev.metallurgists.rutile.api.runtime.data.RutileDynamicDataPack;
 import dev.metallurgists.rutile.config.RutileConfig;

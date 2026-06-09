@@ -1,10 +1,9 @@
 package dev.metallurgists.rutile.api.material.module.types.registry;
 
 import dev.metallurgists.rutile.api.material.module.MaterialModule;
-import dev.metallurgists.rutile.api.material.module.ModuleHolder;
-import dev.metallurgists.rutile.api.material.part.PartKey;
+import dev.metallurgists.rutile.registry.deferred.ModuleHolder;
+import dev.metallurgists.rutile.api.part.PartKey;
 import dev.metallurgists.rutile.registry.RutileModules;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.Map;

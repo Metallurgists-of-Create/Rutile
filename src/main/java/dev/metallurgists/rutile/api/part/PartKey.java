@@ -1,4 +1,4 @@
-package dev.metallurgists.rutile.api.material.part;
+package dev.metallurgists.rutile.api.part;
 
 import lombok.Getter;
 

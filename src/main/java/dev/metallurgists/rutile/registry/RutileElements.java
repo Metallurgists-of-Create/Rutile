@@ -1,7 +1,7 @@
 package dev.metallurgists.rutile.registry;
 
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.api.element.DeferredElements;
+import dev.metallurgists.rutile.registry.deferred.DeferredElements;
 import dev.metallurgists.rutile.api.element.Element;
 import dev.metallurgists.rutile.api.element.ElementLike;
 import dev.metallurgists.rutile.util.RegistryHelper;
@@ -131,13 +131,15 @@ public class RutileElements {
 
     public static void init() {}
 
-    public static ElementLike create(String name, String symbol, int colour) {
+    public static ElementLike create(String prename, String symbol, int colour) {
+        String name = "element_" + prename;
         Element element = new Element(symbol, colour, Rutile.getResource(name));
         DeferredElements HELPER = RegistryHelper.createElements(element.getModId());
         return HELPER.register(element.getName(), () -> element);
     }
 
-    public static ElementLike create(String name, String symbol, int colour, FeatureFlag... requiredFeatures) {
+    public static ElementLike create(String prename, String symbol, int colour, FeatureFlag... requiredFeatures) {
+        String name = "element_" + prename;
         Element element = new Element(symbol, colour, Rutile.getResource(name), requiredFeatures);
         DeferredElements HELPER = RegistryHelper.createElements(element.getModId());
         return HELPER.register(element.getName(), () -> element);

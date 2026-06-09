@@ -1,7 +1,7 @@
 package dev.metallurgists.rutile.api.plugin;
 
-import dev.metallurgists.rutile.api.composition.RutileCompositions;
-import dev.metallurgists.rutile.api.material.RutileMaterial;
+import dev.metallurgists.rutile.registry.RutileCompositions;
+import dev.metallurgists.rutile.registry.material.RutileMaterials;
 
 public interface IRutilePlugin {
     /**
@@ -15,5 +15,5 @@ public interface IRutilePlugin {
      */
     default void collectCompositionManagers(RutileCompositions handler) { }
 
-    default void modifyMaterials(RutileMaterial materials) { }
+    default void modifyMaterials(RutileMaterials materials) { }
 }
