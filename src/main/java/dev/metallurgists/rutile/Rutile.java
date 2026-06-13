@@ -1,11 +1,13 @@
 package dev.metallurgists.rutile;
 
 import com.mojang.logging.LogUtils;
+import dev.metallurgists.rutile.api.data.server.RegistryAccessJsonReloadListener;
 import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.events.CommonEvents;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -14,6 +16,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
@@ -36,6 +40,8 @@ public class Rutile {
         ModLoadingContext modLoadingContext = ModLoadingContext.get();
         INSTANCE = this;
 
+        NeoForge.EVENT_BUS.addListener(TagsUpdatedEvent.class, (event) -> afterDataReloadOrDataSync(event.getRegistryAccess()));
+
         RutileConfig.register(modLoadingContext);
         CommonEvents.init(INSTANCE.modEventBus);
 
@@ -54,6 +60,9 @@ public class Rutile {
 
     }
 
+    private static void afterDataReloadOrDataSync(RegistryAccess registryAccess) {
+        RegistryAccessJsonReloadListener.runReloads(registryAccess);
+    }
 
     public static ResourceLocation getResource(String path) {
         if (path.contains(":")) {

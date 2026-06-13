@@ -8,6 +8,8 @@ import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.data.AbstractReloadManager;
 import lombok.Getter;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -41,10 +43,10 @@ public abstract class AbstractCompositionManager<T> extends AbstractReloadManage
     public abstract T getFromKey(ResourceLocation key);
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> files, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+    public void parse(Map<ResourceLocation, JsonElement> jsonMap, RegistryAccess registryAccess) {
         clearData();
 
-        for(Map.Entry<ResourceLocation, JsonElement> entry : files.entrySet()) {
+        for(Map.Entry<ResourceLocation, JsonElement> entry : jsonMap.entrySet()) {
             ResourceLocation resourceLocation = entry.getKey();
 
             if (resourceLocation.getPath().startsWith("_")) {
@@ -54,7 +56,7 @@ public abstract class AbstractCompositionManager<T> extends AbstractReloadManage
             try {
                 T composed = getFromKey(resourceLocation);
                 if (composed != null) {
-                    Composition composition = Composition.CODEC.parse(JsonOps.INSTANCE, entry.getValue()).getOrThrow();
+                    Composition composition = Composition.CODEC.parse(RegistryOps.create(JsonOps.INSTANCE, registryAccess), entry.getValue()).getOrThrow();
                     if (composition != null) {
                         putComposition(composed, composition);
                     }

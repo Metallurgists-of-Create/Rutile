@@ -3,10 +3,11 @@ package dev.metallurgists.rutile.api.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.metallurgists.rutile.Rutile;
+import dev.metallurgists.rutile.api.data.server.RegistryAccessJsonReloadListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 
-public abstract class AbstractReloadManager extends SimpleJsonResourceReloadListener {
+public abstract class AbstractReloadManager extends RegistryAccessJsonReloadListener {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     public AbstractReloadManager(String filePath) {
