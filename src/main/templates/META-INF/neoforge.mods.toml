@@ -1,17 +1,17 @@
 modLoader = "javafml"
-# The loader version doesn't matter. Modify the NeoForge and/or Minecraft version ranges instead.
-loaderVersion = "[0,)"
-issueTrackerURL = "https://github.com/Metallurgists-of-Create/Rutile/issues"
+loaderVersion = "${loader_version_range}"
 license = "${mod_license}"
-
+issueTrackerURL="https://github.com/Metallurgists-of-Create/Rutile/issues/"
 [[mods]]
 modId = "${mod_id}"
 version = "${mod_version}"
 displayName = "${mod_name}"
-displayURL = "https://www.curseforge.com/minecraft/mc-mods/create"
-logoFile = "icon.png"
-authors = "${mod_author}"
-description = '''${mod_description}'''
+#updateJSONURL="https://github.com/Metallurgists-of-Create/Rutile/raw/refs/heads/1.21.1/updates.json"
+displayURL="https://github.com/Metallurgists-of-Create/Rutile"
+logoFile="rutile.png"
+credits="${mod_credits}"
+authors="${mod_authors}"
+description='''${mod_description}'''
 
 [[mixins]]
 config = "${mod_id}.mixins.json"
@@ -19,27 +19,12 @@ config = "${mod_id}.mixins.json"
 [[dependencies."${mod_id}"]]
 modId = "neoforge"
 type = "required"
-versionRange = "[${neo_version},)"
+versionRange = "[${neo_version_range},)"
 ordering = "NONE"
 side = "BOTH"
-
 [[dependencies."${mod_id}"]]
 modId = "minecraft"
 type = "required"
-versionRange = "[${minecraft_version}]"
+versionRange = "${minecraft_version_range}"
 ordering = "NONE"
-side = "BOTH"
-
-[[dependencies."${mod_id}"]]
-modId = "flywheel"
-type = "required"
-versionRange = "${flywheel_version_range}"
-ordering = "AFTER"
-side = "CLIENT"
-
-[[dependencies."${mod_id}"]]
-modId = "ponder"
-type = "required"
-versionRange = "[${ponder_version},)"
-ordering = "AFTER"
 side = "BOTH"
