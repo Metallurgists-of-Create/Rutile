@@ -1,0 +1,44 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "amount": 1,
+          "id": "rutile:sodium"
+        },
+        {
+          "amount": 1,
+          "id": "rutile:calcium"
+        }
+      ]
+    },
+    {
+      "elements": [
+        {
+          "amount": 6,
+          "id": "rutile:aluminum"
+        },
+        {
+          "amount": 6,
+          "id": "rutile:silicon"
+        },
+        {
+          "amount": 24,
+          "id": "rutile:oxygen"
+        }
+      ]
+    },
+    {
+      "elements": [
+        {
+          "amount": 1,
+          "id": "rutile:iron"
+        },
+        {
+          "amount": 2,
+          "id": "rutile:sulfur"
+        }
+      ]
+    }
+  ]
+}

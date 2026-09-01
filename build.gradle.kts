@@ -10,7 +10,12 @@ val baseArchivesName = project.property("mod_id").toString()
 base {
     archivesName.set(project.property("mod_id").toString())
 }
-version = "${property("minecraft_version")}-${property("mod_version")}"
+val ci = System.getenv("CI") != null && System.getenv("CI").toBoolean()
+val release = System.getenv("RELEASE") != null && System.getenv("RELEASE").toBoolean()
+val webhook = ci && !release
+val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
+
+version = "${property("minecraft_version")}-${property("mod_version")}${if (webhook) "-build.${buildNumber}" else ""}"
 group = "${property("mod_group_id")}"
 
 java {
@@ -170,13 +175,26 @@ java {
 publishing {
     publications {
         register<MavenPublication>("mavenJava") {
-            artifactId = "${property("mod_id")}"
             from(components["java"])
+            artifactId = "${property("mod_id")}"
         }
     }
     repositories {
         maven {
-            url = uri("file://${System.getenv("local_maven")}")
+            name = "krystal-maven"
+            url = uri("https://krystalsmaven.oreostack.uk/${findProperty("krystalRepository") ?: "releases"}")
+            credentials {
+                username = "${findProperty("krystalMavenUser") ?: System.getenv("KRYSTAL_MAVEN_USER")}"
+                password = "${findProperty("krystalMavenToken") ?: System.getenv("KRYSTAL_MAVEN_PASSWORD")}"
+            }
+        }
+        maven {
+            name = "krystal-snapshot-maven"
+            url = uri("https://krystalsmaven.oreostack.uk/snapshots")
+            credentials {
+                username = "${findProperty("krystalMavenUser") ?: System.getenv("KRYSTAL_MAVEN_USER")}"
+                password = "${findProperty("krystalMavenToken") ?: System.getenv("KRYSTAL_MAVEN_PASSWORD")}"
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 {
   "sources": [
-    {"type": "single", "resource": "rutile:fluid/thin_fluid_flow"},
-    {"type": "single", "resource": "rutile:fluid/thin_fluid_still"}
+    {"type": "single", "resource": "rutile:fluid/liquid_flow"},
+    {"type": "single", "resource": "rutile:fluid/liquid"},
+    {"type": "single", "resource": "rutile:element/plaque"}
   ]
 }

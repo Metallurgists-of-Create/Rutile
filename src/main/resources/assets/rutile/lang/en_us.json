@@ -1,12 +1,6 @@
 {
-  "materialflag.rutile.storage_block": "Block of %s",
-  "materialflag.rutile.ingot": "%s Ingot",
-  "materialflag.rutile.nugget": "%s Nugget",
-  "materialflag.rutile.gem": "%s",
-  "materialflag.rutile.dust": "%s Dust",
-  "materialflag.rutile.liquid": "%s",
-  "materialflag.rutile.bucket.liquid": "%s Bucket",
-
+  "gui.rutile.element_composition_jei": "Element Compositions",
+  
   "element.rutile.actinium": "Actinium",
   "element.rutile.aluminum": "Aluminum",
   "element.rutile.americium": "Americium",

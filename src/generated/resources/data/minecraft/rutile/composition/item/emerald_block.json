@@ -1,0 +1,24 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "amount": 3,
+          "id": "rutile:beryllium"
+        },
+        {
+          "amount": 2,
+          "id": "rutile:aluminum"
+        },
+        {
+          "amount": 6,
+          "id": "rutile:silicon"
+        },
+        {
+          "amount": 18,
+          "id": "rutile:oxygen"
+        }
+      ]
+    }
+  ]
+}
