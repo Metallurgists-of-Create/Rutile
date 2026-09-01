@@ -2,6 +2,7 @@
   "sources": [
     {"type": "single", "resource": "rutile:fluid/liquid_flow"},
     {"type": "single", "resource": "rutile:fluid/liquid"},
-    {"type": "single", "resource": "rutile:element/plaque"}
+    {"type": "single", "resource": "rutile:element/plaque"},
+    {"type": "single", "resource": "rutile:element/null_plaque"}
   ]
 }

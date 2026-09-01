@@ -68,19 +68,34 @@ public class ElementIngredientRenderer implements IIngredientRenderer<ElementSta
     }
 
     private void drawPlaque(GuiGraphics guiGraphics, Element element, int posX, int posY) {
-        getPlaqueSprite().ifPresent(plaqueSprite -> {
-            int plaqueColor = new Color(element.getColor(), true).getRGB();
-            RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
-            Matrix4f matrix = guiGraphics.pose().last().pose();
-            setGLColorFromInt(plaqueColor);
-            drawTextureWithMasking(matrix, posX, posY, plaqueSprite, 0, 0, 100);
-        });
+        if (element.getId().equals(Rutile.id("null"))) {
+            getNullPlaqueSprite().ifPresent(plaqueSprite -> {
+                RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
+                Matrix4f matrix = guiGraphics.pose().last().pose();
+                drawTextureWithMasking(matrix, posX, posY, plaqueSprite, 0, 0, 100);
+            });
+        } else {
+            getPlaqueSprite().ifPresent(plaqueSprite -> {
+                int plaqueColor = new Color(element.getColor(), true).getRGB();
+                RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
+                Matrix4f matrix = guiGraphics.pose().last().pose();
+                setGLColorFromInt(plaqueColor);
+                drawTextureWithMasking(matrix, posX, posY, plaqueSprite, 0, 0, 100);
+            });
+        }
     }
 
     public Optional<TextureAtlasSprite> getPlaqueSprite() {
         return Optional.ofNullable(Minecraft.getInstance()
                         .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
                         .apply(Rutile.id("element/plaque")))
+                .filter(s -> s.atlasLocation() != MissingTextureAtlasSprite.getLocation());
+    }
+
+    public Optional<TextureAtlasSprite> getNullPlaqueSprite() {
+        return Optional.ofNullable(Minecraft.getInstance()
+                        .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+                        .apply(Rutile.id("element/null_plaque")))
                 .filter(s -> s.atlasLocation() != MissingTextureAtlasSprite.getLocation());
     }
 

@@ -72,7 +72,7 @@
   "element.rutile.niobium": "Niobium",
   "element.rutile.nitrogen": "Nitrogen",
   "element.rutile.nobelium": "Nobelium",
-  "element.rutile.null": "Null",
+  "element.rutile.null": "Unknown",
   "element.rutile.oganesson": "Oganesson",
   "element.rutile.osmium": "Osmium",
   "element.rutile.oxygen": "Oxygen",
@@ -119,7 +119,5 @@
   "element.rutile.ytterbium": "Ytterbium",
   "element.rutile.yttrium": "Yttrium",
   "element.rutile.zinc": "Zinc",
-  "element.rutile.zirconium": "Zirconium",
-
-  "material.rutile.null": "Null"
+  "element.rutile.zirconium": "Zirconium"
 }
