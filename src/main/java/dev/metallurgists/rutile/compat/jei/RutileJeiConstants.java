@@ -2,6 +2,7 @@ package dev.metallurgists.rutile.compat.jei;
 
 import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.api.composition.element.ElementStack;
+import dev.metallurgists.rutile.api.data.manager.composition.FluidCompositionManager;
 import dev.metallurgists.rutile.api.data.manager.composition.ItemCompositionManager;
 import dev.metallurgists.rutile.compat.jei.category.ElementCompositionWrapper;
 import dev.metallurgists.rutile.registry.RutileRegistries;
@@ -59,6 +60,10 @@ public class RutileJeiConstants {
         final List<ElementCompositionWrapper> compositionList = new ArrayList<>();
         for (var info : ItemCompositionManager.getInstance().getCompositions().entrySet()) {
             var recipe = new ElementCompositionWrapper.Items(info.getKey(), info.getValue());
+            compositionList.add(recipe);
+        }
+        for (var info : FluidCompositionManager.getInstance().getCompositions().entrySet()) {
+            var recipe = new ElementCompositionWrapper.Fluids(info.getKey(), info.getValue());
             compositionList.add(recipe);
         }
         return compositionList;

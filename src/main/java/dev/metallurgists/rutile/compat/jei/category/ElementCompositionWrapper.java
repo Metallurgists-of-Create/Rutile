@@ -20,7 +20,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
@@ -69,17 +68,10 @@ public interface ElementCompositionWrapper<T> {
 
         private List<ItemFluidLayoutEntry> layoutItemFluidOutput(ItemStack item) {
             int size = 1;
-            var itemTank = item.getCapability(Capabilities.FluidHandler.ITEM);
-            FluidStack fluid = itemTank != null ? itemTank.getFluidInTank(0) : null;
-            if (fluid != null) size = 2;
             List<ItemFluidLayoutEntry> positions = new ArrayList<>(size);
             LayoutHelper layout = LayoutHelper.centeredHorizontal(size, 1, 18, 18, 1);
             if (!item.isEmpty()) {
                 positions.add(new ItemFluidLayoutEntry(item, null, layout.getX(), layout.getY()));
-                layout.next();
-            }
-            if (fluid != null && !fluid.isEmpty()) {
-                positions.add(new ItemFluidLayoutEntry(null, fluid, layout.getX(), layout.getY()));
                 layout.next();
             }
             return positions;
@@ -146,7 +138,7 @@ public interface ElementCompositionWrapper<T> {
         int size = elements.size();
         List<LayoutEntry> positions = new ArrayList<>(size);
         LayoutHelper layout = LayoutHelper.centeredHorizontal(size, 1, 18, 18, 1);
-        for (Map.Entry<Element, Integer> element : elements.entrySet()) {
+        for (Map.Entry<Element, Integer> element : elements.entrySet().stream().sorted((c, n) -> Integer.compare(n.getValue(), c.getValue())).toList()) {
             float percentage = (float) element.getValue() / totalElementsAmount;
             positions.add(new LayoutEntry(element.getKey().asStack(), percentage, layout.getX(), layout.getY()));
             layout.next();

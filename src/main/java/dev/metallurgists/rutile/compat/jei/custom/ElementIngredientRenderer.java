@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.*;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.api.composition.element.ElementStack;
+import dev.metallurgists.rutile.util.ColourUtil;
 import lombok.RequiredArgsConstructor;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.ChatFormatting;
@@ -15,6 +16,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.NotNull;
@@ -63,7 +65,7 @@ public class ElementIngredientRenderer implements IIngredientRenderer<ElementSta
         guiGraphics.pose().scale(scale, scale, scale);
         int x = Math.round((size / (2f * scale)) - font.width(symbol) / 2f);
         int y = Math.round((size / (2f * scale)) - font.lineHeight / 2f);
-        guiGraphics.drawString(font, symbol, x, y, element.getColor(), true);
+        guiGraphics.drawString(font, symbol, x, y, ColourUtil.brighter(element.getColor(), 0.5f), true);
         guiGraphics.pose().popPose();
     }
 
@@ -130,7 +132,7 @@ public class ElementIngredientRenderer implements IIngredientRenderer<ElementSta
     @Override
     public @NotNull List<Component> getTooltip(ElementStack element, TooltipFlag flag) {
         List<Component> tooltip = new ArrayList<>();
-        tooltip.add(element.getElement().getDisplayName());
+        tooltip.add(Component.translatable(element.getElement().getOrCreateDescriptionId()).withStyle(Style.EMPTY.withColor(ColourUtil.brighter(element.getColor(), 0.5f))));
         if (flag.isAdvanced()) {
             tooltip.add((Component.literal(element.getId().toString())).withStyle(ChatFormatting.DARK_GRAY));
         }

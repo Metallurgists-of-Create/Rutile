@@ -15,6 +15,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 
@@ -27,7 +28,10 @@ public class CompositionHandler {
         boolean hasSpecificComposition = itemComposition(toolTip, stack);
         //TODO: Material compositions
         if (!hasSpecificComposition) {
-            //materialComposition(toolTip, stack);
+            var fluidHandler = stack.getCapability(Capabilities.FluidHandler.ITEM);
+            if (fluidHandler != null && !fluidHandler.getFluidInTank(0).isEmpty()) {
+                appendFluidTooltips(fluidHandler.getFluidInTank(0), toolTip::add);
+            }
         }
     }
 

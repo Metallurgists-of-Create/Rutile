@@ -1,5 +1,6 @@
 package dev.metallurgists.rutile.util;
 
+import java.awt.*;
 import java.util.List;
 
 public class ColourUtil {
@@ -29,4 +30,14 @@ public class ColourUtil {
         return (avgA << 24) | (avgR << 16) | (avgG << 8) | avgB;
     }
 
+    public static int brighter(int rgba, float maxSaturation) {
+        Color c = new Color(rgba, true);
+        int alpha = c.getAlpha();
+        float[] hsb = Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null);
+        float FACTOR = 0.7f;
+        float newBrightness = Math.min(1.0f, hsb[2] / FACTOR);
+        float newSaturation = Math.clamp(maxSaturation, 0f, hsb[1]);
+        int rgbNoAlpha = Color.HSBtoRGB(hsb[0], newSaturation, newBrightness) & 0x00FFFFFF;
+        return (alpha << 24) | rgbNoAlpha;
+    }
 }
