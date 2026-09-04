@@ -17,7 +17,9 @@ In addition, the following restrictions apply:
 2. The Software may not be included in any dataset used for training or improving machine learning algorithms,
    including but not limited to artificial intelligence, natural language processing, or data mining.
 
-3. Any person or organization found to be in violation of these restrictions will be subject to legal action and may be held liable
+3. Any and all forks of this software must abide by our contributing guidelines, as seen on our repository, as if their purpose is for contribution to the main repository.
+
+4. Any person or organization found to be in violation of these restrictions will be subject to legal action and may be held liable
    for any damages resulting from such use.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
