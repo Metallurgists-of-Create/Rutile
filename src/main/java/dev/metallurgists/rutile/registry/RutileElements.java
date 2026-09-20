@@ -5,6 +5,7 @@ import dev.metallurgists.rutile.api.RegistryHelper;
 import dev.metallurgists.rutile.api.composition.element.DeferredElements;
 import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.api.composition.element.ElementLike;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.flag.FeatureFlag;
 
 public class RutileElements {
@@ -139,6 +140,18 @@ public class RutileElements {
 
     public static ElementLike create(String name, String symbol, int colour, FeatureFlag... requiredFeatures) {
         Element element = new Element(symbol, colour, Rutile.id(name), requiredFeatures);
+        DeferredElements HELPER = RegistryHelper.createElements(element.getModId());
+        return HELPER.register(element.getName(), () -> element);
+    }
+
+    public static ElementLike create(ResourceLocation id, String symbol, int colour) {
+        Element element = new Element(symbol, colour, id);
+        DeferredElements HELPER = RegistryHelper.createElements(element.getModId());
+        return HELPER.register(element.getName(), () -> element);
+    }
+
+    public static ElementLike create(ResourceLocation id, String symbol, int colour, FeatureFlag... requiredFeatures) {
+        Element element = new Element(symbol, colour, id, requiredFeatures);
         DeferredElements HELPER = RegistryHelper.createElements(element.getModId());
         return HELPER.register(element.getName(), () -> element);
     }

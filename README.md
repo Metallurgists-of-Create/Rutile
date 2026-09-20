@@ -35,7 +35,8 @@ public class YourRutilePlugin implements IRutilePlugin {
 Register Elements:
 ```java
 public class YourElements {
-    public static final ElementLike ELEMENTIUM = RutileElements.create("yourmod:elementium", "El", 0xff4aedd9);
+    // The first argument can also be a string ("yourmod:elementium") as Rutile will parse it
+    public static final ElementLike ELEMENTIUM = RutileElements.create(YourMod.id("elementium"), "El", 0xff4aedd9);
 
     public static void init() {}
 }
