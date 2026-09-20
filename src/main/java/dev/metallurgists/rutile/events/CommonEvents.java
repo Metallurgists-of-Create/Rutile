@@ -2,7 +2,6 @@ package dev.metallurgists.rutile.events;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.registry.RutileElements;
-import dev.metallurgists.rutile.registry.RutileRegistries;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;

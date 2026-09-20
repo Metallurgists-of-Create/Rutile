@@ -18,7 +18,6 @@ import javax.annotation.Nonnull;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public abstract class AbstractCompositionProvider<T> implements DataProvider {
     private final PackOutput.PathProvider pathProvider;
