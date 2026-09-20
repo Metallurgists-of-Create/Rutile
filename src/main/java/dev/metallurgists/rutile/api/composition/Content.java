@@ -47,19 +47,5 @@ public abstract class Content<T> {
                         .forGetter(Content::getContents)
         ).apply(instance, factory));
     }
-
-    /**
-     * Creates a {@link StreamCodec} for a {@link Content} type
-     */
-    protected static <T, C extends Content<T>> StreamCodec<RegistryFriendlyByteBuf, C> createStreamCodec(
-            StreamCodec<RegistryFriendlyByteBuf, T> entryStreamCodec,
-            Function<List<T>, C> factory
-    ) {
-        return StreamCodec.composite(
-                ByteBufCodecs.collection(ArrayList::new, entryStreamCodec),
-                Content::getContents,
-                factory
-        );
-    }
 }
 
