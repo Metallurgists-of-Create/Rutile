@@ -12,10 +12,10 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class StringFormatUtil {
-    private static final int SMALL_DOWN_NUMBER_BASE = '\u2080'; //₀
-    private static final int SMALL_UP_NUMBER_BASE = '\u2070'; //⁰
-    private static final int SMALL_UP_NUMBER_TWO = '\u00B2'; //²
-    private static final int SMALL_UP_NUMBER_THREE = '\u00B3'; //³
+    private static final int SMALL_DOWN_NUMBER_BASE = '₀'; //₀
+    private static final int SMALL_UP_NUMBER_BASE = '⁰'; //⁰
+    private static final int SMALL_UP_NUMBER_TWO = '²'; //²
+    private static final int SMALL_UP_NUMBER_THREE = '³'; //³
     private static final int NUMBER_BASE = '0';
 
     public static String toSmallUpNumbers(String string) {
