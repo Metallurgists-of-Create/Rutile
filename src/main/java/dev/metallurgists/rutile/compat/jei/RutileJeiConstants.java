@@ -1,5 +1,6 @@
 package dev.metallurgists.rutile.compat.jei;
 
+import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.api.composition.element.ElementStack;
 import dev.metallurgists.rutile.api.data.manager.composition.FluidCompositionManager;
@@ -14,7 +15,9 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.world.flag.FeatureFlagSet;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class RutileJeiConstants {
@@ -58,14 +61,18 @@ public class RutileJeiConstants {
     @SuppressWarnings("rawtypes")
     public static List<ElementCompositionWrapper> getCompositionRecipes() {
         final List<ElementCompositionWrapper> compositionList = new ArrayList<>();
-        for (var info : ItemCompositionManager.getInstance().getCompositions().entrySet()) {
-            var recipe = new ElementCompositionWrapper.Items(info.getKey(), info.getValue());
-            compositionList.add(recipe);
-        }
-        for (var info : FluidCompositionManager.getInstance().getCompositions().entrySet()) {
-            var recipe = new ElementCompositionWrapper.Fluids(info.getKey(), info.getValue());
-            compositionList.add(recipe);
-        }
+        groupByComposition(ItemCompositionManager.getInstance().getCompositions())
+                .forEach((composition, items) -> compositionList.add(new ElementCompositionWrapper.Items(items, composition)));
+        groupByComposition(FluidCompositionManager.getInstance().getCompositions())
+                .forEach((composition, fluids) -> compositionList.add(new ElementCompositionWrapper.Fluids(fluids, composition)));
         return compositionList;
+    }
+
+    private static <T> Map<Composition<T>, List<T>> groupByComposition(Map<T, Composition<T>> compositions) {
+        Map<Composition<T>, List<T>> groups = new IdentityHashMap<>();
+        for (Map.Entry<T, Composition<T>> entry : compositions.entrySet()) {
+            groups.computeIfAbsent(entry.getValue(), c -> new ArrayList<>()).add(entry.getKey());
+        }
+        return groups;
     }
 }

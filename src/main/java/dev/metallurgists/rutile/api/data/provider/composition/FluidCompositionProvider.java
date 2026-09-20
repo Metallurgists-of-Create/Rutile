@@ -1,11 +1,15 @@
 package dev.metallurgists.rutile.api.data.provider.composition;
 
+import com.mojang.serialization.Codec;
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.providers.RegistrateProvider;
 import dev.metallurgists.rutile.datagen.RutileDataGen;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.fml.LogicalSide;
@@ -13,9 +17,18 @@ import net.neoforged.fml.LogicalSide;
 import java.util.concurrent.CompletableFuture;
 
 public class FluidCompositionProvider extends AbstractCompositionProvider<Fluid> {
-
     public FluidCompositionProvider(String modId, PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         super(modId, "fluid", output, registries);
+    }
+
+    @Override
+    protected ResourceKey<? extends Registry<Fluid>> registryKey() {
+        return Registries.FLUID;
+    }
+
+    @Override
+    protected Codec<Fluid> entryCodec() {
+        return BuiltInRegistries.FLUID.byNameCodec();
     }
 
     @Override

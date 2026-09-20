@@ -1,7 +1,7 @@
 package dev.metallurgists.rutile.api.data.manager.composition;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.Composition;
@@ -12,42 +12,53 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractCompositionManager<T> extends AbstractReloadManager {
-
     @Getter
     private final ResourceLocation type;
 
     @Getter
     private final ResourceKey<Registry<T>> typeRegistry;
 
-    public AbstractCompositionManager(ResourceLocation type,  ResourceKey<Registry<T>> typeRegistry) {
+    private final Codec<Composition<T>> codec;
+
+    public AbstractCompositionManager(ResourceLocation type, ResourceKey<Registry<T>> typeRegistry, Codec<Composition<T>> codec) {
         super("composition/" + (type.getNamespace().equals(Rutile.ID) ? type.getPath() : type.getNamespace() + "/" + type.getPath()));
         this.type = type;
         this.typeRegistry = typeRegistry;
+        this.codec = codec;
+        NeoForge.EVENT_BUS.addListener(TagsUpdatedEvent.class, event -> {
+            if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
+                resolveParsed();
+            }
+        });
     }
 
-    private Map<T, Composition> compositionsCache = new HashMap<>();
+    private final Map<T, Composition<T>> compositionsCache = new HashMap<>();
 
-    public abstract Map<T, Composition> getCompositions();
+    private final List<Composition<T>> parsedCompositions = new ArrayList<>();
+
+    public abstract Map<T, Composition<T>> getCompositions();
 
     public abstract List<T> getComposed();
 
     public abstract void clearData();
 
-    public abstract void putComposition(T composed, Composition composition);
+    public abstract void putComposition(T composed, Composition<T> composition);
 
-    public abstract T getFromKey(ResourceLocation key);
+    public abstract Registry<T> getRegistry();
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> files, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
-        clearData();
-        compositionsCache.clear();
-        for(Map.Entry<ResourceLocation, JsonElement> entry : files.entrySet()) {
+        parsedCompositions.clear();
+        for (Map.Entry<ResourceLocation, JsonElement> entry : files.entrySet()) {
             ResourceLocation resourceLocation = entry.getKey();
 
             if (resourceLocation.getPath().startsWith("_")) {
@@ -55,21 +66,28 @@ public abstract class AbstractCompositionManager<T> extends AbstractReloadManage
             }
 
             try {
-                T composed = getFromKey(resourceLocation);
-                if (composed != null) {
-                    Composition composition = Composition.CODEC.parse(JsonOps.INSTANCE, entry.getValue()).getOrThrow();
-                    if (composition != null) {
-                        putComposition(composed, composition);
-                    }
+                parsedCompositions.add(codec.parse(JsonOps.INSTANCE, entry.getValue()).getOrThrow());
+            } catch (RuntimeException runtimeException) {
+                Rutile.LOGGER.error("Parsing error loading {} composition {}", type, resourceLocation, runtimeException);
+            }
+        }
+        resolveParsed();
+    }
+
+    private void resolveParsed() {
+        clearData();
+        compositionsCache.clear();
+        for (Composition<T> composition : parsedCompositions) {
+            for (T content : composition.contents().resolve(getRegistry())) {
+                if (content != null) {
+                    putComposition(content, composition);
                 }
-            } catch (IllegalArgumentException | JsonParseException jsonParseException) {
-                Rutile.LOGGER.error("Parsing error loading {} composition {}", type, resourceLocation, jsonParseException);
             }
         }
         Rutile.LOGGER.info("Load Complete for {} {} compositions", getComposed().size(), type);
     }
 
-    public Composition getComposition(T value) {
+    public Composition<T> getComposition(T value) {
         return compositionsCache.computeIfAbsent(value, f -> getCompositions().get(f));
     }
 

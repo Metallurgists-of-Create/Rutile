@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class CompositionHandler {
-
     public static void appendItemTooltips(List<Component> toolTip, ItemStack stack, HolderLookup.Provider registries) {
         boolean hasSpecificComposition = itemComposition(toolTip, stack);
         //TODO: Material compositions
@@ -36,12 +35,11 @@ public class CompositionHandler {
     }
 
     public static void appendFluidTooltips(FluidStack fluidStack, Consumer<Component> tooltips) {
-        Fluid fluid = fluidStack.getFluid();
-        boolean hasSpecificComposition = fluidComposition(tooltips, fluidStack);
+        fluidComposition(tooltips, fluidStack);
     }
 
     public static boolean itemComposition(List<Component> toolTip, ItemStack stack) {
-        Composition composition = ItemCompositionManager.getInstance().getComposition(stack.getItem());
+        Composition<?> composition = ItemCompositionManager.getInstance().getComposition(stack.getItem());
         if (composition != null) {
             LangBuilder compositionName = RutileClient.getLang();
             createTooltip(compositionName, composition);
@@ -51,15 +49,13 @@ public class CompositionHandler {
         return false;
     }
 
-    public static boolean fluidComposition(Consumer<Component> toolTip, FluidStack stack) {
-        Composition composition = FluidCompositionManager.getInstance().getComposition(convertToStill(stack.getFluid()));
+    public static void fluidComposition(Consumer<Component> toolTip, FluidStack stack) {
+        Composition<?> composition = FluidCompositionManager.getInstance().getComposition(convertToStill(stack.getFluid()));
         if (composition != null) {
             LangBuilder compositionName = RutileClient.getLang();
             createTooltip(compositionName, composition);
             add(toolTip, compositionName);
-            return true;
         }
-        return false;
     }
 
     private static void add(List<Component> toolTip, LangBuilder composition) {
@@ -89,7 +85,7 @@ public class CompositionHandler {
         }
     }
 
-    public static void createTooltip(LangBuilder compositionName, Composition composition) {
+    public static void createTooltip(LangBuilder compositionName, Composition<?> composition) {
         for (SubComposition subComposition : composition.compositions()) {
             if (subComposition == null) continue;
             LangBuilder subComp = RutileClient.getLang();

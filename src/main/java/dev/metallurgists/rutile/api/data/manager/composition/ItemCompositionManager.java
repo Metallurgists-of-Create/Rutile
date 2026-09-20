@@ -2,9 +2,9 @@ package dev.metallurgists.rutile.api.data.manager.composition;
 
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.composition.Composition;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 
 import java.util.ArrayList;
@@ -15,11 +15,11 @@ import java.util.Map;
 public class ItemCompositionManager extends AbstractCompositionManager<Item> {
     public static ItemCompositionManager INSTANCE = new ItemCompositionManager();
 
-    public Map<Item, Composition> compositions = new HashMap<>();
+    public Map<Item, Composition<Item>> compositions = new HashMap<>();
     public List<Item> composed = new ArrayList<>();
 
     public ItemCompositionManager() {
-        super(Rutile.id("item"), Registries.ITEM);
+        super(Rutile.id("item"), Registries.ITEM, Composition.codec(Registries.ITEM, BuiltInRegistries.ITEM.byNameCodec()));
     }
 
     public static ItemCompositionManager getInstance() {
@@ -27,7 +27,12 @@ public class ItemCompositionManager extends AbstractCompositionManager<Item> {
     }
 
     @Override
-    public Map<Item, Composition> getCompositions() {
+    public Registry<Item> getRegistry() {
+        return BuiltInRegistries.ITEM;
+    }
+
+    @Override
+    public Map<Item, Composition<Item>> getCompositions() {
         return this.compositions;
     }
 
@@ -43,13 +48,8 @@ public class ItemCompositionManager extends AbstractCompositionManager<Item> {
     }
 
     @Override
-    public void putComposition(Item composed, Composition composition) {
+    public void putComposition(Item composed, Composition<Item> composition) {
         this.compositions.put(composed, composition);
         this.composed.add(composed);
-    }
-
-    @Override
-    public Item getFromKey(ResourceLocation key) {
-        return BuiltInRegistries.ITEM.get(key);
     }
 }

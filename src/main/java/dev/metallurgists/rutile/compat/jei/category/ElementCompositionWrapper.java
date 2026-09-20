@@ -31,9 +31,9 @@ import java.util.Map;
 import static net.minecraft.world.item.Items.AIR;
 
 public interface ElementCompositionWrapper<T> {
-    Composition getComposition();
+    Composition<?> getComposition();
 
-    T getIngredient();
+    List<T> getIngredients();
 
     default IDrawable getBackground() {
         return asDrawable(RutileJeiConstants.JEI_SLOT);
@@ -41,20 +41,20 @@ public interface ElementCompositionWrapper<T> {
 
     void setRecipe(IRecipeLayoutBuilder builder, IFocusGroup focuses);
 
-    record Items(Item item, Composition composition) implements ElementCompositionWrapper<Item> {
+    record Items(List<Item> items, Composition<Item> composition) implements ElementCompositionWrapper<Item> {
         @Override
-        public Composition getComposition() {
+        public Composition<?> getComposition() {
             return composition;
         }
 
         @Override
-        public Item getIngredient() {
-            return item;
+        public List<Item> getIngredients() {
+            return items;
         }
 
         @Override
         public void setRecipe(IRecipeLayoutBuilder builder, IFocusGroup focuses) {
-            layoutItemFluidOutput(new ItemStack(getIngredient())).forEach(layoutEntry -> {
+            layoutItemFluidOutput().forEach(layoutEntry -> {
                 IRecipeSlotBuilder slotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, (177 / 2) + layoutEntry.posX() + 1, 1).setBackground(getBackground(), -1, -1);
                 if (layoutEntry.item != null) {
                     addIngredient(layoutEntry.item.getItem(), slotBuilder);
@@ -66,32 +66,34 @@ public interface ElementCompositionWrapper<T> {
             addElements(getComposition(), builder);
         }
 
-        private List<ItemFluidLayoutEntry> layoutItemFluidOutput(ItemStack item) {
-            int size = 1;
-            List<ItemFluidLayoutEntry> positions = new ArrayList<>(size);
-            LayoutHelper layout = LayoutHelper.centeredHorizontal(size, 1, 18, 18, 1);
-            if (!item.isEmpty()) {
-                positions.add(new ItemFluidLayoutEntry(item, null, layout.getX(), layout.getY()));
+        private List<ItemFluidLayoutEntry> layoutItemFluidOutput() {
+            List<ItemFluidLayoutEntry> positions = new ArrayList<>(items.size());
+            if (items.isEmpty()) {
+                return positions;
+            }
+            LayoutHelper layout = LayoutHelper.centeredHorizontal(items.size(), 1, 18, 18, 1);
+            for (Item item : items) {
+                positions.add(new ItemFluidLayoutEntry(item.getDefaultInstance(), null, layout.getX(), layout.getY()));
                 layout.next();
             }
             return positions;
         }
     }
 
-    record Fluids(Fluid fluid, Composition composition) implements ElementCompositionWrapper<Fluid> {
+    record Fluids(List<Fluid> fluids, Composition<Fluid> composition) implements ElementCompositionWrapper<Fluid> {
         @Override
-        public Composition getComposition() {
+        public Composition<?> getComposition() {
             return composition;
         }
 
         @Override
-        public Fluid getIngredient() {
-            return fluid;
+        public List<Fluid> getIngredients() {
+            return fluids;
         }
 
         @Override
         public void setRecipe(IRecipeLayoutBuilder builder, IFocusGroup focuses) {
-            layoutItemFluidOutput(getIngredient()).forEach(layoutEntry -> {
+            layoutItemFluidOutput().forEach(layoutEntry -> {
                 IRecipeSlotBuilder slotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, (177 / 2) + layoutEntry.posX() + 1, 1).setBackground(getBackground(), -1, -1);
                 if (layoutEntry.item != null) {
                     addIngredient(layoutEntry.item.getItem(), slotBuilder);
@@ -103,19 +105,25 @@ public interface ElementCompositionWrapper<T> {
             addElements(getComposition(), builder);
         }
 
-        private List<ItemFluidLayoutEntry> layoutItemFluidOutput(Fluid fluid) {
-            int size = 1;
-            Item bucket = fluid.getBucket();
-            if (bucket != AIR) size = 2;
-            List<ItemFluidLayoutEntry> positions = new ArrayList<>(size);
-            LayoutHelper layout = LayoutHelper.centeredHorizontal(size, 1, 18, 18, 1);
-            positions.add(new ItemFluidLayoutEntry(null, new FluidStack(fluid, 1000), layout.getX(), layout.getY()));
-            layout.next();
-            if (bucket != AIR) {
-                positions.add(new ItemFluidLayoutEntry(bucket.getDefaultInstance(), null, layout.getX(), layout.getY()));
+        private List<ItemFluidLayoutEntry> layoutItemFluidOutput() {
+            List<ItemFluidLayoutEntry> entries = new ArrayList<>();
+            for (Fluid fluid : fluids) {
+                Item bucket = fluid.getBucket();
+                entries.add(new ItemFluidLayoutEntry(null, new FluidStack(fluid, 1000), 0, 0));
+                if (bucket != AIR) {
+                    entries.add(new ItemFluidLayoutEntry(bucket.getDefaultInstance(), null, 0, 0));
+                }
+            }
+            if (entries.isEmpty()) {
+                return entries;
+            }
+            LayoutHelper layout = LayoutHelper.centeredHorizontal(entries.size(), 1, 18, 18, 1);
+            for (int i = 0; i < entries.size(); i++) {
+                ItemFluidLayoutEntry entry = entries.get(i);
+                entries.set(i, new ItemFluidLayoutEntry(entry.item(), entry.fluid(), layout.getX(), layout.getY()));
                 layout.next();
             }
-            return positions;
+            return entries;
         }
     }
 
@@ -147,7 +155,7 @@ public interface ElementCompositionWrapper<T> {
         return positions;
     }
 
-    private static void addElements(Composition composition, IRecipeLayoutBuilder builder) {
+    private static void addElements(Composition<?> composition, IRecipeLayoutBuilder builder) {
         Map<Element, Integer> elementCounts = new HashMap<>();
         int totalElementsAmount = 0;
         for (SubComposition subComposition : composition.compositions()) {
