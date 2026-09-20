@@ -93,7 +93,7 @@ public class CompositionHandler {
         for (SubComposition subComposition : composition.compositions()) {
             if (subComposition == null) continue;
             LangBuilder subComp = RutileClient.getLang();
-            int subCompAmount = composition.compositions().size();
+            int subCompAmount = subComposition.getAmount();
             boolean encaseInBrackets = subCompAmount > 1;
             int outerColour = ColourUtil.blendAll(subComposition.getElements().stream().map(ElementStack::getColor).toList());
             var outerStyle = Style.EMPTY.withColor(outerColour);

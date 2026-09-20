@@ -1,9 +1,21 @@
-# Rutile
-[![](https://jitpack.io/v/Metallurgists-of-Create/Rutile.svg)](https://jitpack.io/#Metallurgists-of-Create/Rutile) [![](https://img.shields.io/github/v/release/Metallurgists-of-Create/Rutile)](https://github.com/Metallurgists-of-Create/Rutile/releases/latest)
+<div align="center">
+  <img src="https://metallurgists-of-create.github.io/assets/rutile-icon-small.webp">
+  <h1>Rutile</h1>
+  <a href="https://discord.gg/4yx2D6XRKf"><picture><source srcset="https://img.shields.io/badge/Discord-202830?style=for-the-badge&logo=discord" media="(prefers-color-scheme: dark)"><img src="https://img.shields.io/badge/Discord-white?style=for-the-badge&logo=discord" alt="Discord"></picture></a>
+  <br>
+  <a href="https://github.com/Metallurgists-of-Create/Rutile/graphs/contributors"><picture><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/Metallurgists-of-Create/Rutile"></picture></a>
+  <a href="https://github.com/Metallurgists-of-Create/Rutile/stargazers"><picture><img alt="Stars" src="https://img.shields.io/github/stars/Metallurgists-of-Create/Rutile?style=flat"></picture></a>
+  <a href="https://github.com/Metallurgists-of-Create/Rutile/releases/latest"><picture><img alt="Latest Release" src="https://img.shields.io/github/v/release/Metallurgists-of-Create/Rutile"></picture></a>
+  <a href="https://github.com/Metallurgists-of-Create/Rutile/commits/"><picture><img alt="Commit activity" src="https://img.shields.io/github/commit-activity/t/Metallurgists-of-Create/Rutile"></picture></a>
+  <br>
+  <a href="https://github.com/Metallurgists-of-Create/Rutile/issues"><picture><img alt="Open Issues" src="https://img.shields.io/github/issues-raw/Metallurgists-of-Create/Rutile"></picture></a>
+  <a href="https://github.com/Metallurgists-of-Create/Rutile/issues?q=is%3Aissue+state%3Aclosed"><picture><img alt="Closed Issues" src="https://img.shields.io/github/issues-closed-raw/Metallurgists-of-Create/Rutile"></picture></a>
+  <a href="https://github.com/Metallurgists-of-Create/Rutile/pulls"><picture><img alt="Pull Requests" src="https://img.shields.io/github/issues-pr-raw/Metallurgists-of-Create/Rutile"></picture></a>
+  <a href="https://github.com/Metallurgists-of-Create/Rutile/pulls?q=is%3Apr+state%3Aclosed"><picture><img alt="Closed Pull Requests" src="https://img.shields.io/github/issues-pr-closed-raw/Metallurgists-Of-Create/Rutile"></picture></a>
+  <br>
+  <a>Element Compositions and other useful tools</a>
+</div>
 
-
-API for easy material registry using flags. \
-Also chemical compositions.
 
 ## How to implement
 \
@@ -13,70 +25,18 @@ Create a plugin:
 public class YourRutilePlugin implements IRutilePlugin {
 
     @Override
-    public String getPluginNamespace() {
-        return "modid";
-    }
-
-    public AbstractRegistrate<?> getRegistrate() {
-        return YourMod.registrate();
+    public void configure(PluginConfig config) {
+        config.setModId("namespace");
+        config.setRegistrate(YourMod.registrate());
     }
 }
-```
-\
-Register Materials:
-```java
-public class YourMaterials {
-
-    public static void init() {}
-    
-    public static Material Iron = new Material.Builder(Rutile.id("iron"))
-            .element(RutileElements.IRON)
-            .addFlags(
-                    new IngotFlag("minecraft")
-            ).buildAndRegister();
-}
-
-// Register Materials in your mod container
-
-    @SubscribeEvent
-    public void registerMaterials(MaterialEvent event) {
-        YourMaterials.init();
-    }
 ```
 \
 Register Elements:
 ```java
 public class YourElements {
-    public static final Element ELEMENTIUM = createAndRegister("elementium", "El", 0xff4aedd9);
+    public static final ElementLike ELEMENTIUM = RutileElements.create("yourmod:elementium", "El", 0xff4aedd9);
 
     public static void init() {}
 }
-
-// Register Elements in your Rutile Plugin
-
-    @Override
-    public void registerElements() {
-        YourElements.init();
-    }
-```
-\
-Register Custom Flags
-```java
-public class YourFlagKeys {
-    public static FlagKey<SheetFlag> SHEET = createFlag("sheet", SheetFlag.class);
-
-    public static void init() {}
-
-    private static <C extends IMaterialFlag> FlagKey<C> createFlag(String name, Class<C> type) {
-        ResourceLocation location = YourMod.asResource(name);
-        return RutileAPI.registerFlag(location, FlagKey.create(name, type));
-    }
-}
-
-// Register Flags in your Rutile Plugin
-
-    @Override
-    public void registerFlags() {
-        YourFlagKeys.init();
-    }
 ```
