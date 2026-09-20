@@ -12,5 +12,9 @@
         }
       ]
     }
+  ],
+  "contents": [
+    "minecraft:quartz",
+    "minecraft:quartz_block"
   ]
 }

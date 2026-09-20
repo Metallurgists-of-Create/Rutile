@@ -8,5 +8,9 @@
         }
       ]
     }
+  ],
+  "contents": [
+    "minecraft:diamond",
+    "minecraft:diamond_block"
   ]
 }

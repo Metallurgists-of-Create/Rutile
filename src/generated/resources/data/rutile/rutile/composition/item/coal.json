@@ -8,5 +8,10 @@
         }
       ]
     }
+  ],
+  "contents": [
+    "minecraft:coal",
+    "minecraft:coal_block",
+    "minecraft:charcoal"
   ]
 }

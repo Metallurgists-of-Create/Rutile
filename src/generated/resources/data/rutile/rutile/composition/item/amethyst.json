@@ -9,8 +9,16 @@
         {
           "amount": 2,
           "id": "rutile:oxygen"
+        },
+        {
+          "amount": 1,
+          "id": "rutile:iron"
         }
       ]
     }
+  ],
+  "contents": [
+    "minecraft:amethyst_shard",
+    "minecraft:amethyst_block"
   ]
 }

@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "amount": 1,
+          "id": "rutile:gold"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "minecraft:gold_nugget",
+    "minecraft:gold_block",
+    "minecraft:raw_gold",
+    "minecraft:raw_gold_block",
+    "#minecraft:gold_ores",
+    "#c:ingots/gold"
+  ]
+}

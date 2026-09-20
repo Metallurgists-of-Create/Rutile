@@ -40,5 +40,9 @@
         }
       ]
     }
+  ],
+  "contents": [
+    "minecraft:lapis_lazuli",
+    "minecraft:lapis_block"
   ]
 }

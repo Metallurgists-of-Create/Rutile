@@ -1,0 +1,19 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "amount": 1,
+          "id": "rutile:copper"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "minecraft:copper_block",
+    "minecraft:raw_copper",
+    "minecraft:raw_copper_block",
+    "#minecraft:copper_ores",
+    "#c:ingots/copper"
+  ]
+}
