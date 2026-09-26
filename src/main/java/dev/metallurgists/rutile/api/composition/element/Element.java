@@ -5,13 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.flag.FeatureElement;
-import net.minecraft.world.flag.FeatureFlag;
-import net.minecraft.world.flag.FeatureFlagSet;
-import net.minecraft.world.flag.FeatureFlags;
-import org.jetbrains.annotations.NotNull;
 
-public class Element implements IDisplayedName, FeatureElement, ElementLike {
+public class Element implements IDisplayedName, ElementLike {
     private String descriptionId;
 
     @Getter
@@ -25,22 +20,10 @@ public class Element implements IDisplayedName, FeatureElement, ElementLike {
     @Setter
     private int color;
 
-    @Getter
-    @Setter
-    private FeatureFlagSet requiredFeatures;
-
     public Element(String symbol, int color, ResourceLocation id) {
         this.symbol = symbol;
         this.color = color;
         this.id = id;
-        this.requiredFeatures = FeatureFlags.VANILLA_SET;
-    }
-
-    public Element(String symbol, int color, ResourceLocation id, FeatureFlag... requiredFeatures) {
-        this.symbol = symbol;
-        this.color = color;
-        this.id = id;
-        this.requiredFeatures = FeatureFlags.REGISTRY.subset(requiredFeatures);
     }
 
     /**
@@ -66,11 +49,6 @@ public class Element implements IDisplayedName, FeatureElement, ElementLike {
             this.descriptionId = Util.makeDescriptionId("element", getId());
         }
         return this.descriptionId;
-    }
-
-    @Override
-    public @NotNull FeatureFlagSet requiredFeatures() {
-        return this.requiredFeatures;
     }
 
     @Override
