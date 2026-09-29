@@ -26,5 +26,23 @@ Sometimes a material will be created with an `Ingot` part, but that ingot alread
 <br>
 Redirecting a part will stop Rutile from registering that part for the material, and it will instead reference the redirected object in its place.
 
+## Element Ingredients
+Fluid & Item ingredient types that take in a group tag or a list of tags and a list of elements with percentage ranges.
+Useful for alloying recipes where you want to accept any dust that contains 25%-55% copper.<br>
+Likely formatted as:
+```json
+{
+  "type": "rutile:elements",
+  "tags": ["c:dusts"],
+  "elements": [
+    {
+      "element": "rutile:copper",
+      "min": 0.25,
+      "max": 0.55
+    }
+  ]
+}
+```
+
 # WIP
 **will add more later**
