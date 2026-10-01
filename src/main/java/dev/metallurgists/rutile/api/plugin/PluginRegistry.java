@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 public class PluginRegistry {
     private static final PluginRegistry INSTANCE = new PluginRegistry();
     private final Map<IRutilePlugin, PluginConfig> plugins = new LinkedHashMap<>();
+    private static boolean initialized = false;
 
     public void loadPlugins() {
         this.plugins.put(new RutileCorePlugin(), new PluginConfig());
@@ -39,6 +40,14 @@ public class PluginRegistry {
         this.forEach(IRutilePlugin::configure);
 
         Rutile.LOGGER.info("Loaded {} plugins", this.plugins.size());
+    }
+
+    public void callRegistration() {
+        if (initialized) {
+            throw new IllegalStateException("Cannot call registration after initialization");
+        }
+        initialized = true;
+        forEach((plugin, config) -> plugin.registerRegistries());
     }
 
     public void forEach(BiConsumer<IRutilePlugin, PluginConfig> action) {
