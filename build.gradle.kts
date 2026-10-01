@@ -110,6 +110,19 @@ repositories {
         name = "DevAuth Maven"
         url = uri("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
     }
+
+    maven("https://maven.latvian.dev/releases") {
+        content {
+            includeGroup("dev.latvian.mods")
+            includeGroup("dev.latvian.apps")
+        }
+    }
+
+    maven("https://jitpack.io") {
+        content {
+            includeGroup("com.github.rtyley")
+        }
+    }
 }
 
 dependencies {
@@ -133,6 +146,9 @@ dependencies {
     implementation("mezz.jei:jei-${property("jei_minecraft_version")}-neoforge:${property("jei_version")}")
 
     runtimeOnly("me.djtheredstoner:DevAuth-neoforge:1.2.1")
+
+    implementation("dev.latvian.mods:kubejs-neoforge:${property("kubejs_version")}")
+    interfaceInjectionData("dev.latvian.mods:kubejs-neoforge:${property("kubejs_version")}")
 }
 
 val generateModMetadata by tasks.registering(ProcessResources::class) {
