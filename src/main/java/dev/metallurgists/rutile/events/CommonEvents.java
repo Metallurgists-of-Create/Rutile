@@ -1,13 +1,12 @@
 package dev.metallurgists.rutile.events;
 
 import dev.metallurgists.rutile.Rutile;
-import dev.metallurgists.rutile.registry.RutileElements;
+import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 public class CommonEvents {
-
     private static IEventBus modBus;
 
     public static void init(final IEventBus modBus) {
@@ -25,7 +24,7 @@ public class CommonEvents {
         if (didRunRegistration) {
             return;
         }
-        RutileElements.init();
+        PluginRegistry.getInstance().callRegistration();
 
         didRunRegistration = true;
     }

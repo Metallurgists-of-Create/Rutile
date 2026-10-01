@@ -5,6 +5,7 @@ import dev.metallurgists.rutile.api.data.manager.composition.FluidCompositionMan
 import dev.metallurgists.rutile.api.data.manager.composition.ItemCompositionManager;
 import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
 import dev.metallurgists.rutile.api.plugin.PluginConfig;
+import dev.metallurgists.rutile.registry.RutileElements;
 
 public class RutileCorePlugin implements IRutilePlugin {
     @Override
@@ -17,5 +18,10 @@ public class RutileCorePlugin implements IRutilePlugin {
     public void collectCompositionManagers(RutileCompositions handler) {
         handler.addManager(ItemCompositionManager.getInstance());
         handler.addManager(FluidCompositionManager.getInstance());
+    }
+
+    @Override
+    public void registerRegistries() {
+        RutileElements.init();
     }
 }
