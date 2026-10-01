@@ -1,0 +1,1 @@
+dev.metallurgists.rutile.compat.kubejs.RutileKubePlugin rutile

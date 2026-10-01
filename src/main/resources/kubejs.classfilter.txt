@@ -1,0 +1,17 @@
++ dev.metallurgists.rutile.api
++ dev.metallurgists.rutile.registry
++ dev.metallurgists.rutile.Rutile
++ dev.metallurgists.rutile.compat.kubejs
++ dev.metallurgists.rutile.util
+
+- dev.metallurgists.rutile.api.plugin
+- dev.metallurgists.rutile.api.data.provider
+- dev.metallurgists.rutile.mixin
+- dev.metallurgists.rutile.datagen
+- dev.metallurgists.rutile.compat.jei
+- dev.metallurgists.rutile.config
+- dev.metallurgists.rutile.events
+- dev.metallurgists.rutile.RutileRegistrate
+- dev.metallurgists.rutile.RutileCorePlugin
+- dev.metallurgists.rutile.RutileClient
+- dev.metallurgists.rutile.util.GuiTexture
