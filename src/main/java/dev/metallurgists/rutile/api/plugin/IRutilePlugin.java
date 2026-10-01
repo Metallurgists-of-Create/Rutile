@@ -13,4 +13,9 @@ public interface IRutilePlugin {
      * Override this method to add custom Composition managers
      */
     default void collectCompositionManagers(RutileCompositions handler) { }
+
+    /**
+     * Override this method to register elements and materials
+     */
+    default void registerRegistries() {}
 }
