@@ -6,7 +6,6 @@ import dev.metallurgists.rutile.api.composition.element.DeferredElements;
 import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.api.composition.element.ElementLike;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.flag.FeatureFlag;
 
 public class RutileElements {
 

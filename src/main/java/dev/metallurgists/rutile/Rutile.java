@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Contract;
 
 import java.nio.file.Path;
 
-
 @Mod(Rutile.ID)
 public class Rutile {
     private static Rutile INSTANCE;
