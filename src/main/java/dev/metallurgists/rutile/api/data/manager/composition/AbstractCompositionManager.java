@@ -28,18 +28,17 @@ public abstract class AbstractCompositionManager<T> extends AbstractReloadManage
     private final ResourceKey<Registry<T>> registryKey;
 
     @Getter
+    private final Registry<T> registry;
+
+    @Getter
     private final Map<T, Composition<T>> compositions = new HashMap<>();
 
     @Getter
     private final List<T> composed = new ArrayList<>();
 
-    @Getter
-    private final Registry<T> registry;
-
     private final Map<T, Composition<T>> compositionsCache = new HashMap<>();
     private final List<Composition<T>> parsedCompositions = new ArrayList<>();
     private final Codec<Composition<T>> codec;
-
 
     public AbstractCompositionManager(ResourceLocation type, ResourceKey<Registry<T>> registryKey, Registry<T> registry) {
         super("composition/" + (type.getNamespace().equals(Rutile.ID) ? type.getPath() : type.getNamespace() + "/" + type.getPath()));
@@ -60,8 +59,10 @@ public abstract class AbstractCompositionManager<T> extends AbstractReloadManage
     }
 
     public void putComposition(T composed, Composition<T> composition) {
-        this.compositions.put(composed, composition);
-        this.composed.add(composed);
+        // Only track the key once so overriding an entry doesn't list it twice
+        if (this.compositions.put(composed, composition) == null) {
+            this.composed.add(composed);
+        }
     }
 
     @Override
@@ -87,20 +88,20 @@ public abstract class AbstractCompositionManager<T> extends AbstractReloadManage
         clearData();
         compositionsCache.clear();
         for (Composition<T> composition : parsedCompositions) {
-            for (T content : composition.contents().resolve(getRegistry())) {
+            for (T content : composition.contents().resolve(registry)) {
                 if (content != null) {
                     putComposition(content, composition);
                 }
             }
         }
-        Rutile.LOGGER.info("Load Complete for {} {} compositions", getComposed().size(), type);
+        Rutile.LOGGER.info("Load Complete for {} {} compositions", composed.size(), type);
     }
 
     public Composition<T> getComposition(T value) {
-        return compositionsCache.computeIfAbsent(value, f -> getCompositions().get(f));
+        return compositionsCache.computeIfAbsent(value, compositions::get);
     }
 
     public boolean hasComposition(T value) {
-        return getComposed().contains(value);
+        return compositions.containsKey(value);
     }
 }
