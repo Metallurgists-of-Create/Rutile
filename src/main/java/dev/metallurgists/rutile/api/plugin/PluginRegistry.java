@@ -26,7 +26,7 @@ public class PluginRegistry {
                     try {
                         Class<?> clazz = Class.forName(annotation.memberName());
                         if (IRutilePlugin.class.isAssignableFrom(clazz)) {
-                            IRutilePlugin plugin = (IRutilePlugin) clazz.newInstance();
+                            IRutilePlugin plugin = (IRutilePlugin) clazz.getDeclaredConstructor().newInstance();
                             this.plugins.put(plugin, new PluginConfig());
                             Rutile.LOGGER.info("Registered plugin: {}", annotation.memberName());
                         }
