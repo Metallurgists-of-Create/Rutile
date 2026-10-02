@@ -27,13 +27,26 @@ public abstract class AbstractCompositionManager<T> extends AbstractReloadManage
     @Getter
     private final ResourceKey<Registry<T>> typeRegistry;
 
+    @Getter
+    private final Map<T, Composition<T>> compositions = new HashMap<>();
+
+    @Getter
+    private final List<T> composed = new ArrayList<>();
+
+    @Getter
+    private final Registry<T> registry;
+
+    private final Map<T, Composition<T>> compositionsCache = new HashMap<>();
+    private final List<Composition<T>> parsedCompositions = new ArrayList<>();
     private final Codec<Composition<T>> codec;
 
-    public AbstractCompositionManager(ResourceLocation type, ResourceKey<Registry<T>> typeRegistry, Codec<Composition<T>> codec) {
+
+    public AbstractCompositionManager(ResourceLocation type, ResourceKey<Registry<T>> typeRegistry, Registry<T> registry) {
         super("composition/" + (type.getNamespace().equals(Rutile.ID) ? type.getPath() : type.getNamespace() + "/" + type.getPath()));
         this.type = type;
         this.typeRegistry = typeRegistry;
-        this.codec = codec;
+        this.registry = registry;
+        this.codec = Composition.codec(typeRegistry, registry.byNameCodec());
         NeoForge.EVENT_BUS.addListener(TagsUpdatedEvent.class, event -> {
             if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
                 resolveParsed();
@@ -41,19 +54,15 @@ public abstract class AbstractCompositionManager<T> extends AbstractReloadManage
         });
     }
 
-    private final Map<T, Composition<T>> compositionsCache = new HashMap<>();
+    public void clearData() {
+        this.compositions.clear();
+        this.composed.clear();
+    }
 
-    private final List<Composition<T>> parsedCompositions = new ArrayList<>();
-
-    public abstract Map<T, Composition<T>> getCompositions();
-
-    public abstract List<T> getComposed();
-
-    public abstract void clearData();
-
-    public abstract void putComposition(T composed, Composition<T> composition);
-
-    public abstract Registry<T> getRegistry();
+    public void putComposition(T composed, Composition<T> composition) {
+        this.compositions.put(composed, composition);
+        this.composed.add(composed);
+    }
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> files, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
