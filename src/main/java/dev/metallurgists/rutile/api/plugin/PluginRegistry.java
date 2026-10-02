@@ -3,6 +3,7 @@ package dev.metallurgists.rutile.api.plugin;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.RutileCorePlugin;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.LoadingModList;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class PluginRegistry {
                 if (annotation.annotationType().getClassName().equals(RutilePlugin.class.getName())) {
                     try {
                         Class<?> clazz = Class.forName(annotation.memberName());
-                        if (IRutilePlugin.class.isAssignableFrom(clazz)) {
+                        if (IRutilePlugin.class.isAssignableFrom(clazz) && modLoadSatisfied(clazz)) {
                             IRutilePlugin plugin = (IRutilePlugin) clazz.getDeclaredConstructor().newInstance();
                             this.plugins.put(plugin, new PluginConfig());
                             Rutile.LOGGER.info("Registered plugin: {}", annotation.memberName());
@@ -57,6 +58,16 @@ public class PluginRegistry {
     public <T> Stream<T> map(BiFunction<IRutilePlugin, PluginConfig, T> function) {
         Function<Map.Entry<IRutilePlugin, PluginConfig>, T> entryFunction = next -> function.apply(next.getKey(), next.getValue());
         return this.plugins.entrySet().stream().map(entryFunction);
+    }
+
+    private static boolean modLoadSatisfied(Class<?> clazz) {
+        RutilePlugin plugin = clazz.getAnnotation(RutilePlugin.class);
+        for (String modId : plugin.value()) {
+            if (LoadingModList.get().getModFileById(modId) == null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static PluginRegistry getInstance() {
