@@ -6,7 +6,7 @@ import dev.metallurgists.rutile.api.plugin.PluginConfig;
 import dev.metallurgists.rutile.api.plugin.RutilePlugin;
 import org.jetbrains.annotations.ApiStatus;
 
-@RutilePlugin({"kubejs"})
+@RutilePlugin("kubejs")
 @ApiStatus.Internal
 public final class InternalRutileKubePlugin implements IRutilePlugin {
     @Override
