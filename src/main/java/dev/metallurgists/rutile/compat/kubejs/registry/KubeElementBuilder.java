@@ -1,4 +1,4 @@
-package dev.metallurgists.rutile.compat.kubejs.event;
+package dev.metallurgists.rutile.compat.kubejs.registry;
 
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.util.KubeResourceLocation;
