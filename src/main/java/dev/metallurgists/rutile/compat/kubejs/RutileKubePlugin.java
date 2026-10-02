@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
 import dev.metallurgists.rutile.api.plugin.PluginConfig;
 import dev.metallurgists.rutile.api.plugin.RutilePlugin;
-import dev.metallurgists.rutile.compat.kubejs.event.KubeElementBuilder;
+import dev.metallurgists.rutile.compat.kubejs.registry.KubeElementBuilder;
 import dev.metallurgists.rutile.compat.kubejs.event.RutileKubeEvents;
 import dev.metallurgists.rutile.compat.kubejs.registry.KubeRegistrate;
 import dev.metallurgists.rutile.registry.RutileElements;

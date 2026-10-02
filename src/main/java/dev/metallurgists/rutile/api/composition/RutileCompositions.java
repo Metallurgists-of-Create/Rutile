@@ -5,7 +5,9 @@ import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RutileCompositions {
@@ -27,5 +29,13 @@ public class RutileCompositions {
     public void register(AddReloadListenerEvent event) {
         PluginRegistry.getInstance().forEach((plugin, config) -> plugin.collectCompositionManagers(this));
         managers.forEach((type, manager) -> event.addListener(manager));
+    }
+
+    public AbstractCompositionManager<?> getManager(ResourceLocation type) {
+        return managers.get(type);
+    }
+
+    public List<ResourceLocation> getTypes() {
+        return new ArrayList<>(managers.keySet());
     }
 }
