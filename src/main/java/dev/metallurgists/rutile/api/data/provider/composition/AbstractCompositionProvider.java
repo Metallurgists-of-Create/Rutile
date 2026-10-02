@@ -40,7 +40,11 @@ public abstract class AbstractCompositionProvider<T> implements DataProvider {
 
     protected abstract ResourceKey<? extends Registry<T>> registryKey();
 
-    protected abstract Codec<T> entryCodec();
+    protected abstract Registry<T> registry();
+
+    protected Codec<T> entryCodec() {
+        return registry().byNameCodec();
+    }
 
     public void generate(HolderLookup.Provider registries) {}
 
@@ -121,7 +125,9 @@ public abstract class AbstractCompositionProvider<T> implements DataProvider {
         return new HolderContent<>();
     }
 
-    abstract ResourceLocation getKey(T value);
+    ResourceLocation getKey(T value) {
+        return registry().getKey(value);
+    }
 
     @Nonnull
     public final String getName() {

@@ -27,13 +27,8 @@ public class FluidCompositionProvider extends AbstractCompositionProvider<Fluid>
     }
 
     @Override
-    protected Codec<Fluid> entryCodec() {
-        return BuiltInRegistries.FLUID.byNameCodec();
-    }
-
-    @Override
-    ResourceLocation getKey(Fluid value) {
-        return BuiltInRegistries.FLUID.getKey(value);
+    protected Registry<Fluid> registry() {
+        return BuiltInRegistries.FLUID;
     }
 
     public static class Registrate extends FluidCompositionProvider implements RegistrateProvider {

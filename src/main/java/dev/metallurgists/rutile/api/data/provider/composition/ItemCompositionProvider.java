@@ -27,13 +27,8 @@ public class ItemCompositionProvider extends AbstractCompositionProvider<Item> {
     }
 
     @Override
-    protected Codec<Item> entryCodec() {
-        return BuiltInRegistries.ITEM.byNameCodec();
-    }
-
-    @Override
-    ResourceLocation getKey(Item value) {
-        return BuiltInRegistries.ITEM.getKey(value);
+    protected Registry<Item> registry() {
+        return BuiltInRegistries.ITEM;
     }
 
     public static class Registrate extends ItemCompositionProvider implements RegistrateProvider {
