@@ -1,7 +1,7 @@
 package dev.metallurgists.rutile;
 
 import dev.metallurgists.rutile.api.composition.CompositionHandler;
-import net.createmod.catnip.lang.LangBuilder;
+import net.createmod.catnip.utility.lang.LangBuilder;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

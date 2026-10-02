@@ -2,8 +2,8 @@ package dev.metallurgists.rutile.util;
 
 import com.google.common.base.CaseFormat;
 import dev.metallurgists.rutile.RutileClient;
-import net.createmod.catnip.lang.LangBuilder;
-import net.createmod.catnip.lang.LangNumberFormat;
+import net.createmod.catnip.utility.lang.LangBuilder;
+import net.createmod.catnip.utility.lang.LangNumberFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 

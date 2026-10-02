@@ -7,7 +7,7 @@ import dev.metallurgists.rutile.api.data.manager.composition.ItemCompositionMana
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.util.ColourUtil;
 import dev.metallurgists.rutile.util.StringFormatUtil;
-import net.createmod.catnip.lang.LangBuilder;
+import net.createmod.catnip.utility.lang.LangBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;

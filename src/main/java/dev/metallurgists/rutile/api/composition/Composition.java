@@ -7,7 +7,7 @@ import dev.metallurgists.rutile.api.composition.content.HolderContent;
 import dev.metallurgists.rutile.api.composition.element.ElementLike;
 import dev.metallurgists.rutile.api.composition.element.ElementStack;
 import lombok.experimental.Accessors;
-import net.createmod.catnip.lang.LangBuilder;
+import net.createmod.catnip.utility.lang.LangBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;

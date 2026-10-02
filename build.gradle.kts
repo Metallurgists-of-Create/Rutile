@@ -99,7 +99,14 @@ repositories {
     }
     mavenLocal()
     mavenCentral()
-    maven("https://maven.createmod.net") // Ponder, Flywheel
+    maven("https://maven.createmod.net") {
+        content {
+            includeGroup("net.createmod.catnip")
+            includeGroup("net.createmod.ponder")
+            includeGroup("dev.engine-room.flywheel")
+            includeGroup("dev.engine-room.vanillin")
+        }
+    }
     maven("https://mvn.devos.one/snapshots") // Registrate
     maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/") // ForgeConfigAPIPort
     maven("https://maven.blamejared.com") // JEI, Vazkii's Mods
@@ -131,10 +138,10 @@ dependencies {
             prefer(property("registrate_version") as String)
         }
     })
-    jarJar(api("net.createmod.ponder:ponder-neoforge:${property("ponder_version")}+mc${property("minecraft_version")}") {
+    jarJar(api("net.createmod.catnip:Catnip-NeoForge-1.21.1:${property("catnip_version")}") {
+        exclude(group = "dev.engine_room.flywheel")
         version {
-            strictly("[${property("ponder_version")}+mc${property("minecraft_version")},)")
-            prefer("${property("ponder_version")}+mc${property("minecraft_version")}")
+            strictly("${property("catnip_version")}")
         }
     })
 
