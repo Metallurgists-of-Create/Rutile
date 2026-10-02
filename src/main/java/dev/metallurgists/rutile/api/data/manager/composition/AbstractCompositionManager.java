@@ -25,7 +25,7 @@ public abstract class AbstractCompositionManager<T> extends AbstractReloadManage
     private final ResourceLocation type;
 
     @Getter
-    private final ResourceKey<Registry<T>> typeRegistry;
+    private final ResourceKey<Registry<T>> registryKey;
 
     @Getter
     private final Map<T, Composition<T>> compositions = new HashMap<>();
@@ -41,12 +41,12 @@ public abstract class AbstractCompositionManager<T> extends AbstractReloadManage
     private final Codec<Composition<T>> codec;
 
 
-    public AbstractCompositionManager(ResourceLocation type, ResourceKey<Registry<T>> typeRegistry, Registry<T> registry) {
+    public AbstractCompositionManager(ResourceLocation type, ResourceKey<Registry<T>> registryKey, Registry<T> registry) {
         super("composition/" + (type.getNamespace().equals(Rutile.ID) ? type.getPath() : type.getNamespace() + "/" + type.getPath()));
         this.type = type;
-        this.typeRegistry = typeRegistry;
+        this.registryKey = registryKey;
         this.registry = registry;
-        this.codec = Composition.codec(typeRegistry, registry.byNameCodec());
+        this.codec = Composition.codec(registryKey, registry.byNameCodec());
         NeoForge.EVENT_BUS.addListener(TagsUpdatedEvent.class, event -> {
             if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
                 resolveParsed();
