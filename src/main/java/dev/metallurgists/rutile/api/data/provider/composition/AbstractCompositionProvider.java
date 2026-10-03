@@ -137,11 +137,11 @@ public abstract class AbstractCompositionProvider<T> implements DataProvider {
 
     public Composition<T> composition(ElementStack... elements) {
         SubComposition subComposition = subComposition(elements);
-        return new Composition<>(List.of(subComposition));
+        return new Composition<>( new LinkedList<>(Collections.singletonList(subComposition)));
     }
 
     public Composition<T> composition(SubComposition... subCompositions) {
-        return new Composition<>(List.of(subCompositions));
+        return new Composition<>(new LinkedList<>(Arrays.asList(subCompositions)));
     }
 
     public SubComposition subComposition(ElementStack... elements) {

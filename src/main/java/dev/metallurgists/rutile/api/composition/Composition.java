@@ -14,20 +14,23 @@ import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Accessors(chain = true, fluent = true)
-public record Composition<T>(List<SubComposition> compositions, HolderContent<T> contents) {
-    public static final Composition<?> EMPTY = new Composition<>(List.of());
+public record Composition<T>(LinkedList<SubComposition> compositions, HolderContent<T> contents) {
+    public static final Composition<?> EMPTY = new Composition<>(new LinkedList<>());
 
-    public Composition(List<SubComposition> compositions) {
+    public Composition(LinkedList<SubComposition> compositions) {
         this(compositions, null);
     }
 
-    public Composition(HolderContent<T> contents, List<SubComposition> compositions) {
+    public Composition(HolderContent<T> contents, LinkedList<SubComposition> compositions) {
         this(compositions, contents);
+    }
+
+    // Needed for codec
+    private Composition(HolderContent<T> content, List<SubComposition> subCompositions) {
+        this(content, new LinkedList<>(subCompositions));
     }
 
     /**
@@ -81,8 +84,12 @@ public record Composition<T>(List<SubComposition> compositions, HolderContent<T>
         return new Builder<>();
     }
 
+    public boolean isSameComposition(Composition<T> composition) {
+        return this.compositions.equals(composition.compositions);
+    }
+
     public static class Builder<T> {
-        private final List<SubComposition> subCompositions = new ArrayList<>();
+        private final LinkedList<SubComposition> subCompositions = new LinkedList<>();
 
         private SubComposition.Builder currentComposition;
 
