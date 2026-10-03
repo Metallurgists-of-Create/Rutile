@@ -134,7 +134,7 @@ public class ElementIngredientRenderer implements IIngredientRenderer<ElementSta
         List<Component> tooltip = new ArrayList<>();
         tooltip.add(Component.translatable(element.getElement().getOrCreateDescriptionId()).withStyle(Style.EMPTY.withColor(ColourUtil.brighter(element.getColor(), 0.5f))));
         if (flag.isAdvanced()) {
-            tooltip.add((Component.literal(element.getId().toString())).withStyle(ChatFormatting.DARK_GRAY));
+            tooltip.add((Component.literal(element.id().toString())).withStyle(ChatFormatting.DARK_GRAY));
         }
         return tooltip;
     }

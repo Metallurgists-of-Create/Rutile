@@ -5,11 +5,15 @@ import dev.metallurgists.rutile.api.RegistryHelper;
 import dev.metallurgists.rutile.api.composition.element.DeferredElements;
 import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.api.composition.element.ElementLike;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class RutileElements {
 
-    public static final ElementLike NULL = create("null", "?", 0xffbf4cd2),
+    public static final ElementLike NULL = create(Element.NULL),
             H  =  create("hydrogen", "H", 0xff9175dc),
             He =  create("helium", "He", 0xfffcc6f7),
             Li =  create("lithium", "Li", 0xff989890),
@@ -131,14 +135,24 @@ public class RutileElements {
 
     public static void init() {}
 
+    public static @Nullable Element get(ResourceLocation id) {
+        Registry<Element> registry = RutileRegistries.ELEMENTS_REGISTRY;
+        return registry.containsKey(id) ? registry.get(id) : null;
+    }
+
+    public static List<Element> getAll() {
+        return RutileRegistries.ELEMENTS_REGISTRY.stream().toList();
+    }
+
     public static ElementLike create(String name, String symbol, int colour) {
-        Element element = new Element(symbol, colour, Rutile.id(name));
-        DeferredElements HELPER = RegistryHelper.createElements(element.getModId());
-        return HELPER.register(element.getName(), () -> element);
+        return create(new Element(symbol, colour, Rutile.id(name)));
     }
 
     public static ElementLike create(ResourceLocation id, String symbol, int colour) {
-        Element element = new Element(symbol, colour, id);
+        return create(new Element(symbol, colour, id));
+    }
+
+    public static ElementLike create(Element element) {
         DeferredElements HELPER = RegistryHelper.createElements(element.getModId());
         return HELPER.register(element.getName(), () -> element);
     }

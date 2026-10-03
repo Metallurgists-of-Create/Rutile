@@ -1,24 +1,26 @@
 package dev.metallurgists.rutile.api.composition.element;
 
+import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.IDisplayedName;
 import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Objects;
+
 public class Element implements IDisplayedName, ElementLike {
+    public static final Element NULL = new Element("?", 0xffbf4cd2, Rutile.id("null"));
+
     private String descriptionId;
 
     @Getter
     private final ResourceLocation id;
 
     @Getter
-    @Setter
-    private String symbol;
+    private final String symbol;
 
     @Getter
-    @Setter
-    private int color;
+    private final int color;
 
     public Element(String symbol, int color, ResourceLocation id) {
         this.symbol = symbol;
@@ -54,5 +56,24 @@ public class Element implements IDisplayedName, ElementLike {
     @Override
     public Element asElement() {
         return this;
+    }
+
+    public boolean isNull() {
+        return this == NULL;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Element other && this.id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.id);
+    }
+
+    @Override
+    public String toString() {
+        return this.id.toString();
     }
 }

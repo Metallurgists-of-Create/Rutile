@@ -53,7 +53,7 @@ public class ElementIngredientHelper implements IIngredientHelper<ElementStack> 
 
     @Override
     public ResourceLocation getResourceLocation(ElementStack element) {
-        return element.getId();
+        return element.id();
     }
 
     @Override
@@ -66,15 +66,12 @@ public class ElementIngredientHelper implements IIngredientHelper<ElementStack> 
 
     @Override
     public long getAmount(ElementStack elementStack) {
-        return elementStack.getAmount();
+        return elementStack.amount();
     }
 
     @Override
     public ElementStack copyWithAmount(ElementStack elementStack, long amount) {
-        ElementStack copy = elementStack.copy();
-        int intAmount = Math.toIntExact(amount);
-        copy.setAmount(intAmount);
-        return copy;
+        return elementStack.copyWithAmount(Math.toIntExact(amount));
     }
 
     @Override
@@ -84,14 +81,7 @@ public class ElementIngredientHelper implements IIngredientHelper<ElementStack> 
 
     @Override
     public ElementStack normalizeIngredient(ElementStack elementStack) {
-        if (elementStack.getAmount() == 1) {
-            return elementStack;
-        }
-        int originalAmount = elementStack.getAmount();
-        elementStack.setAmount(1);
-        ElementStack copy = elementStack.copy();
-        elementStack.setAmount(originalAmount);
-        return copy;
+        return elementStack.copyWithAmount(1);
     }
     @Override
     public Iterable<Integer> getColors(ElementStack element) {
