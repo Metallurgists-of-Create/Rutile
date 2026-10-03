@@ -12,23 +12,27 @@ import java.util.Map;
 
 public class RutileCompositions {
     public static final RutileCompositions INSTANCE = new RutileCompositions();
+    private boolean frozen = false;
 
     private final Map<ResourceLocation, AbstractCompositionManager<?>> managers = new HashMap<>();
 
     private RutileCompositions() {}
 
-    public <T> boolean addManager(AbstractCompositionManager<T> manager) {
+    public <T> void addManager(AbstractCompositionManager<T> manager) {
+        if (frozen) {
+            throw new IllegalStateException("Cannot register Composition manager '" + manager.getType() + "': registry is frozen.");
+        }
+
         ResourceLocation type = manager.getType();
         if (!managers.containsKey(type)) {
             managers.put(type, manager);
-            return true;
         }
-        return false;
     }
 
     public void register(AddReloadListenerEvent event) {
         PluginRegistry.getInstance().forEach((plugin, config) -> plugin.collectCompositionManagers(this));
         managers.forEach((type, manager) -> event.addListener(manager));
+        frozen = true;
     }
 
     public AbstractCompositionManager<?> getManager(ResourceLocation type) {
