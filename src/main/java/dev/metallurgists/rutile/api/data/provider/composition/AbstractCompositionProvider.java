@@ -97,7 +97,7 @@ public abstract class AbstractCompositionProvider<T> implements DataProvider {
     }
 
     public final Builder<T> addTags(String name, List<TagKey<T>> tags, NonNullFunction<Composition.Builder<T>, Composition.Builder<T>> composition, ICondition... conditions) {
-        return addTags(name, tags, composition.apply(Composition.<T>builder()).end(), conditions);
+        return addTags(name, tags, composition.apply(Composition.builder()).end(), conditions);
     }
 
     public final Builder<T> addData(String name, List<? extends T> values, List<TagKey<T>> tags, Composition<T> composition, ICondition... conditions) {
@@ -105,7 +105,7 @@ public abstract class AbstractCompositionProvider<T> implements DataProvider {
     }
 
     public final Builder<T> addData(String name, List<? extends T> values, List<TagKey<T>> tags, NonNullFunction<Composition.Builder<T>, Composition.Builder<T>> composition, ICondition... conditions) {
-        return addData(name, values, tags, composition.apply(Composition.<T>builder()).end(), conditions);
+        return addData(name, values, tags, composition.apply(Composition.builder()).end(), conditions);
     }
 
     public final Builder<T> addData(String name, List<? extends T> values, Composition<T> composition, ICondition... conditions) {
@@ -114,7 +114,7 @@ public abstract class AbstractCompositionProvider<T> implements DataProvider {
     }
 
     public final Builder<T> addData(String name, List<? extends T> values, NonNullFunction<Composition.Builder<T>, Composition.Builder<T>> composition, ICondition... conditions) {
-        return addData(name, values, composition.apply(Composition.<T>builder()).end(), conditions);
+        return addData(name, values, composition.apply(Composition.builder()).end(), conditions);
     }
 
     /**

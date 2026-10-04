@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:osmium"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/osmium",
+    "#c:ingots/osmium",
+    "#c:nuggets/osmium",
+    "#c:plates/osmium",
+    "#c:ores/osmium",
+    "#c:raw_materials/osmium",
+    "#c:storage_blocks/raw_osmium"
+  ]
+}

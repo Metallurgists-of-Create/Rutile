@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:nickel"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/nickel",
+    "#c:ingots/nickel",
+    "#c:nuggets/nickel",
+    "#c:plates/nickel",
+    "#c:ores/nickel",
+    "#c:raw_materials/nickel",
+    "#c:storage_blocks/raw_nickel"
+  ]
+}

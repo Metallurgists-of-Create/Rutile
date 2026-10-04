@@ -1,0 +1,14 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:sulfur"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:dusts/sulfur"
+  ]
+}

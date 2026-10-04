@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:tin"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/tin",
+    "#c:ingots/tin",
+    "#c:nuggets/tin",
+    "#c:plates/tin",
+    "#c:ores/tin",
+    "#c:raw_materials/tin",
+    "#c:storage_blocks/raw_tin"
+  ]
+}

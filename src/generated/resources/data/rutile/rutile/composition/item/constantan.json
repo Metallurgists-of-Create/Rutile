@@ -1,0 +1,23 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:copper"
+        },
+        {
+          "id": "rutile:nickel"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/constantan",
+    "#c:ingots/constantan",
+    "#c:nuggets/constantan",
+    "#c:plates/constantan",
+    "#c:ores/constantan",
+    "#c:raw_materials/constantan",
+    "#c:storage_blocks/raw_constantan"
+  ]
+}

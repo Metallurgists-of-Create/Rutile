@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:aluminum"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/aluminum",
+    "#c:ingots/aluminum",
+    "#c:nuggets/aluminum",
+    "#c:plates/aluminum",
+    "#c:ores/aluminum",
+    "#c:raw_materials/aluminum",
+    "#c:storage_blocks/raw_aluminum"
+  ]
+}

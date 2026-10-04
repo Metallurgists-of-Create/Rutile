@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:lead"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/lead",
+    "#c:ingots/lead",
+    "#c:nuggets/lead",
+    "#c:plates/lead",
+    "#c:ores/lead",
+    "#c:raw_materials/lead",
+    "#c:storage_blocks/raw_lead"
+  ]
+}

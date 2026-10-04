@@ -1,0 +1,23 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:copper"
+        },
+        {
+          "id": "rutile:zinc"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/brass",
+    "#c:ingots/brass",
+    "#c:nuggets/brass",
+    "#c:plates/brass",
+    "#c:ores/brass",
+    "#c:raw_materials/brass",
+    "#c:storage_blocks/raw_brass"
+  ]
+}

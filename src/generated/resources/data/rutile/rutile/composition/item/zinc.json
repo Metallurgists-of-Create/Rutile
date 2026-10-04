@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:zinc"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/zinc",
+    "#c:ingots/zinc",
+    "#c:nuggets/zinc",
+    "#c:plates/zinc",
+    "#c:ores/zinc",
+    "#c:raw_materials/zinc",
+    "#c:storage_blocks/raw_zinc"
+  ]
+}

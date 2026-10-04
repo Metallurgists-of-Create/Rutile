@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:silicon"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/silicon",
+    "#c:ingots/silicon",
+    "#c:nuggets/silicon",
+    "#c:plates/silicon",
+    "#c:ores/silicon",
+    "#c:raw_materials/silicon",
+    "#c:storage_blocks/raw_silicon"
+  ]
+}

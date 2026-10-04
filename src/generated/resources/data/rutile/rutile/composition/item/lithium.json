@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:lithium"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/lithium",
+    "#c:ingots/lithium",
+    "#c:nuggets/lithium",
+    "#c:plates/lithium",
+    "#c:ores/lithium",
+    "#c:raw_materials/lithium",
+    "#c:storage_blocks/raw_lithium"
+  ]
+}

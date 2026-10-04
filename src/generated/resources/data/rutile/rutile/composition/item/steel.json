@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:iron"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/steel",
+    "#c:ingots/steel",
+    "#c:nuggets/steel",
+    "#c:plates/steel",
+    "#c:ores/steel",
+    "#c:raw_materials/steel",
+    "#c:storage_blocks/raw_steel"
+  ]
+}

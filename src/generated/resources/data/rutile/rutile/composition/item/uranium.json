@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:uranium"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/uranium",
+    "#c:ingots/uranium",
+    "#c:nuggets/uranium",
+    "#c:plates/uranium",
+    "#c:ores/uranium",
+    "#c:raw_materials/uranium",
+    "#c:storage_blocks/raw_uranium"
+  ]
+}
