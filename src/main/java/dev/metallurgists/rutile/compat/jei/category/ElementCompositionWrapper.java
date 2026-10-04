@@ -142,13 +142,13 @@ public interface ElementCompositionWrapper<T> {
         };
     }
 
-    private static List<LayoutEntry> layoutOutput(Map<Element, Integer> elements, int totalElementsAmount) {
+    private static List<LayoutEntry> layoutOutput(Map<ElementStack, Integer> elements, int totalElementsAmount) {
         int size = elements.size();
         List<LayoutEntry> positions = new ArrayList<>(size);
         LayoutHelper layout = LayoutHelper.centeredHorizontal(size, 1, 18, 18, 1);
-        for (Map.Entry<Element, Integer> element : elements.entrySet().stream().sorted((c, n) -> Integer.compare(n.getValue(), c.getValue())).toList()) {
+        for (Map.Entry<ElementStack, Integer> element : elements.entrySet().stream().sorted((c, n) -> Integer.compare(n.getValue(), c.getValue())).toList()) {
             float percentage = (float) element.getValue() / totalElementsAmount;
-            positions.add(new LayoutEntry(element.getKey().asStack(), percentage, layout.getX(), layout.getY()));
+            positions.add(new LayoutEntry(element.getKey(), percentage, layout.getX(), layout.getY()));
             layout.next();
         }
 
@@ -156,13 +156,13 @@ public interface ElementCompositionWrapper<T> {
     }
 
     private static void addElements(Composition<?> composition, IRecipeLayoutBuilder builder) {
-        Map<Element, Integer> elementCounts = new HashMap<>();
+        Map<ElementStack, Integer> elementCounts = new HashMap<>();
         int totalElementsAmount = 0;
         for (SubComposition subComposition : composition.compositions()) {
             for (ElementStack elementStack : subComposition.getElements()) {
-                Element element = elementStack.getElement();
+                ElementStack single = elementStack.copyWithAmount(1);
                 int amount = elementStack.getAmount();
-                elementCounts.put(element, elementCounts.getOrDefault(element, 0) + amount);
+                elementCounts.put(single, elementCounts.getOrDefault(single, 0) + amount);
                 totalElementsAmount += amount;
             }
         }

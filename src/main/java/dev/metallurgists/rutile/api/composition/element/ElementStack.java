@@ -149,7 +149,8 @@ public class ElementStack implements ISerializable {
         if (advanced) {
             tooltip.accept((Component.literal(getId().toString())).withStyle(ChatFormatting.DARK_GRAY));
         }
-        String displayedMass = (advanced || !RutileConfig.getClient().roundMass.get()) ? "" + mass : String.format("%.2f", mass);
+
+        String displayedMass = (advanced || !RutileConfig.getClient().roundMass.get()) ? "" + mass : StringFormatUtil.DECIMAL_FORMAT.format(mass);
         tooltip.accept((Component.literal(displayedMass + "amu")).withStyle(ChatFormatting.YELLOW));
     }
 }
