@@ -4,7 +4,8 @@
       "elements": [
         {
           "amount": 1,
-          "id": "rutile:gold"
+          "id": "rutile:gold",
+          "mass": 196.96657
         }
       ]
     }

@@ -130,12 +130,10 @@ public class ElementIngredientRenderer implements IIngredientRenderer<ElementSta
     }
 
     @Override
-    public @NotNull List<Component> getTooltip(ElementStack element, TooltipFlag flag) {
+    public @NotNull List<Component> getTooltip(ElementStack stack, TooltipFlag flag) {
         List<Component> tooltip = new ArrayList<>();
-        tooltip.add(Component.translatable(element.getElement().getOrCreateDescriptionId()).withStyle(Style.EMPTY.withColor(ColourUtil.brighter(element.getColor(), 0.5f))));
-        if (flag.isAdvanced()) {
-            tooltip.add((Component.literal(element.id().toString())).withStyle(ChatFormatting.DARK_GRAY));
-        }
+        tooltip.add(Component.translatable(stack.getElement().getOrCreateDescriptionId()).withStyle(Style.EMPTY.withColor(ColourUtil.brighter(stack.getColor(), 0.5f))));
+        stack.getTooltip(tooltip::add, flag);
         return tooltip;
     }
 }

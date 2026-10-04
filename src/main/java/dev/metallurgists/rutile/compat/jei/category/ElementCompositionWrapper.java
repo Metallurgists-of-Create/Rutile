@@ -161,7 +161,7 @@ public interface ElementCompositionWrapper<T> {
         for (SubComposition subComposition : composition.compositions()) {
             for (ElementStack elementStack : subComposition.getElements()) {
                 Element element = elementStack.getElement();
-                int amount = elementStack.amount();
+                int amount = elementStack.getAmount();
                 elementCounts.put(element, elementCounts.getOrDefault(element, 0) + amount);
                 totalElementsAmount += amount;
             }

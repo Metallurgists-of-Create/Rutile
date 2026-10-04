@@ -43,7 +43,7 @@ public final class RutileKubePlugin implements IRutilePlugin, KubeJSPlugin {
             RutileKubeEvents.REGISTER_ELEMENTS.post(ScriptType.STARTUP, builder);
             for (KubeElementBuilder.Built built : builder.getBuiltElements()) {
                 toGenerateLang.add(built.id());
-                RutileElements.create(built.id(), built.symbol(), built.color());
+                RutileElements.create(built.id(), built.symbol(), built.color(), built.mass());
             }
         }
     }

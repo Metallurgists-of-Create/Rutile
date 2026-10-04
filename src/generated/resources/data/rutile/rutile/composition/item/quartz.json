@@ -4,11 +4,13 @@
       "elements": [
         {
           "amount": 1,
-          "id": "rutile:silicon"
+          "id": "rutile:silicon",
+          "mass": 28.085
         },
         {
           "amount": 2,
-          "id": "rutile:oxygen"
+          "id": "rutile:oxygen",
+          "mass": 15.999
         }
       ]
     }

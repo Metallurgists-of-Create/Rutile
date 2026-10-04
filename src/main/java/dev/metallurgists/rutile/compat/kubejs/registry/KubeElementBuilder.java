@@ -11,10 +11,10 @@ public class KubeElementBuilder implements KubeEvent {
     @Getter
     private final LinkedList<Built> builtElements = new LinkedList<>();
 
-    public void create(KubeResourceLocation id, String symbol, int color) {
+    public void create(KubeResourceLocation id, String symbol, int color, double mass) {
         int argb = (color & 0xFF000000) == 0 ? (0xFF000000 | color) : color;
-        this.builtElements.add(new Built(id.wrapped(), symbol, argb));
+        this.builtElements.add(new Built(id.wrapped(), symbol, argb, mass));
     }
 
-    public record Built(ResourceLocation id, String symbol, int color) {}
+    public record Built(ResourceLocation id, String symbol, int color, double mass) {}
 }

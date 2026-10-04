@@ -4,19 +4,23 @@
       "elements": [
         {
           "amount": 3,
-          "id": "rutile:beryllium"
+          "id": "rutile:beryllium",
+          "mass": 9.012183
         },
         {
           "amount": 2,
-          "id": "rutile:aluminum"
+          "id": "rutile:aluminum",
+          "mass": 26.981538
         },
         {
           "amount": 6,
-          "id": "rutile:silicon"
+          "id": "rutile:silicon",
+          "mass": 28.085
         },
         {
           "amount": 18,
-          "id": "rutile:oxygen"
+          "id": "rutile:oxygen",
+          "mass": 15.999
         }
       ]
     }

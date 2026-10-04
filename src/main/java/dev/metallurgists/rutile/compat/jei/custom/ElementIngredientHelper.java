@@ -53,7 +53,7 @@ public class ElementIngredientHelper implements IIngredientHelper<ElementStack> 
 
     @Override
     public ResourceLocation getResourceLocation(ElementStack element) {
-        return element.id();
+        return element.getId();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ElementIngredientHelper implements IIngredientHelper<ElementStack> 
 
     @Override
     public long getAmount(ElementStack elementStack) {
-        return elementStack.amount();
+        return elementStack.getAmount();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ElementIngredientHelper implements IIngredientHelper<ElementStack> 
     public Iterable<Integer> getColors(ElementStack element) {
         return getStillFluidSprite()
                 .map(fluidStillSprite -> {
-                    int renderColor = new Color(element.getElement().getColor(), true).getRGB();
+                    int renderColor = new Color(element.getColor(), true).getRGB();
                     return colorHelper.getColors(fluidStillSprite, renderColor, 1);
                 })
                 .orElseGet(List::of);

@@ -4,7 +4,8 @@
       "elements": [
         {
           "amount": 1,
-          "id": "rutile:carbon"
+          "id": "rutile:carbon",
+          "mass": 12.011
         }
       ]
     }
