@@ -94,7 +94,7 @@ public class ElementStack implements ISerializable {
     static {
         CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 RutileRegistries.ELEMENTS_REGISTRY.byNameCodec().fieldOf("id").forGetter(ElementStack::getElement),
-                Codec.INT.fieldOf("amount").forGetter(ElementStack::getAmount),
+                Codec.INT.optionalFieldOf("amount", 1).forGetter(ElementStack::getAmount),
                 Codec.DOUBLE.optionalFieldOf("mass", -1.0d).forGetter(ElementStack::getMass)
         ).apply(instance, ElementStack::new));
         SINGLE_CODEC = RecordCodecBuilder.create(instance -> instance.group(

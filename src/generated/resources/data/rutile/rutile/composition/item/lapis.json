@@ -3,12 +3,10 @@
     {
       "elements": [
         {
-          "amount": 1,
           "id": "rutile:sodium",
           "mass": 22.9897693
         },
         {
-          "amount": 1,
           "id": "rutile:calcium",
           "mass": 40.08
         }
@@ -36,7 +34,6 @@
     {
       "elements": [
         {
-          "amount": 1,
           "id": "rutile:iron",
           "mass": 55.84
         },
