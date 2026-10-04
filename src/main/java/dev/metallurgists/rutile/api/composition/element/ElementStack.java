@@ -1,53 +1,70 @@
 package dev.metallurgists.rutile.api.composition.element;
 
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapLike;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.metallurgists.rutile.api.data.ISerializable;
-import dev.metallurgists.rutile.registry.RutileElements;
+import dev.metallurgists.rutile.config.RutileConfig;
+import dev.metallurgists.rutile.registry.RutileRegistries;
 import dev.metallurgists.rutile.util.StringFormatUtil;
+import lombok.Getter;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 
-public record ElementStack(int amount, ResourceLocation id) implements ISerializable {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+
+public class ElementStack implements ISerializable {
+    @Getter
+    private final Element element;
+    @Getter
+    private final int amount;
+    @Getter
+    private final double mass;
+
+    public ElementStack(Element element, int amount, double mass) {
+        this.element = element;
+        this.amount = amount;
+        this.mass = mass == -1 ? element.getMass() : mass;
+    }
+
     public static final ElementStack NULL = new ElementStack(Element.NULL, 1);
 
     public static final Codec<ElementStack> CODEC;
     public static final Codec<ElementStack> SINGLE_CODEC;
 
     public ElementStack(ElementLike element, int amount) {
-        this(amount, element.asElement().getId());
+        this(element.asElement(), amount, element.asElement().getMass());
     }
 
     public ElementStack(ElementLike element) {
-        this(element.asElement().getId(), 1);
-    }
-
-    public ElementStack(ResourceLocation id) {
-        this(id, 1);
-    }
-
-    public ElementStack(ResourceLocation id, int amount) {
-        this(amount, id);
-    }
-
-    public static ElementStack of(ResourceLocation id) {
-        return new ElementStack(id, 1);
-    }
-
-    public static ElementStack of(ResourceLocation id, int amount) {
-        return new ElementStack(id, amount);
+        this(element.asElement(), 1, element.asElement().getMass());
     }
 
     public static ElementStack of(Element element) {
-        return new ElementStack(element.getId(), 1);
+        return new ElementStack(element, 1, element.asElement().getMass());
     }
 
     public static ElementStack of(Element element, int amount) {
-        return new ElementStack(element.getId(), amount);
+        return new ElementStack(element, amount, element.asElement().getMass());
     }
 
-    public Element getElement() {
-        return RutileElements.get(id);
+    public static ElementStack of(Element element, double mass, int amount) {
+        return new ElementStack(element, amount, mass);
+    }
+
+    public ResourceLocation getId() {
+        Element element = getElement();
+        return element != null ? element.getId() : Element.NULL.getId();
     }
 
     public int getColor() {
@@ -56,11 +73,11 @@ public record ElementStack(int amount, ResourceLocation id) implements ISerializ
     }
 
     public ElementStack copy() {
-        return new ElementStack(this.id(), this.amount);
+        return new ElementStack(this.element, this.amount, this.mass);
     }
 
     public ElementStack copyWithAmount(int amount) {
-        return amount == this.amount ? this : new ElementStack(this.id, amount);
+        return amount == this.amount ? this : new ElementStack(this.element, amount, this.mass);
     }
 
     public ElementStack grow(int amount) {
@@ -79,23 +96,29 @@ public record ElementStack(int amount, ResourceLocation id) implements ISerializ
         StringBuilder display = new StringBuilder(getElement().getSymbol());
         if (amount > 1)
             display.append(amount);
-        return StringFormatUtil.toSmallDownNumbers(display.toString());
+        StringBuilder sized = new StringBuilder(StringFormatUtil.toSmallDownNumbers(display.toString()));
+        if (getMass() != getElement().getMass()) {
+            sized.insert(0, Math.round(getMass()));
+        }
+        return StringFormatUtil.toSmallUpNumbers(sized.toString());
     }
 
+    //TODO: Find a way to stop the codec from printing the default mass.
     static {
         CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                ResourceLocation.CODEC.fieldOf("id").forGetter(ElementStack::id),
-                Codec.INT.fieldOf("amount").forGetter(ElementStack::amount)
-        ).apply(instance, ElementStack::new));
+                RutileRegistries.ELEMENTS_REGISTRY.byNameCodec().fieldOf("id").forGetter(ElementStack::getElement),
+                Codec.INT.optionalFieldOf("amount", 1).forGetter(ElementStack::getAmount),
+                Codec.DOUBLE.optionalFieldOf("mass").forGetter((es) -> es.getMass() == es.getElement().getMass() ? Optional.empty() : Optional.of(es.getMass()))
+        ).apply(instance, (el, am, ma) -> new ElementStack(el, am, ma.orElse(el.getMass()))));
         SINGLE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                ResourceLocation.CODEC.fieldOf("id").forGetter(ElementStack::id)
+                RutileRegistries.ELEMENTS_REGISTRY.byNameCodec().fieldOf("id").forGetter(ElementStack::getElement)
         ).apply(instance, ElementStack::new));
     }
 
     @Override
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
-        serialize(ResourceLocation.CODEC, this.id, "id", json);
+        serialize(RutileRegistries.ELEMENTS_REGISTRY.byNameCodec(), this.element, "id", json);
         serialize(Codec.INT, this.amount, "amount", json);
         return json;
     }
@@ -110,13 +133,24 @@ public record ElementStack(int amount, ResourceLocation id) implements ISerializ
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof ElementStack(int amount1, ResourceLocation id1)
-                && this.amount == amount1
-                && this.id.equals(id1);
+        return o instanceof ElementStack stack
+                && this.amount == stack.getAmount()
+                && this.mass == stack.getMass()
+                && this.element.equals(stack.getElement());
     }
 
     @Override
     public String toString() {
-        return this.id + " x" + this.amount;
+        return this.element.getSymbol() + " x" + this.amount;
+    }
+
+    public void getTooltip(Consumer<Component> tooltip, TooltipFlag flag) {
+        boolean advanced = flag.isAdvanced();
+        if (advanced) {
+            tooltip.accept((Component.literal(getId().toString())).withStyle(ChatFormatting.DARK_GRAY));
+        }
+
+        String displayedMass = (advanced || !RutileConfig.getClient().roundMass.get()) ? "" + mass : StringFormatUtil.DECIMAL_FORMAT.format(mass);
+        tooltip.accept((Component.literal(displayedMass + "amu")).withStyle(ChatFormatting.YELLOW));
     }
 }

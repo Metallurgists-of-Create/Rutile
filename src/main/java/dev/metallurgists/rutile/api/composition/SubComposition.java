@@ -91,6 +91,11 @@ public class SubComposition implements ISerializable {
             return this;
         }
 
+        public Builder element(double mass, ElementLike element, int amount) {
+            elements.add(element.asStack(mass, amount));
+            return this;
+        }
+
         public Builder element(ElementStack... elements) {
             this.elements.addAll(Arrays.stream(elements).toList());
             return this;

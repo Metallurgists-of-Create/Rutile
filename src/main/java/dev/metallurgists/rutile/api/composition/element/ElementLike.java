@@ -10,4 +10,8 @@ public interface ElementLike {
     default ElementStack asStack(int amount) {
         return ElementStack.of(asElement(), amount);
     }
+
+    default ElementStack asStack(double mass, int amount) {
+        return ElementStack.of(asElement(), mass, amount);
+    }
 }

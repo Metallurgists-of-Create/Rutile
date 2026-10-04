@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Objects;
 
 public class Element implements IDisplayedName, ElementLike {
-    public static final Element NULL = new Element("?", 0xffbf4cd2, Rutile.id("null"));
+    public static final Element NULL = new Element("?", 0xffbf4cd2, 1, Rutile.id("null"));
 
     private String descriptionId;
 
@@ -20,11 +20,15 @@ public class Element implements IDisplayedName, ElementLike {
     private final String symbol;
 
     @Getter
+    private final double mass;
+
+    @Getter
     private final int color;
 
-    public Element(String symbol, int color, ResourceLocation id) {
+    public Element(String symbol, int color, double mass, ResourceLocation id) {
         this.symbol = symbol;
         this.color = color;
+        this.mass = mass;
         this.id = id;
     }
 

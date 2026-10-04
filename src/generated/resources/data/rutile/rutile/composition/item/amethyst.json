@@ -3,7 +3,6 @@
     {
       "elements": [
         {
-          "amount": 1,
           "id": "rutile:silicon"
         },
         {
@@ -11,7 +10,6 @@
           "id": "rutile:oxygen"
         },
         {
-          "amount": 1,
           "id": "rutile:iron"
         }
       ]

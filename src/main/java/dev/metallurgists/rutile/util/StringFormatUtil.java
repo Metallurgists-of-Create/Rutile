@@ -7,6 +7,7 @@ import net.createmod.catnip.utility.lang.LangNumberFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -17,6 +18,8 @@ public class StringFormatUtil {
     private static final int SMALL_UP_NUMBER_TWO = '²'; //²
     private static final int SMALL_UP_NUMBER_THREE = '³'; //³
     private static final int NUMBER_BASE = '0';
+
+    public static DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.##");
 
     public static String toSmallUpNumbers(String string) {
         return checkNumbers(string, SMALL_UP_NUMBER_BASE, true);

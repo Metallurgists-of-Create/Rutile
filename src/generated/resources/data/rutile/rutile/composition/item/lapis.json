@@ -3,11 +3,9 @@
     {
       "elements": [
         {
-          "amount": 1,
           "id": "rutile:sodium"
         },
         {
-          "amount": 1,
           "id": "rutile:calcium"
         }
       ]
@@ -31,7 +29,6 @@
     {
       "elements": [
         {
-          "amount": 1,
           "id": "rutile:iron"
         },
         {
