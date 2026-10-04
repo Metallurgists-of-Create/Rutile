@@ -166,6 +166,7 @@ public interface ElementCompositionWrapper<T> {
                 totalElementsAmount += amount;
             }
         }
+
         int xOffset = 177 / 2;
         int yOffset = 18 * 2;
         layoutOutput(elementCounts, totalElementsAmount).forEach(layoutEntry -> builder

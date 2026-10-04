@@ -30,6 +30,7 @@ public class RutileCompositions {
     }
 
     public void register(AddReloadListenerEvent event) {
+        frozen = false;
         PluginRegistry.getInstance().forEach((plugin, config) -> plugin.collectCompositionManagers(this));
         managers.forEach((type, manager) -> event.addListener(manager));
         frozen = true;

@@ -4,12 +4,10 @@
       "elements": [
         {
           "amount": 2,
-          "id": "rutile:hydrogen",
-          "mass": 1.008
+          "id": "rutile:hydrogen"
         },
         {
-          "id": "rutile:oxygen",
-          "mass": 15.999
+          "id": "rutile:oxygen"
         }
       ]
     }

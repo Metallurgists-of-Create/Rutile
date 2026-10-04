@@ -112,6 +112,11 @@ public record Composition<T>(LinkedList<SubComposition> compositions, HolderCont
             return this;
         }
 
+        public Builder<T> element(double mass, ElementLike element, int amount) {
+            this.currentComposition.element(mass, element, amount);
+            return this;
+        }
+
         public Builder<T> element(ElementStack... elements) {
             this.currentComposition.element(elements);
             return this;

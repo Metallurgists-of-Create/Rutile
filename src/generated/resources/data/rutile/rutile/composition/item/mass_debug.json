@@ -3,17 +3,16 @@
     {
       "elements": [
         {
-          "id": "rutile:silicon"
+          "id": "rutile:uranium",
+          "mass": 235.0
         },
         {
-          "amount": 2,
           "id": "rutile:oxygen"
         }
       ]
     }
   ],
   "contents": [
-    "minecraft:quartz",
-    "minecraft:quartz_block"
+    "minecraft:dirt"
   ]
 }

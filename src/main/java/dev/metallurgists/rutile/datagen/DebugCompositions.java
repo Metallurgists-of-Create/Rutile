@@ -22,6 +22,11 @@ public class DebugCompositions {
 
         @Override
         public void generate(HolderLookup.Provider registries) {
+            addData("mass_debug",
+                    List.of(Items.DIRT),
+                    c -> c.element(235, RutileElements.U, 1).element(RutileElements.O)
+            );
+
             addData("iron",
                     List.of(Items.IRON_NUGGET, Items.IRON_BLOCK, Items.RAW_IRON, Items.RAW_IRON_BLOCK),
                     List.of(ItemTags.IRON_ORES, RutileTags.Items.INGOT_IRON.tag),

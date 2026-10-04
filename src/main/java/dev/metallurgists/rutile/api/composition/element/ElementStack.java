@@ -1,7 +1,11 @@
 package dev.metallurgists.rutile.api.composition.element;
 
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapLike;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.metallurgists.rutile.api.data.ISerializable;
 import dev.metallurgists.rutile.config.RutileConfig;
@@ -16,6 +20,7 @@ import net.minecraft.world.item.TooltipFlag;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class ElementStack implements ISerializable {
@@ -53,6 +58,10 @@ public class ElementStack implements ISerializable {
         return new ElementStack(element, amount, element.asElement().getMass());
     }
 
+    public static ElementStack of(Element element, double mass, int amount) {
+        return new ElementStack(element, amount, mass);
+    }
+
     public ResourceLocation getId() {
         Element element = getElement();
         return element != null ? element.getId() : Element.NULL.getId();
@@ -87,7 +96,11 @@ public class ElementStack implements ISerializable {
         StringBuilder display = new StringBuilder(getElement().getSymbol());
         if (amount > 1)
             display.append(amount);
-        return StringFormatUtil.toSmallDownNumbers(display.toString());
+        StringBuilder sized = new StringBuilder(StringFormatUtil.toSmallDownNumbers(display.toString()));
+        if (getMass() != getElement().getMass()) {
+            sized.insert(0, Math.round(getMass()));
+        }
+        return StringFormatUtil.toSmallUpNumbers(sized.toString());
     }
 
     //TODO: Find a way to stop the codec from printing the default mass.
@@ -95,8 +108,8 @@ public class ElementStack implements ISerializable {
         CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 RutileRegistries.ELEMENTS_REGISTRY.byNameCodec().fieldOf("id").forGetter(ElementStack::getElement),
                 Codec.INT.optionalFieldOf("amount", 1).forGetter(ElementStack::getAmount),
-                Codec.DOUBLE.optionalFieldOf("mass", -1.0d).forGetter(ElementStack::getMass)
-        ).apply(instance, ElementStack::new));
+                Codec.DOUBLE.optionalFieldOf("mass").forGetter((es) -> es.getMass() == es.getElement().getMass() ? Optional.empty() : Optional.of(es.getMass()))
+        ).apply(instance, (el, am, ma) -> new ElementStack(el, am, ma.orElse(el.getMass()))));
         SINGLE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 RutileRegistries.ELEMENTS_REGISTRY.byNameCodec().fieldOf("id").forGetter(ElementStack::getElement)
         ).apply(instance, ElementStack::new));
