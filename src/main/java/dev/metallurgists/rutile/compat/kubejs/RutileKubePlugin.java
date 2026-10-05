@@ -1,19 +1,30 @@
 package dev.metallurgists.rutile.compat.kubejs;
 
+import com.google.gson.JsonElement;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
+import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
+import dev.metallurgists.rutile.Rutile;
+import dev.metallurgists.rutile.api.composition.Composition;
+import dev.metallurgists.rutile.api.composition.RutileCompositions;
 import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.api.composition.element.ElementLike;
 import dev.metallurgists.rutile.api.composition.element.ElementStack;
+import dev.metallurgists.rutile.api.data.manager.composition.AbstractCompositionManager;
 import dev.metallurgists.rutile.api.plugin.IRutilePlugin;
 import dev.metallurgists.rutile.api.plugin.PluginConfig;
 import dev.metallurgists.rutile.api.plugin.RutilePlugin;
+import dev.metallurgists.rutile.compat.kubejs.data.CompositionEntry;
+import dev.metallurgists.rutile.compat.kubejs.data.CompositionEntryWrapper;
+import dev.metallurgists.rutile.compat.kubejs.data.KubeCompositionBuilder;
 import dev.metallurgists.rutile.compat.kubejs.event.RutileKubeEvents;
 import dev.metallurgists.rutile.compat.kubejs.registry.KubeElementBuilder;
 import dev.metallurgists.rutile.compat.kubejs.registry.KubeRegistrate;
@@ -63,6 +74,7 @@ public final class RutileKubePlugin implements IRutilePlugin, KubeJSPlugin {
         registry.register(Element.class, ElementWrapper::wrapElement);
         registry.register(ElementLike.class, ElementWrapper::wrapElement);
         registry.register(ElementStack.class, ElementStackWrapper::wrapElementStack);
+        registry.register(CompositionEntry.class, CompositionEntryWrapper::wrapEntry);
     }
 
     @Override
@@ -74,5 +86,53 @@ public final class RutileKubePlugin implements IRutilePlugin, KubeJSPlugin {
     @Override
     public void registerEvents(EventGroupRegistry registry) {
         registry.register(RutileKubeEvents.GROUP);
+    }
+
+    @Override
+    public void generateData(KubeDataGenerator generator) {
+        for (ResourceLocation type : RutileCompositions.INSTANCE.getTypes()) {
+            if (!RutileKubeEvents.COMPOSITION.hasListeners(type)) {
+                continue;
+            }
+
+            AbstractCompositionManager<?> manager = RutileCompositions.INSTANCE.getManager(type);
+            KubeCompositionBuilder<?> event = new KubeCompositionBuilder<>(manager);
+
+            RutileKubeEvents.COMPOSITION.post(ScriptType.SERVER, type, event);
+
+            for (var entry : event.getCompositions().entrySet()) {
+                write(generator, manager, entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    private static ResourceLocation dataId(AbstractCompositionManager<?> manager, String name) {
+        ResourceLocation type = manager.getType();
+
+        return ResourceLocation.fromNamespaceAndPath(type.getNamespace(), "rutile/composition/" + type.getPath() + "/" + name);
+    }
+
+    private static void write(KubeDataGenerator generator, AbstractCompositionManager<?> manager, String name, Composition<?> composition) {
+        JsonElement json = encode(manager, composition);
+
+        if (json == null) {
+            return;
+        }
+
+        ResourceLocation id = dataId(manager, name);
+        generator.json(id, json);
+        Rutile.LOGGER.info("[Rutile] Generated {} composition '{}' -> data/{}/{}.json\n{}",
+                manager.getType(), name, id.getNamespace(), id.getPath(), json);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static JsonElement encode(AbstractCompositionManager<?> manager, Composition<?> composition) {
+        DataResult<JsonElement> result = ((AbstractCompositionManager) manager).getCodec().encodeStart(JsonOps.INSTANCE, composition);
+
+        return result.result().orElseGet(() -> {
+            Rutile.LOGGER.error("Failed to generate {} composition '{}': {}",
+                    manager.getType(), composition, result.error().map(Object::toString).orElse("unknown error"));
+            return null;
+        });
     }
 }

@@ -36,12 +36,14 @@ public abstract class AbstractCompositionManager<T> extends AbstractReloadManage
     @Getter
     private final List<T> composed = new ArrayList<>();
 
-    private final Map<T, Composition<T>> compositionsCache = new HashMap<>();
-    private final List<Composition<T>> parsedCompositions = new ArrayList<>();
+    @Getter
     private final Codec<Composition<T>> codec;
 
+    private final Map<T, Composition<T>> compositionsCache = new HashMap<>();
+    private final List<Composition<T>> parsedCompositions = new ArrayList<>();
+
     public AbstractCompositionManager(ResourceLocation type, ResourceKey<Registry<T>> registryKey, Registry<T> registry) {
-        super("composition/" + (type.getNamespace().equals(Rutile.ID) ? type.getPath() : type.getNamespace() + "/" + type.getPath()));
+        super(folder(type));
         this.type = type;
         this.registryKey = registryKey;
         this.registry = registry;
@@ -51,6 +53,10 @@ public abstract class AbstractCompositionManager<T> extends AbstractReloadManage
                 resolveParsed();
             }
         });
+    }
+
+    private static String folder(ResourceLocation type) {
+        return "composition/" + (type.getNamespace().equals(Rutile.ID) ? type.getPath() : type.getNamespace() + "/" + type.getPath());
     }
 
     public void clearData() {
