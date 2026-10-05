@@ -35,6 +35,11 @@ public interface ElementStackWrapper {
         return element.asStack(amount);
     }
 
+
+    static ElementStack of(ElementStack stack, double mass) {
+        return new ElementStack(stack.getElement(), stack.getAmount(), mass);
+    }
+
     static ElementStack copyWithAmount(ElementStack stack, int amount) {
         return stack.copyWithAmount(amount);
     }
