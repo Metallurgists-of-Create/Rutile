@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:platinum"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/platinum",
+    "#c:ingots/platinum",
+    "#c:nuggets/platinum",
+    "#c:plates/platinum",
+    "#c:ores/platinum",
+    "#c:raw_materials/platinum",
+    "#c:storage_blocks/raw_platinum"
+  ]
+}

@@ -28,8 +28,8 @@ public class RutileDataGen {
         final boolean includeClient = event.includeClient();
         final boolean includeServer = event.includeServer();
 
-        DebugCompositions.Item itemCompositions = new DebugCompositions.Item(packOutput, lookupProvider);
-        DebugCompositions.Fluid fluidCompositions = new DebugCompositions.Fluid(packOutput, lookupProvider);
+        DefaultCompositions.Item itemCompositions = new DefaultCompositions.Item(packOutput, lookupProvider);
+        DefaultCompositions.Fluid fluidCompositions = new DefaultCompositions.Fluid(packOutput, lookupProvider);
 
         dataGenerator.addProvider(includeServer, itemCompositions);
         dataGenerator.addProvider(includeServer, fluidCompositions);

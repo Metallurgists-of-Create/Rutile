@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:tungsten"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/tungsten",
+    "#c:ingots/tungsten",
+    "#c:nuggets/tungsten",
+    "#c:plates/tungsten",
+    "#c:ores/tungsten",
+    "#c:raw_materials/tungsten",
+    "#c:storage_blocks/raw_tungsten"
+  ]
+}
