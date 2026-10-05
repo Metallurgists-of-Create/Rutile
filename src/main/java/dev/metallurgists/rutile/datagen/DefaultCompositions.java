@@ -93,12 +93,15 @@ public class DefaultCompositions {
                     List.of(Items.LAPIS_LAZULI, Items.LAPIS_BLOCK),
                     c -> c
                             .element(RutileElements.Na)
-                            .element(RutileElements.Ca).next()
-                            .element(RutileElements.Al, 6)
-                            .element(RutileElements.Si, 6)
-                            .element(RutileElements.O, 24).next()
-                            .element(RutileElements.Fe)
-                            .element(RutileElements.S, 2)
+                            .element(RutileElements.Ca)
+                            .nested(n -> n
+                                    .element(RutileElements.Al, 6)
+                                    .element(RutileElements.Si, 6)
+                                    .element(RutileElements.O, 24)
+                            ).nested(n -> n
+                                    .element(RutileElements.Fe)
+                                    .element(RutileElements.S, 2)
+                            )
             );
 
             // Integration Compositions

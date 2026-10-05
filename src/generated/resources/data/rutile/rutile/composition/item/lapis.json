@@ -8,32 +8,34 @@
         {
           "id": "rutile:calcium"
         }
-      ]
-    },
-    {
-      "elements": [
+      ],
+      "nested": [
         {
-          "amount": 6,
-          "id": "rutile:aluminum"
+          "elements": [
+            {
+              "amount": 6,
+              "id": "rutile:aluminum"
+            },
+            {
+              "amount": 6,
+              "id": "rutile:silicon"
+            },
+            {
+              "amount": 24,
+              "id": "rutile:oxygen"
+            }
+          ]
         },
         {
-          "amount": 6,
-          "id": "rutile:silicon"
-        },
-        {
-          "amount": 24,
-          "id": "rutile:oxygen"
-        }
-      ]
-    },
-    {
-      "elements": [
-        {
-          "id": "rutile:iron"
-        },
-        {
-          "amount": 2,
-          "id": "rutile:sulfur"
+          "elements": [
+            {
+              "id": "rutile:iron"
+            },
+            {
+              "amount": 2,
+              "id": "rutile:sulfur"
+            }
+          ]
         }
       ]
     }
