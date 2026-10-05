@@ -73,7 +73,7 @@ public abstract class AbstractCompositionProvider<T> implements DataProvider {
     }
 
     public final Builder<T> addData(String name, HolderContent<T> content, NonNullFunction<Composition.Builder<T>, Composition.Builder<T>> composition, ICondition... conditions) {
-        return addData(name, content, composition.apply(Composition.<T>builder()).end(), conditions);
+        return addData(name, content, composition.apply(Composition.builder()).end(), conditions);
     }
 
     public final Builder<T> addData(String name, T value, Composition<T> composition, ICondition... conditions) {

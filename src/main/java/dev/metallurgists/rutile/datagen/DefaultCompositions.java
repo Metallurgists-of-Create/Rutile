@@ -27,6 +27,20 @@ public class DefaultCompositions {
 
         @Override
         public void generate(HolderLookup.Provider registries) {
+            //TODO: REMOVE THIS WHEN DONE
+            addData("debug_dirt", List.of(Items.DIRT), c -> c
+                    .element(RutileElements.Fe)
+                    .element(RutileElements.O)
+                    .nested(n -> n
+                            .nested(s -> s
+                                    .element(RutileElements.Fe, 2)
+                                    .element(RutileElements.O, 3)
+                            ).nested(s -> s
+                                    .element(RutileElements.H, 2)
+                                    .element(RutileElements.O)
+                            )
+                    ));
+
             addData("iron",
                     List.of(Items.IRON_NUGGET, Items.IRON_BLOCK, Items.RAW_IRON, Items.RAW_IRON_BLOCK),
                     List.of(ItemTags.IRON_ORES, RutileTags.Items.INGOT_IRON.tag),

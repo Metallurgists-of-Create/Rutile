@@ -2,6 +2,7 @@ package dev.metallurgists.rutile.api.composition;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.tterrag.registrate.util.nullness.NonNullFunction;
 import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.api.composition.content.HolderContent;
 import dev.metallurgists.rutile.api.composition.element.ElementLike;
@@ -124,6 +125,11 @@ public record Composition<T>(LinkedList<SubComposition> compositions, HolderCont
 
         public Builder<T> setAmount(int amount) {
             this.currentComposition.setAmount(amount);
+            return this;
+        }
+
+        public Builder<T> nested(NonNullFunction<SubComposition.Builder, SubComposition.Builder> nest) {
+            this.currentComposition.nested(nest);
             return this;
         }
 

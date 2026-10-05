@@ -148,7 +148,7 @@ public interface ElementCompositionWrapper<T> {
         LayoutHelper layout = LayoutHelper.centeredHorizontal(size, 1, 18, 18, 1);
         for (Map.Entry<ElementStack, Integer> element : elements.entrySet().stream().sorted((c, n) -> Integer.compare(n.getValue(), c.getValue())).toList()) {
             float percentage = (float) element.getValue() / totalElementsAmount;
-            positions.add(new LayoutEntry(element.getKey(), percentage, layout.getX(), layout.getY()));
+            positions.add(new LayoutEntry(element.getKey().copyWithAmount(element.getValue()), percentage, layout.getX(), layout.getY()));
             layout.next();
         }
 
@@ -159,12 +159,8 @@ public interface ElementCompositionWrapper<T> {
         Map<ElementStack, Integer> elementCounts = new HashMap<>();
         int totalElementsAmount = 0;
         for (SubComposition subComposition : composition.compositions()) {
-            for (ElementStack elementStack : subComposition.getElements()) {
-                ElementStack single = elementStack.copyWithAmount(1);
-                int amount = elementStack.getAmount();
-                elementCounts.put(single, elementCounts.getOrDefault(single, 0) + amount);
-                totalElementsAmount += amount;
-            }
+            elementCounts.putAll(subComposition.getContainedElements());
+            totalElementsAmount += subComposition.getContainedAmount();
         }
 
         int xOffset = 177 / 2;

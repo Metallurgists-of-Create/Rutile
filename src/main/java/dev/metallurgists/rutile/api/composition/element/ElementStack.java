@@ -1,11 +1,7 @@
 package dev.metallurgists.rutile.api.composition.element;
 
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.MapLike;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.metallurgists.rutile.api.data.ISerializable;
 import dev.metallurgists.rutile.config.RutileConfig;
@@ -15,11 +11,8 @@ import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -149,7 +142,7 @@ public class ElementStack implements ISerializable {
         if (advanced) {
             tooltip.accept((Component.literal(getId().toString())).withStyle(ChatFormatting.DARK_GRAY));
         }
-
+        double mass = getMass() * getAmount();
         String displayedMass = (advanced || !RutileConfig.getClient().roundMass.get()) ? "" + mass : StringFormatUtil.DECIMAL_FORMAT.format(mass);
         tooltip.accept((Component.literal(displayedMass + "amu")).withStyle(ChatFormatting.YELLOW));
     }

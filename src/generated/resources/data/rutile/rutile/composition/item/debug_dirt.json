@@ -1,0 +1,46 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:iron"
+        },
+        {
+          "id": "rutile:oxygen"
+        }
+      ],
+      "nested": [
+        {
+          "nested": [
+            {
+              "elements": [
+                {
+                  "amount": 2,
+                  "id": "rutile:iron"
+                },
+                {
+                  "amount": 3,
+                  "id": "rutile:oxygen"
+                }
+              ]
+            },
+            {
+              "elements": [
+                {
+                  "amount": 2,
+                  "id": "rutile:hydrogen"
+                },
+                {
+                  "id": "rutile:oxygen"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "minecraft:dirt"
+  ]
+}

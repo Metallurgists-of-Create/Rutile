@@ -87,28 +87,7 @@ public class CompositionHandler {
 
     public static void createTooltip(LangBuilder compositionName, Composition<?> composition) {
         for (SubComposition subComposition : composition.compositions()) {
-            if (subComposition == null) continue;
-            LangBuilder subComp = RutileClient.getLang();
-            int subCompAmount = subComposition.getAmount();
-            boolean encaseInBrackets = subCompAmount > 1;
-            int outerColour = ColourUtil.blendAll(subComposition.getElements().stream().map(ElementStack::getColor).toList());
-            var outerStyle = Style.EMPTY.withColor(outerColour);
-            if (!RutileConfig.getClient().elementColorForTooltip.get()) {
-                outerStyle = Style.EMPTY.withColor(RutileConfig.getClient().tooltipColor.get());
-            }
-            if (encaseInBrackets) subComp.add(Component.literal("(").setStyle(outerStyle));
-            for (int j = 0; j < subComposition.getElements().size(); j++) {
-                if (subComposition.getElements().get(j) == null) continue;
-                ElementStack elementStack = subComposition.getElements().get(j);
-                MutableComponent elementComp = Component.literal(elementStack.getDisplay());
-                if (RutileConfig.getClient().elementColorForTooltip.get()) {
-                    elementComp = elementComp.setStyle(Style.EMPTY.withColor(elementStack.getColor()));
-                }
-                subComp.add(elementComp);
-            }
-            if (encaseInBrackets) subComp.add(Component.literal(")").setStyle(outerStyle));
-            if (subComposition.getAmount() > 1) subComp.add(Component.literal(StringFormatUtil.toSmallDownNumbers(String.valueOf(subComposition.getAmount()))).setStyle(outerStyle));
-            compositionName.add(subComp);
+            compositionName.add(subComposition.getDisplay());
         }
     }
 
