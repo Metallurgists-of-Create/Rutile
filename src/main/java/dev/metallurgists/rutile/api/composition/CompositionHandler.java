@@ -127,7 +127,7 @@ public class CompositionHandler {
                     text += stackItem.getElement().getSymbol();
 
                     if (stackItem.getAmount() > 1) {
-                        text += stackItem.getAmount();
+                        text += StringFormatUtil.toLowerNumbers(stackItem.getAmount());
                     }
 
                     if (useElementColor) {
@@ -164,7 +164,7 @@ public class CompositionHandler {
                         int bracketColor = useElementColor ? frame.node.getColor() : defaultColor;
                         builder.add(RutileClient.getLang().text(")").color(bracketColor));
                         if (frame.node.getAmount() > 1) {
-                            builder.add(RutileClient.getLang().text(String.valueOf(frame.node.getAmount())).color(bracketColor));
+                            builder.add(RutileClient.getLang().text(StringFormatUtil.toLowerNumbers(frame.node.getAmount())).color(bracketColor));
                         }
                     }
                 }

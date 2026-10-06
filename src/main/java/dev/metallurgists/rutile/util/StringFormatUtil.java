@@ -95,4 +95,25 @@ public class StringFormatUtil {
         }
         return sb.toString();
     }
+
+    public static String toLowerNumbers(long number) {
+        String str = String.valueOf(number);
+        StringBuilder sb = new StringBuilder();
+        for (char c : str.toCharArray()) {
+            switch (c) {
+                case '0' -> sb.append('₀');
+                case '1' -> sb.append('₁');
+                case '2' -> sb.append('₂');
+                case '3' -> sb.append('₃');
+                case '4' -> sb.append('₄');
+                case '5' -> sb.append('₅');
+                case '6' -> sb.append('₆');
+                case '7' -> sb.append('₇');
+                case '8' -> sb.append('₈');
+                case '9' -> sb.append('₉');
+                default -> sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
 }
