@@ -1,6 +1,7 @@
 package dev.metallurgists.rutile.events;
 
 import dev.metallurgists.rutile.Rutile;
+import dev.metallurgists.rutile.api.composition.RutileCompositions;
 import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -22,6 +23,7 @@ public class CommonEvents {
             return;
         }
         PluginRegistry.getInstance().callRegistration();
+        RutileCompositions.INSTANCE.collectManagers();
 
         didRunRegistration = true;
     }
