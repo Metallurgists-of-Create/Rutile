@@ -7,10 +7,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 public class CommonEvents {
-    private static IEventBus modBus;
-
     public static void init(final IEventBus modBus) {
-        CommonEvents.modBus = modBus;
         modBus.register(CommonEvents.class);
 
         Rutile.getRegistrate().registerEventListeners(modBus);
