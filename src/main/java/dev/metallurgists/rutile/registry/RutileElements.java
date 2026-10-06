@@ -7,9 +7,7 @@ import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.api.composition.element.ElementLike;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import org.codehaus.plexus.util.Os;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.List;
 
