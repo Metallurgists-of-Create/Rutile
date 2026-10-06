@@ -5,13 +5,11 @@ import dev.metallurgists.rutile.api.composition.element.ElementStack;
 import dev.metallurgists.rutile.api.data.manager.composition.FluidCompositionManager;
 import dev.metallurgists.rutile.api.data.manager.composition.ItemCompositionManager;
 import dev.metallurgists.rutile.config.RutileConfig;
-import dev.metallurgists.rutile.util.ColourUtil;
 import dev.metallurgists.rutile.util.StringFormatUtil;
 import net.createmod.catnip.utility.lang.LangBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -19,10 +17,13 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class CompositionHandler {
+
     public static void appendItemTooltips(List<Component> toolTip, ItemStack stack, HolderLookup.Provider registries) {
         boolean hasSpecificComposition = itemComposition(toolTip, stack);
         //TODO: Material compositions
@@ -86,8 +87,98 @@ public class CompositionHandler {
     }
 
     public static void createTooltip(LangBuilder compositionName, Composition<?> composition) {
-        for (SubComposition subComposition : composition.compositions()) {
-            compositionName.add(subComposition.getDisplay());
+        List<SubComposition> compositions = composition.compositions();
+        int defaultColor = RutileConfig.getClient().tooltipColor.get();
+
+        for (int i = 0; i < compositions.size(); i++) {
+            if (i > 0) {
+                compositionName.add(RutileClient.getLang().text(" + ").color(defaultColor));
+            }
+            appendSubComposition(compositionName, compositions.get(i));
+        }
+    }
+
+    @SuppressWarnings("null")
+    private static void appendSubComposition(LangBuilder builder, SubComposition subComposition) {
+        if (subComposition == null) return;
+
+        boolean useElementColor = RutileConfig.getClient().elementColorForTooltip.get();
+        int defaultColor = RutileConfig.getClient().tooltipColor.get();
+
+        if (subComposition.getAmount() > 1) {
+            int rootColor = useElementColor ? subComposition.getColor() : defaultColor;
+            builder.add(RutileClient.getLang().text(String.valueOf(subComposition.getAmount())).color(rootColor));
+        }
+
+        Deque<DisplayFrame> stack = new ArrayDeque<>();
+        stack.push(new DisplayFrame(subComposition));
+
+        while (!stack.isEmpty()) {
+            DisplayFrame frame = stack.peek();
+
+            if (!frame.elementsProcessed) {
+                for (ElementStack stackItem : frame.node.getElements()) {
+                    String text = "";
+
+                    if (stackItem.getMass() != stackItem.getElement().getMass()) {
+                        text += StringFormatUtil.toUpperNumbers(Math.round(stackItem.getMass()));
+                    }
+
+                    text += stackItem.getElement().getSymbol();
+
+                    if (stackItem.getAmount() > 1) {
+                        text += StringFormatUtil.toLowerNumbers(stackItem.getAmount());
+                    }
+
+                    if (useElementColor) {
+                        int color = stackItem.getElement().getColor();
+                        builder.add(RutileClient.getLang().text(text).color(color));
+                    } else {
+                        builder.add(RutileClient.getLang().text(text).color(defaultColor));
+                    }
+                }
+                frame.elementsProcessed = true;
+            }
+
+            if (frame.childIndex < frame.node.getNested().size()) {
+                SubComposition child = frame.node.getNested().get(frame.childIndex);
+                frame.childIndex++;
+
+                if (child.isHydrate()) {
+                    builder.add(RutileClient.getLang().text(" ⋅ ").color(defaultColor));
+                    if (child.getAmount() > 1) {
+                        int hydrateColor = useElementColor ? child.getColor() : defaultColor;
+                        builder.add(RutileClient.getLang().text(String.valueOf(child.getAmount())).color(hydrateColor));
+                    }
+                } else {
+                    int bracketColor = useElementColor ? child.getColor() : defaultColor;
+                    builder.add(RutileClient.getLang().text("(").color(bracketColor));
+                }
+
+                stack.push(new DisplayFrame(child));
+            } else {
+                stack.pop();
+
+                if (!stack.isEmpty()) {
+                    if (!frame.node.isHydrate()) {
+                        int bracketColor = useElementColor ? frame.node.getColor() : defaultColor;
+                        builder.add(RutileClient.getLang().text(")").color(bracketColor));
+                        if (frame.node.getAmount() > 1) {
+                            builder.add(RutileClient.getLang().text(StringFormatUtil.toLowerNumbers(frame.node.getAmount())).color(bracketColor));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static class DisplayFrame {
+        final SubComposition node;
+        int childIndex = 0;
+        boolean elementsProcessed = false;
+
+        DisplayFrame(SubComposition node) {
+            this.node = node;
         }
     }
 

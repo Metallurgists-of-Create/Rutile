@@ -12,9 +12,13 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RutileElements {
 
+    private static final Map<String, Element> BY_SYMBOL = new ConcurrentHashMap<>();
+    
     public static final ElementLike NULL = create(Element.NULL),
             H  =  create("hydrogen", "H", 0xff9175dc, 1.008),
             He =  create("helium", "He", 0xfffcc6f7, 4.0026),
@@ -155,7 +159,15 @@ public class RutileElements {
     }
 
     public static ElementLike create(Element element) {
+        if(element.getSymbol() != null) {
+            BY_SYMBOL.put(element.getSymbol(), element);
+        }
+        
         DeferredElements HELPER = RegistryHelper.createElements(element.getModId());
         return HELPER.register(element.getName(), () -> element);
+    }
+
+    public static @Nullable Element getBySymbol(String symbol) {
+        return BY_SYMBOL.get(symbol);
     }
 }

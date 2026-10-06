@@ -2,7 +2,6 @@ package dev.metallurgists.rutile.api.composition;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.tterrag.registrate.util.nullness.NonNullFunction;
 import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.api.composition.element.ElementLike;
@@ -30,6 +29,9 @@ public class SubComposition implements ISerializable {
     private final List<ElementStack> elements;
     @Getter
     private final List<SubComposition> nested;
+    @Getter
+    @Setter
+    private boolean hydrate = false;
 
     public SubComposition(List<ElementStack> elements) {
         this.elements = elements;
@@ -128,12 +130,10 @@ public class SubComposition implements ISerializable {
     }
 
     static {
-        CODEC = Codec.recursive(SubComposition.class.getSimpleName(), recursed ->
-                RecordCodecBuilder.create(instance -> instance.group(
-                        Codec.list(ElementStack.CODEC).optionalFieldOf("elements", List.of()).forGetter(SubComposition::getElements),
-                        Codec.INT.optionalFieldOf("amount", 1).forGetter(SubComposition::getAmount),
-                        recursed.listOf().optionalFieldOf("nested", List.of()).forGetter(SubComposition::getNested)
-                ).apply(instance, SubComposition::new)));
+        CODEC = Codec.STRING.comapFlatMap(
+            FormulaParser::parse,
+            FormulaParser::toFormulaString
+        );
     }
 
     @Override

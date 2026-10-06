@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.TooltipFlag;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -130,6 +131,11 @@ public class ElementStack implements ISerializable {
                 && this.amount == stack.getAmount()
                 && this.mass == stack.getMass()
                 && this.element.equals(stack.getElement());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.element, this.amount, this.mass);
     }
 
     @Override
