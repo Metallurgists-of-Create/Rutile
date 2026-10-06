@@ -158,8 +158,13 @@ public interface ElementCompositionWrapper<T> {
     private static void addElements(Composition<?> composition, IRecipeLayoutBuilder builder) {
         Map<ElementStack, Integer> elementCounts = new HashMap<>();
         int totalElementsAmount = 0;
+
         for (SubComposition subComposition : composition.compositions()) {
-            elementCounts.putAll(subComposition.getContainedElements());
+            for (Map.Entry<ElementStack, Integer> entry : subComposition.getContainedElements().entrySet()) {
+                ElementStack single = entry.getKey().copyWithAmount(1);
+                int amount = entry.getValue();
+                elementCounts.put(single, elementCounts.getOrDefault(single, 0) + amount);
+            }
             totalElementsAmount += subComposition.getContainedAmount();
         }
 
