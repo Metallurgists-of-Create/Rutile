@@ -3,7 +3,6 @@ package dev.metallurgists.rutile.compat.jei.category;
 import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.api.composition.Composition;
 import dev.metallurgists.rutile.api.composition.SubComposition;
-import dev.metallurgists.rutile.api.composition.element.Element;
 import dev.metallurgists.rutile.api.composition.element.ElementStack;
 import dev.metallurgists.rutile.compat.jei.RutileJeiConstants;
 import dev.metallurgists.rutile.util.GuiTexture;
@@ -31,9 +30,7 @@ import java.util.Map;
 import static net.minecraft.world.item.Items.AIR;
 
 public interface ElementCompositionWrapper<T> {
-    Composition<?> getComposition();
-
-    List<T> getIngredients();
+    Composition<T> getComposition();
 
     default IDrawable getBackground() {
         return asDrawable(RutileJeiConstants.JEI_SLOT);
@@ -43,13 +40,8 @@ public interface ElementCompositionWrapper<T> {
 
     record Items(List<Item> items, Composition<Item> composition) implements ElementCompositionWrapper<Item> {
         @Override
-        public Composition<?> getComposition() {
+        public Composition<Item> getComposition() {
             return composition;
-        }
-
-        @Override
-        public List<Item> getIngredients() {
-            return items;
         }
 
         @Override
@@ -82,13 +74,8 @@ public interface ElementCompositionWrapper<T> {
 
     record Fluids(List<Fluid> fluids, Composition<Fluid> composition) implements ElementCompositionWrapper<Fluid> {
         @Override
-        public Composition<?> getComposition() {
+        public Composition<Fluid> getComposition() {
             return composition;
-        }
-
-        @Override
-        public List<Fluid> getIngredients() {
-            return fluids;
         }
 
         @Override
