@@ -74,4 +74,25 @@ public class StringFormatUtil {
         if (((colorValue >> 24) & 0xFF) != 0) return colorValue;
         return opacity << 24 | colorValue;
     }
+
+    public static String toUpperNumbers(long number) {
+        String str = String.valueOf(number);
+        StringBuilder sb = new StringBuilder();
+        for (char c : str.toCharArray()) {
+            switch (c) {
+                case '0' -> sb.append('⁰');
+                case '1' -> sb.append('¹');
+                case '2' -> sb.append('²');
+                case '3' -> sb.append('³');
+                case '4' -> sb.append('⁴');
+                case '5' -> sb.append('⁵');
+                case '6' -> sb.append('⁶');
+                case '7' -> sb.append('⁷');
+                case '8' -> sb.append('⁸');
+                case '9' -> sb.append('⁹');
+                default -> sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
 }
