@@ -15,7 +15,9 @@ import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 @Accessors(chain = true, fluent = true)
 public record Composition<T>(LinkedList<SubComposition> compositions, HolderContent<T> contents) {

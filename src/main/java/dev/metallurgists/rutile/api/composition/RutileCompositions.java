@@ -1,5 +1,6 @@
 package dev.metallurgists.rutile.api.composition;
 
+import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.api.data.manager.composition.AbstractCompositionManager;
 import dev.metallurgists.rutile.api.plugin.PluginRegistry;
 import net.minecraft.resources.ResourceLocation;
@@ -24,15 +25,26 @@ public class RutileCompositions {
         }
 
         ResourceLocation type = manager.getType();
+
         if (!managers.containsKey(type)) {
             managers.put(type, manager);
         }
     }
 
+    public void collectManagers() {
+        if (frozen) {
+            throw new IllegalStateException("Cannot collect Composition managers: registry is frozen");
+        }
+
+        PluginRegistry.getInstance().forEach((plugin, config) -> plugin.collectCompositionManagers(this));
+        Rutile.LOGGER.info("Registered {} composition managers: {}", this.managers.size(), this.getTypes());
+    }
+
     public void register(AddReloadListenerEvent event) {
         frozen = false;
-        PluginRegistry.getInstance().forEach((plugin, config) -> plugin.collectCompositionManagers(this));
-        managers.forEach((type, manager) -> event.addListener(manager));
+        for (var manager : managers.values()) {
+            event.addListener(manager);
+        }
         frozen = true;
     }
 

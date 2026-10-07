@@ -8,7 +8,6 @@ import dev.metallurgists.rutile.api.composition.element.ElementStack;
 import dev.metallurgists.rutile.util.ColourUtil;
 import lombok.RequiredArgsConstructor;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;

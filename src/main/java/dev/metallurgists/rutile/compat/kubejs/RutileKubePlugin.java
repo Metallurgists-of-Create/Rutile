@@ -121,8 +121,6 @@ public final class RutileKubePlugin implements IRutilePlugin, KubeJSPlugin {
 
         ResourceLocation id = dataId(manager, name);
         generator.json(id, json);
-        Rutile.LOGGER.info("[Rutile] Generated {} composition '{}' -> data/{}/{}.json\n{}",
-                manager.getType(), name, id.getNamespace(), id.getPath(), json);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
