@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -69,19 +70,22 @@ public record Composition<T>(LinkedList<SubComposition> compositions, HolderCont
         for (SubComposition subComposition : compositions()) {
             if (subComposition == null) continue;
             LangBuilder subComp = RutileClient.getLang();
-            int subCompAmount = compositions().size();
-            boolean encaseInBrackets = subCompAmount > 1;
+			boolean encaseInBrackets = subComposition.getElements().size() > 1;
             if (encaseInBrackets) subComp.add(Component.literal("("));
-            for (int j = 0; j < subComposition.getElements().size(); j++) {
-                if (subComposition.getElements().get(j) == null) continue;
-                ElementStack elementStack = subComposition.getElements().get(j);
-                subComp.add(Component.literal(elementStack.getDisplay()));
-            }
+			subComp.add(subComposition.getDisplay());
             if (encaseInBrackets) subComp.add(Component.literal(")"));
             sb.append(subComp.string());
         }
         return sb.toString();
     }
+	
+	public HashMap<ElementStack, Integer> getContainedElements () {
+		return compositions.stream().map(IComposable::getContainedElements).reduce((one, two) -> {
+			for (HashMap.Entry<ElementStack, Integer> entry : two.entrySet())
+				one.merge(entry.getKey(), entry.getValue(), Integer::sum);
+			return one;
+		}).orElse(new HashMap<>());
+	}
 
     public static <T> Builder<T> builder() {
         return new Builder<>();

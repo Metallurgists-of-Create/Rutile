@@ -3,20 +3,26 @@ package dev.metallurgists.rutile.api.composition.element;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.metallurgists.rutile.api.data.ISerializable;
+import dev.metallurgists.rutile.RutileClient;
+import dev.metallurgists.rutile.api.composition.IComposable;
 import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.registry.RutileRegistries;
 import dev.metallurgists.rutile.util.StringFormatUtil;
 import lombok.Getter;
+import net.createmod.catnip.utility.lang.LangBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.TooltipFlag;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class ElementStack implements ISerializable {
+public class ElementStack implements IComposable {
     @Getter
     private final Element element;
     @Getter
@@ -85,7 +91,8 @@ public class ElementStack implements ISerializable {
         return new ElementStack(element, this.amount);
     }
 
-    public String getDisplay() {
+    public LangBuilder getDisplay() {
+		LangBuilder builder = RutileClient.getLang();
         StringBuilder display = new StringBuilder(getElement().getSymbol());
         if (amount > 1)
             display.append(amount);
@@ -93,9 +100,19 @@ public class ElementStack implements ISerializable {
         if (getMass() != getElement().getMass()) {
             sized.insert(0, Math.round(getMass()));
         }
-        return StringFormatUtil.toSmallUpNumbers(sized.toString());
+		MutableComponent elementComp = Component.literal(StringFormatUtil.toSmallUpNumbers(sized.toString()));
+		if (RutileConfig.getClient().elementColorForTooltip.get()) {
+			elementComp = elementComp.setStyle(Style.EMPTY.withColor(this.getColor()));
+		}
+		builder.add(elementComp);
+		return builder;
     }
-
+	
+	@Override
+	public HashMap<ElementStack, Integer> getContainedElements() {
+		return new HashMap<>(Map.of(this.copyWithAmount(1), this.getAmount()));
+	}
+	
     //TODO: Find a way to stop the codec from printing the default mass.
     static {
         CODEC = RecordCodecBuilder.create(instance -> instance.group(

@@ -2,7 +2,6 @@ package dev.metallurgists.rutile.compat.jei.category;
 
 import dev.metallurgists.rutile.RutileClient;
 import dev.metallurgists.rutile.api.composition.Composition;
-import dev.metallurgists.rutile.api.composition.SubComposition;
 import dev.metallurgists.rutile.api.composition.element.ElementStack;
 import dev.metallurgists.rutile.compat.jei.RutileJeiConstants;
 import dev.metallurgists.rutile.util.GuiTexture;
@@ -22,8 +21,8 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -143,12 +142,8 @@ public interface ElementCompositionWrapper<T> {
     }
 
     private static void addElements(Composition<?> composition, IRecipeLayoutBuilder builder) {
-        Map<ElementStack, Integer> elementCounts = new HashMap<>();
-        int totalElementsAmount = 0;
-        for (SubComposition subComposition : composition.compositions()) {
-            elementCounts.putAll(subComposition.getContainedElements());
-            totalElementsAmount += subComposition.getContainedAmount();
-        }
+        Map<ElementStack, Integer> elementCounts = composition.getContainedElements();
+        int totalElementsAmount = elementCounts.values().stream().reduce(Integer::sum).orElse(0);
 
         int xOffset = 177 / 2;
         int yOffset = 18 * 2;
@@ -194,7 +189,7 @@ public interface ElementCompositionWrapper<T> {
                 return texture.getHeight();
             }
 
-            @Override
+            @Override @ParametersAreNonnullByDefault
             public void draw(GuiGraphics graphics, int xOffset, int yOffset) {
                 texture.render(graphics, xOffset, yOffset);
             }

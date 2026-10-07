@@ -11,7 +11,9 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 public class ElementCompositionCategory implements IRecipeCategory<ElementCompositionWrapper> {
     public static final RecipeType<ElementCompositionWrapper> RECIPE_TYPE = RecipeType.create("rutile", "element_composition", ElementCompositionWrapper.class);
@@ -24,17 +26,17 @@ public class ElementCompositionCategory implements IRecipeCategory<ElementCompos
         this.localizedName = Component.translatable("gui.rutile.element_composition_jei");
     }
 
-    @Override
+    @Override @ParametersAreNonnullByDefault
     public void setRecipe(IRecipeLayoutBuilder builder, ElementCompositionWrapper recipe, IFocusGroup focuses) {
         recipe.setRecipe(builder, focuses);
     }
 
-    @Override
+    @Override @Nonnull
     public RecipeType<ElementCompositionWrapper> getRecipeType() {
         return RECIPE_TYPE;
     }
 
-    @Override
+    @Override @Nonnull
     public Component getTitle() {
         return localizedName;
     }
@@ -61,7 +63,7 @@ public class ElementCompositionCategory implements IRecipeCategory<ElementCompos
             return 50;
         }
 
-        @Override
+        @Override @ParametersAreNonnullByDefault
         public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {}
     }
 }
