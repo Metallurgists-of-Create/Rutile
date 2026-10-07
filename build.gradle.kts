@@ -6,9 +6,9 @@ plugins {
     id("io.freefair.lombok") version "8.11"
 }
 
-val baseArchivesName = project.property("mod_id").toString()
+val modID = project.property("mod_id").toString()
 base {
-    archivesName.set(project.property("mod_id").toString())
+    archivesName.set(modID)
 }
 val ci = System.getenv("CI") != null && System.getenv("CI").toBoolean()
 val release = System.getenv("RELEASE") != null && System.getenv("RELEASE").toBoolean()
@@ -33,7 +33,7 @@ tasks.withType<Javadoc>().configureEach {
     (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
 }
 
-val localRuntime: Configuration by configurations.creating
+val localRuntime: Configuration = configurations.create("localRuntime")
 configurations.runtimeClasspath {
     extendsFrom(localRuntime)
 }
@@ -50,24 +50,24 @@ neoForge {
         register("client") {
             client()
 
-            systemProperty("neoforge.enabledGameTestNamespaces", project.property("mod_id").toString())
+            systemProperty("neoforge.enabledGameTestNamespaces", modID)
         }
 
         register("server") {
             server()
             programArgument("--nogui")
-            systemProperty("neoforge.enabledGameTestNamespaces", project.property("mod_id").toString())
+            systemProperty("neoforge.enabledGameTestNamespaces", modID)
         }
 
         register("gameTestServer") {
             type = "gameTestServer"
-            systemProperty("neoforge.enabledGameTestNamespaces", project.property("mod_id").toString())
+            systemProperty("neoforge.enabledGameTestNamespaces", modID)
         }
 
         register("data") {
             data()
             programArguments.addAll(
-                "--mod", project.property("mod_id").toString(),
+                "--mod", modID,
                 "--all",
                 "--output", file("src/generated/resources/").absolutePath,
                 "--existing", file("src/main/resources/").absolutePath
@@ -158,8 +158,9 @@ dependencies {
     interfaceInjectionData("dev.latvian.mods:kubejs-neoforge:${property("kubejs_version")}")
 }
 
-val generateModMetadata by tasks.registering(ProcessResources::class) {
-    val replaceProperties = mapOf(
+val generateModMetadata = tasks.register<ProcessResources>("generateModMetadata") {
+    description = project.findProperty("mod_description").toString()
+	val replaceProperties = mapOf(
         "minecraft_version" to project.findProperty("minecraft_version") as String,
         "minecraft_version_range" to project.findProperty("minecraft_version_range") as String,
         "neo_version" to project.findProperty("neo_version") as String,
