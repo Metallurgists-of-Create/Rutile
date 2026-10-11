@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:silver"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/silver",
+    "#c:ingots/silver",
+    "#c:nuggets/silver",
+    "#c:plates/silver",
+    "#c:ores/silver",
+    "#c:raw_materials/silver",
+    "#c:storage_blocks/raw_silver"
+  ]
+}

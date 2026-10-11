@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:palladium"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/palladium",
+    "#c:ingots/palladium",
+    "#c:nuggets/palladium",
+    "#c:plates/palladium",
+    "#c:ores/palladium",
+    "#c:raw_materials/palladium",
+    "#c:storage_blocks/raw_palladium"
+  ]
+}

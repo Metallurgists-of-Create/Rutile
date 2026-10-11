@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:titanium"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/titanium",
+    "#c:ingots/titanium",
+    "#c:nuggets/titanium",
+    "#c:plates/titanium",
+    "#c:ores/titanium",
+    "#c:raw_materials/titanium",
+    "#c:storage_blocks/raw_titanium"
+  ]
+}

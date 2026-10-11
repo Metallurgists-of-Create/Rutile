@@ -1,0 +1,23 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:copper"
+        },
+        {
+          "id": "rutile:gold"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/rose_gold",
+    "#c:ingots/rose_gold",
+    "#c:nuggets/rose_gold",
+    "#c:plates/rose_gold",
+    "#c:ores/rose_gold",
+    "#c:raw_materials/rose_gold",
+    "#c:storage_blocks/raw_rose_gold"
+  ]
+}

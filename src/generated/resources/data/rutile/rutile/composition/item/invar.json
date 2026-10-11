@@ -1,0 +1,23 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:iron"
+        },
+        {
+          "id": "rutile:nickel"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/invar",
+    "#c:ingots/invar",
+    "#c:nuggets/invar",
+    "#c:plates/invar",
+    "#c:ores/invar",
+    "#c:raw_materials/invar",
+    "#c:storage_blocks/raw_invar"
+  ]
+}
