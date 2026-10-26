@@ -1,34 +1,18 @@
 package dev.metallurgists.rutile.util;
 
 import java.awt.*;
-import java.util.List;
+import java.util.stream.Stream;
 
 public class ColourUtil {
 
-    public static int blendAll(List<Integer> colors) {
-        if (colors == null || colors.isEmpty()) {
-            return 0xFF000000;
-        }
-        long totalA = 0, totalR = 0, totalG = 0, totalB = 0;
-
-        for (int color : colors) {
-            int a = (color >> 24) & 0xFF;
-            int r = (color >> 16) & 0xFF;
-            int g = (color >> 8) & 0xFF;
-            int b = color & 0xFF;
-            totalA += a;
-            totalR += r * a;
-            totalG += g * a;
-            totalB += b * a;
-        }
-
-        if (totalA == 0) return 0xFF000000;
-        int avgA = (int)(totalA / colors.size());
-        int avgR = (int)(totalR / totalA);
-        int avgG = (int)(totalG / totalA);
-        int avgB = (int)(totalB / totalA);
-        return (avgA << 24) | (avgR << 16) | (avgG << 8) | avgB;
-    }
+    public static int blendAll(Stream<Integer> colors) {
+		if (colors == null) return 0xFF000000;
+		return colors.reduce(
+			new ColorBlend(),
+			ColorBlend::addColor,
+			ColorBlend::blend
+		).getColor();
+	}
 
     public static int brighter(int rgba, float maxSaturation) {
         Color c = new Color(rgba, true);
@@ -40,4 +24,47 @@ public class ColourUtil {
         int rgbNoAlpha = Color.HSBtoRGB(hsb[0], newSaturation, newBrightness) & 0x00FFFFFF;
         return (alpha << 24) | rgbNoAlpha;
     }
+	
+	private record ColorBlend (int count, long a, long r, long g, long b) {
+		public ColorBlend() {
+			this(0, 0, 0, 0, 0);
+		}
+		
+		public ColorBlend addColor(int color) {
+			int a = (color >> 24) & 0xFF;
+			int r = (color >> 16) & 0xFF;
+			int g = (color >> 8) & 0xFF;
+			int b = color & 0xFF;
+			return addColor(a, r, g, b);
+		}
+		
+		public ColorBlend addColor(int a, int r, int g, int b) {
+			return new ColorBlend(
+				count + 1,
+				this.a + a,
+				this.r + (long) a * r,
+				this.g + (long) a * g,
+				this.b + (long) a * b
+			);
+		}
+		
+		public ColorBlend blend(ColorBlend other) {
+			return new ColorBlend(
+				count + other.count,
+				a + other.a,
+				r + other.r,
+				g + other.g,
+				b + other.b
+			);
+		}
+		
+		public int getColor() {
+			if (a == 0) return 0xFF000000;
+			int avgA = (int)(a / count);
+			int avgR = (int)(r / a);
+			int avgG = (int)(g / a);
+			int avgB = (int)(b / a);
+			return (avgA << 24) | (avgR << 16) | (avgG << 8) | avgB;
+		}
+	}
 }

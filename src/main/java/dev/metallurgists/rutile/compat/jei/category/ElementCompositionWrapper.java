@@ -143,7 +143,7 @@ public interface ElementCompositionWrapper<T> {
 
     private static void addElements(Composition<?> composition, IRecipeLayoutBuilder builder) {
         Map<ElementStack, Integer> elementCounts = composition.getContainedElements();
-        int totalElementsAmount = elementCounts.values().stream().reduce(Integer::sum).orElse(0);
+        int totalElementsAmount = elementCounts.values().stream().reduce(0, Integer::sum);
 
         int xOffset = 177 / 2;
         int yOffset = 18 * 2;

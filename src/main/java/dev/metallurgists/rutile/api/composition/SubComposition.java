@@ -21,7 +21,22 @@ import net.minecraft.network.chat.Style;
 import java.util.*;
 
 public class SubComposition implements IComposable {
-    public static final Codec<SubComposition> CODEC;
+    public static final Codec<SubComposition> CODEC = Codec.recursive(SubComposition.class.getSimpleName(),
+		recursed -> RecordCodecBuilder.create(instance -> instance.group(
+				Codec.list(Codec.xor(ElementStack.CODEC, recursed).flatComapMap(
+					(e) -> e.map(ee -> (IComposable) ee, ee -> (IComposable) ee),
+					(c) -> {
+						Either<ElementStack, SubComposition> either = null;
+						if (c instanceof ElementStack cee) either = Either.left(cee);
+						else if (c instanceof SubComposition csc) either = Either.right(csc);
+						if (either == null) return DataResult.error(() -> "Failed to parse composition elements.");
+						return DataResult.success(either);
+					}
+				)).fieldOf("elements").forGetter(SubComposition::getElements),
+				Codec.INT.optionalFieldOf("amount", 1).forGetter(SubComposition::getAmount)
+			).apply(instance, SubComposition::new)
+		)
+	);
 
     @Getter
     @Setter
@@ -39,8 +54,7 @@ public class SubComposition implements IComposable {
     }
 
     public int getColor() {
-		List<Integer> colours = new ArrayList<>(elements.stream().map(IComposable::getColor).toList());
-        return ColourUtil.blendAll(colours);
+        return ColourUtil.blendAll(elements.stream().map(IComposable::getColor));
     }
 
     public Style groupStyle() {
@@ -67,7 +81,7 @@ public class SubComposition implements IComposable {
     }
 
     public int getContainedAmount() {
-        return getContainedElements().values().stream().mapToInt(Integer::intValue).sum();
+        return getContainedElements().values().stream().reduce(0, Integer::sum);
     }
 
 
@@ -92,25 +106,6 @@ public class SubComposition implements IComposable {
         return subCompositions;
     }
 
-    static {
-        CODEC = Codec.recursive(SubComposition.class.getSimpleName(),
-			recursed -> RecordCodecBuilder.create(instance -> instance.group(
-					Codec.list(Codec.xor(ElementStack.CODEC, recursed).flatComapMap(
-						(e) -> e.map(ee -> (IComposable) ee, ee -> (IComposable) ee),
-						(c) -> {
-							Either<ElementStack, SubComposition> either = null;
-							if (c instanceof ElementStack cee) either = Either.left(cee);
-							else if (c instanceof SubComposition csc) either = Either.right(csc);
-							if (either == null) return DataResult.error(() -> "Failed to parse composition elements.");
-							return DataResult.success(either);
-						}
-					)).fieldOf("elements").forGetter(SubComposition::getElements),
-					Codec.INT.optionalFieldOf("amount", 1).forGetter(SubComposition::getAmount)
-                ).apply(instance, SubComposition::new)
-			)
-		);
-    }
-
     @Override
     public JsonObject toJson() {
         return serialize(CODEC, this);
@@ -127,7 +122,7 @@ public class SubComposition implements IComposable {
         public Builder() {}
 
         public Builder nested(NonNullFunction<Builder, Builder> nest) {
-			elements.add(nest.apply(SubComposition.builder()).build());
+			elements.add(nest.apply(new Builder()).build());
             return this;
         }
 
