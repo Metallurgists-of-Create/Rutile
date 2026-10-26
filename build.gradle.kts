@@ -152,9 +152,10 @@ dependencies {
 
     implementation("mezz.jei:jei-${property("jei_minecraft_version")}-neoforge:${property("jei_version")}")
 
-    runtimeOnly("me.djtheredstoner:DevAuth-neoforge:1.2.1")
+    localRuntime("me.djtheredstoner:DevAuth-neoforge:1.2.1")
 
-    implementation("dev.latvian.mods:kubejs-neoforge:${property("kubejs_version")}")
+    compileOnly("dev.latvian.mods:kubejs-neoforge:${property("kubejs_version")}")
+    localRuntime("dev.latvian.mods:kubejs-neoforge:${property("kubejs_version")}")
     interfaceInjectionData("dev.latvian.mods:kubejs-neoforge:${property("kubejs_version")}")
 }
 
