@@ -105,24 +105,36 @@ public class DefaultCompositions {
             );
 
             // Integration Compositions
-            compat("lead", RutileElements.Pb, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
-            compat("nickel", RutileElements.Ni, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
-            compat("lithium", RutileElements.Li, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
             compat("aluminum", RutileElements.Al, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
-            compat("zinc", RutileElements.Zn, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
             compat("tin", RutileElements.Sn, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
             compat("osmium", RutileElements.Os, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
-            compat("uranium", RutileElements.U, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
-            compat("tungsten", RutileElements.W, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("zinc", RutileElements.Zn, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("lead", RutileElements.Pb, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("nickel", RutileElements.Ni, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("silver", RutileElements.Ag, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
             compat("platinum", RutileElements.Pt, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
-            compat("silicon", RutileElements.Si, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
-            // Alloys
-            compat("steel", RutileElements.Fe, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
-            compat("brass", c -> c.element(RutileElements.Cu).element(RutileElements.Zn), "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("palladium", RutileElements.Pd, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("tungsten", RutileElements.W, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("titanium", RutileElements.Ti, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("uranium", RutileElements.U, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("thorium", RutileElements.Th, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+
+            compat("lithium", RutileElements.Li, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+
+            // Alloys(?)
+            compat("cast_iron", RutileElements.Fe, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("wrought_iron", RutileElements.Fe, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("rose_gold", c -> c.element(RutileElements.Cu).element(RutileElements.Au), "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
             compat("constantan", c -> c.element(RutileElements.Cu).element(RutileElements.Ni), "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("invar", c -> c.element(RutileElements.Fe).element(RutileElements.Ni), "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("electrum", c -> c.element(RutileElements.Au).element(RutileElements.Ag), "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
             compat("bronze", c -> c.element(RutileElements.Cu).element(RutileElements.Sn), "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("brass", c -> c.element(RutileElements.Cu).element(RutileElements.Zn), "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+            compat("steel", RutileElements.Fe, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
+
             // Misc
             compat("sulfur", RutileElements.S, "dusts/");
+            compat("silicon", RutileElements.Si, "storage_blocks/", "ingots/", "nuggets/", "plates/", "ores/", "raw_materials/", "storage_blocks/raw_");
 
         }
 

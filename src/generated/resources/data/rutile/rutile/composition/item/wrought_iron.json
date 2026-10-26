@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:iron"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/wrought_iron",
+    "#c:ingots/wrought_iron",
+    "#c:nuggets/wrought_iron",
+    "#c:plates/wrought_iron",
+    "#c:ores/wrought_iron",
+    "#c:raw_materials/wrought_iron",
+    "#c:storage_blocks/raw_wrought_iron"
+  ]
+}

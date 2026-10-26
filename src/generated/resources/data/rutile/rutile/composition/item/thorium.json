@@ -1,0 +1,20 @@
+{
+  "compositions": [
+    {
+      "elements": [
+        {
+          "id": "rutile:thorium"
+        }
+      ]
+    }
+  ],
+  "contents": [
+    "#c:storage_blocks/thorium",
+    "#c:ingots/thorium",
+    "#c:nuggets/thorium",
+    "#c:plates/thorium",
+    "#c:ores/thorium",
+    "#c:raw_materials/thorium",
+    "#c:storage_blocks/raw_thorium"
+  ]
+}
