@@ -13,13 +13,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(value = FluidHelper.class, remap = false)
-public class FluidHelperMixin {
+public abstract class FluidHelperMixin {
 
     @Inject(method = "getTooltip(Ljava/util/List;Lnet/neoforged/neoforge/fluids/FluidStack;Lnet/minecraft/world/item/TooltipFlag;)V",
             at = @At("TAIL"),
             remap = false,
             require = 0)
-    private void injectFluidTooltips(List<Component> tooltip, FluidStack ingredient, TooltipFlag tooltipFlag, CallbackInfo ci) {
+    private static void injectFluidTooltips(List<Component> tooltip, FluidStack ingredient, TooltipFlag tooltipFlag, CallbackInfo ci) {
         CompositionHandler.appendFluidTooltips(ingredient, tooltip::add);
     }
 }
