@@ -144,7 +144,7 @@ dependencies {
             strictly("${property("catnip_version")}")
         }
     })
-    jarJar(implementation("dev.engine-room.flywheel:flywheel-neoforge-${property("minecraft_version")}:${property("flywheel_version")}") {
+    jarJar(api("dev.engine-room.flywheel:flywheel-neoforge-${property("minecraft_version")}:${property("flywheel_version")}") {
         version {
             prefer("${property("flywheel_version")}")
         }
