@@ -2,7 +2,7 @@ package dev.metallurgists.rutile.api.composition;
 
 import dev.metallurgists.rutile.api.composition.element.ElementStack;
 import dev.metallurgists.rutile.api.data.ISerializable;
-import net.createmod.catnip.utility.lang.LangBuilder;
+import net.createmod.catnip.lang.LangBuilder;
 
 import java.util.HashMap;
 

@@ -14,7 +14,7 @@ import dev.metallurgists.rutile.util.ColourUtil;
 import dev.metallurgists.rutile.util.StringFormatUtil;
 import lombok.Getter;
 import lombok.Setter;
-import net.createmod.catnip.utility.lang.LangBuilder;
+import net.createmod.catnip.lang.LangBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 

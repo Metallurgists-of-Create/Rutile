@@ -9,7 +9,7 @@ import dev.metallurgists.rutile.config.RutileConfig;
 import dev.metallurgists.rutile.registry.RutileRegistries;
 import dev.metallurgists.rutile.util.StringFormatUtil;
 import lombok.Getter;
-import net.createmod.catnip.utility.lang.LangBuilder;
+import net.createmod.catnip.lang.LangBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;

@@ -138,20 +138,13 @@ dependencies {
             prefer(property("registrate_version") as String)
         }
     })
-    jarJar(api("net.createmod.catnip:Catnip-NeoForge-1.21.1:${property("catnip_version")}") {
-        exclude(group = "dev.engine_room.flywheel")
+    jarJar(api("net.createmod.ponder:ponder-neoforge:${property("ponder_version")}+mc${property("minecraft_version")}") {
         version {
-            strictly("${property("catnip_version")}")
-        }
-    })
-    jarJar(api("dev.engine-room.flywheel:flywheel-neoforge-${property("minecraft_version")}:${property("flywheel_version")}") {
-        version {
-            prefer("${property("flywheel_version")}")
+            prefer("${property("ponder_version")}")
         }
     })
 
     compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${property("minecraft_version")}:${property("flywheel_version")}")
-
     runtimeOnly("dev.engine-room.vanillin:vanillin-neoforge-${property("minecraft_version")}:${property("vanillin_version")}")
 
     implementation("mezz.jei:jei-${property("jei_minecraft_version")}-neoforge:${property("jei_version")}")
