@@ -87,6 +87,14 @@ public class KubeCompositionBuilder<T> implements KubeEvent {
         }
 
         @ReturnsSelf
+        public Builder add(CompositionEntry... entry) {
+            for (CompositionEntry compositionEntry : entry) {
+                KubeCompositionBuilder.this.addEntry(this.holderContent, compositionEntry);
+            }
+            return this;
+        }
+
+        @ReturnsSelf
         public Builder add(CompositionEntry entry) {
             KubeCompositionBuilder.this.addEntry(this.holderContent, entry);
             return this;
