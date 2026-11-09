@@ -1,17 +1,13 @@
 package dev.metallurgists.rutile.api.composition;
 
 import dev.metallurgists.rutile.RutileClient;
-import dev.metallurgists.rutile.api.composition.element.ElementStack;
 import dev.metallurgists.rutile.api.data.manager.composition.FluidCompositionManager;
 import dev.metallurgists.rutile.api.data.manager.composition.ItemCompositionManager;
 import dev.metallurgists.rutile.config.RutileConfig;
-import dev.metallurgists.rutile.util.ColourUtil;
-import dev.metallurgists.rutile.util.StringFormatUtil;
 import net.createmod.catnip.utility.lang.LangBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;

@@ -18,7 +18,10 @@ import net.createmod.catnip.utility.lang.LangBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class SubComposition implements IComposable {
     public static final Codec<SubComposition> CODEC = Codec.recursive(SubComposition.class.getSimpleName(),

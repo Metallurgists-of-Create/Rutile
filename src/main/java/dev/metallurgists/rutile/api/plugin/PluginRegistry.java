@@ -3,7 +3,6 @@ package dev.metallurgists.rutile.api.plugin;
 import dev.metallurgists.rutile.Rutile;
 import dev.metallurgists.rutile.RutileCorePlugin;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.loading.LoadingModList;
 
 import java.util.LinkedHashMap;
 import java.util.List;
