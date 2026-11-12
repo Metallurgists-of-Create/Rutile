@@ -29,12 +29,14 @@ public class PluginRegistry {
                     }
 
                     String className = annotation.memberName();
-                    List<String> required = (List<String>) annotation.annotationData().get("value");
+                    Object value = annotation.annotationData().get("value");
 
-                    for (String modId : required) {
-                        if (!ModList.get().isLoaded(modId)) {
-                            Rutile.LOGGER.info("Skipping plugin {}, mod {} is not loaded", className, modId);
-                            return;
+                    if (value != null) {
+                        for (String modId : (List<String>) value) {
+                            if (!ModList.get().isLoaded(modId)) {
+                                Rutile.LOGGER.info("Skipping plugin {}, mod {} is not loaded", className, modId);
+                                return;
+                            }
                         }
                     }
 
