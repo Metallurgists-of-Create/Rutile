@@ -19,19 +19,14 @@ public class RutileDataGen {
     public static void gatherDataEvent(GatherDataEvent event) {
         Rutile.LOGGER.info("[Rutile] Data Generation starts.");
 
-        String modId = Rutile.ID;
         DataGenerator dataGenerator = event.getGenerator();
-        ExistingFileHelper fileHelper = event.getExistingFileHelper();
         PackOutput packOutput = dataGenerator.getPackOutput();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
-
-        final boolean includeClient = event.includeClient();
-        final boolean includeServer = event.includeServer();
 
         DefaultCompositions.Item itemCompositions = new DefaultCompositions.Item(packOutput, lookupProvider);
         DefaultCompositions.Fluid fluidCompositions = new DefaultCompositions.Fluid(packOutput, lookupProvider);
 
-        dataGenerator.addProvider(includeServer, itemCompositions);
-        dataGenerator.addProvider(includeServer, fluidCompositions);
+        event.addProvider(itemCompositions);
+        event.addProvider(fluidCompositions);
     }
 }
